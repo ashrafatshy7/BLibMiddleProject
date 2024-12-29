@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="514.0" prefWidth="682.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ClientsFrameController">
+    <children>
+        <TableView fx:id="clientsTable" layoutX="14.0" layoutY="14.0" prefHeight="400" prefWidth="648.0">
+            <columns>
+                <TableColumn fx:id="ipColumn" prefWidth="222.0" text="IP Address" />
+                <TableColumn fx:id="hostColumn" prefWidth="199.0" text="Host Name" />
+                <TableColumn fx:id="statusColumn" prefWidth="193.0" text="Connection Status" />
+            </columns>
+        </TableView>
+      <Button fx:id="backBtn" layoutX="610.0" layoutY="438.0" mnemonicParsing="false" onAction="#backToMainMenu" text="back" />
+    </children>
+</AnchorPane>
