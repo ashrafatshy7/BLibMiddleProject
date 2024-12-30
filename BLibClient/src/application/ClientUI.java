@@ -2,7 +2,6 @@ package application;
 
 
 import gui.bounderies.IpFrameController;
-import gui.bounderies.ClientFrameController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
