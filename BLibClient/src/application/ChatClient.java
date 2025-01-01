@@ -5,17 +5,13 @@ import ocsf.client.*;
 
 import common.ChatIF;
 import gui.bounderies.ClientFrameController;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import enteties.Subscriber;
-import enteties.Status;
-
 /**
  * This class overrides some of the methods defined in the abstract
  * superclass in order to give more functionality to the client.
