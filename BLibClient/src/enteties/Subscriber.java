@@ -52,7 +52,7 @@ public class Subscriber {
         return detailedSubscriptionHistory;
     }
 
-    public void SETDetailedSubscriptionHistory(int detailedSubscriptionHistory) {
+    public void setDetailedSubscriptionHistory(int detailedSubscriptionHistory) {
         this.detailedSubscriptionHistory = detailedSubscriptionHistory;
     }
 
