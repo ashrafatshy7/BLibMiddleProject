@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="399.0" prefWidth="669.0" stylesheets="@HomeFrame.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.HomeFrameController">
+    <children>
+        <Button fx:id="login" layoutX="586.0" layoutY="20.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="77.0" text="Login" />
+        <Label layoutX="22.0" layoutY="67.0" prefHeight="23.0" prefWidth="96.0" text="Top 5 Loaned" textAlignment="CENTER">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+        <Label layoutX="27.0" layoutY="22.0" prefHeight="23.0" prefWidth="50.0" text="Status:" />
+        <Label fx:id="status" layoutX="71.0" layoutY="21.0" text="Active" />
+        <ImageView fx:id="image1" fitHeight="182.0" fitWidth="109.0" layoutX="45.0" layoutY="116.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../../1003w-QHBKwQnsgzs.png" />
+            </image>
+        </ImageView>
+        <ImageView fx:id="image2" fitHeight="182.0" fitWidth="109.0" layoutX="172.0" layoutY="116.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../../1003w-QHBKwQnsgzs.png" />
+            </image>
+        </ImageView>
+        <ImageView fx:id="image3" fitHeight="182.0" fitWidth="109.0" layoutX="290.0" layoutY="116.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../../1003w-QHBKwQnsgzs.png" />
+            </image>
+        </ImageView>
+        <ImageView fx:id="image4" fitHeight="182.0" fitWidth="109.0" layoutX="412.0" layoutY="116.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../../1003w-QHBKwQnsgzs.png" />
+            </image>
+        </ImageView>
+        <ImageView fx:id="image5" fitHeight="182.0" fitWidth="109.0" layoutX="531.0" layoutY="116.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../../1003w-QHBKwQnsgzs.png" />
+            </image>
+        </ImageView>
+        <Button fx:id="myInfo" layoutX="22.0" layoutY="341.0" mnemonicParsing="false" onAction="#information" prefHeight="38.0" prefWidth="96.0" text="My Info" />
+        <Button fx:id="seeAll" layoutX="589.0" layoutY="66.0" mnemonicParsing="false" onAction="#seeAllBooks" text="See All" />
+        <Label fx:id="name1" layoutX="68.0" layoutY="299.0" text="Alone" />
+        <Label fx:id="name2" layoutX="195.0" layoutY="302.0" text="Alone" />
+        <Label fx:id="name3" layoutX="313.0" layoutY="302.0" text="Alone" />
+        <Label fx:id="name4" layoutX="435.0" layoutY="299.0" text="Alone" />
+        <Label fx:id="name5" layoutX="554.0" layoutY="299.0" text="Alone" />
+    </children>
+</AnchorPane>

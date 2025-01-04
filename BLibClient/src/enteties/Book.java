@@ -1,44 +1,57 @@
 package enteties;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javafx.scene.image.Image;
 
 public class Book {
-	//aa
-    private String ID;
+    
+    private String barcode;
     private String title;
     private String author;
-    private String subject;
+    private String category;
     private String description;
-    private String locationOnTheShelf;
+    private String shelf;
     private boolean isAvailable;
     private int availableCopies;
+    private Image cachedImage;
     private List<Loan> loan;
     private List<Reservation> reservation;
 
     // Constructor
-    public Book(String ID, String title, String author, String subject, String description,
-                String locationOnTheShelf, boolean isAvailable, int availableCopies,
-                List<Loan> loan, List<Reservation> reservation) {
-        this.ID = ID;
+    public Book(String barcode, String title, String author, String category, String description,
+                String shelf, boolean isAvailable, int availableCopies) {
+        this.barcode = barcode;
         this.title = title;
         this.author = author;
-        this.subject = subject;
+        this.category = category;
         this.description = description;
-        this.locationOnTheShelf = locationOnTheShelf;
+        this.shelf = shelf;
         this.isAvailable = isAvailable;
         this.availableCopies = availableCopies;
-        this.loan = loan;
-        this.reservation = reservation;
+        this.loan = new ArrayList<>();
+        this.reservation = new ArrayList<>();
+        
+        
+        try {
+            cachedImage = new Image(getClass().getResourceAsStream("../1003w-QHBKwQnsgzs.png"));
+        } catch (Exception e) {
+            System.err.println("Failed to load default book image: " + e.getMessage());
+        }
+    }
+    
+    public Image getCachedImage() {
+        return cachedImage;
     }
 
     // Getters and Setters
-    public String getID() {
-        return ID;
+    public String getBarcode() {
+        return barcode;
     }
 
-    public void setID(String ID) {
-        this.ID = ID;
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
     }
 
     public String getTitle() {
@@ -56,30 +69,31 @@ public class Book {
     public void setAuthor(String author) {
         this.author = author;
     }
-
-    public String getSubject() {
-        return subject;
+    
+    public String getCategory() {
+        return category;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public void setCategory(String category) {
+        this.category = category;
     }
-
+    
     public String getDescription() {
         return description;
     }
-
+    
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public String getLocationOnTheShelf() {
-        return locationOnTheShelf;
+    public String getShelf() {
+        return shelf;
     }
 
-    public void setLocationOnTheShelf(String locationOnTheShelf) {
-        this.locationOnTheShelf = locationOnTheShelf;
+    public void setShelf(String shelf) {
+        this.shelf = shelf;
     }
+
 
     public boolean isAvailable() {
         return isAvailable;
@@ -104,6 +118,10 @@ public class Book {
     public void setLoan(List<Loan> loan) {
         this.loan = loan;
     }
+    
+    public void addLoan(Loan loan) {
+        this.loan.add(loan);
+    }
 
     public List<Reservation> getReservation() {
         return reservation;
@@ -112,17 +130,21 @@ public class Book {
     public void setReservation(List<Reservation> reservation) {
         this.reservation = reservation;
     }
+    
+    public void addReservation(Reservation reservation) {
+        this.reservation.add(reservation);
+    }
 
     // Override toString method
     @Override
     public String toString() {
         return "Book{" +
-                "ID='" + ID + '\'' +
+                "barcode='" + barcode + '\'' +
                 ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
-                ", subject='" + subject + '\'' +
+                ", category='" + category + '\'' +
                 ", description='" + description + '\'' +
-                ", locationOnTheShelf='" + locationOnTheShelf + '\'' +
+                ", shelf='" + shelf + '\'' +
                 ", isAvailable=" + isAvailable +
                 ", availableCopies=" + availableCopies +
                 ", loan=" + loan +
@@ -130,4 +152,3 @@ public class Book {
                 '}';
     }
 }
-
