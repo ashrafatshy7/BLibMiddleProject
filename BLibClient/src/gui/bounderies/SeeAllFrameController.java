@@ -42,6 +42,7 @@ public class SeeAllFrameController {
 
 	@FXML
 	public void initialize() {
+		//
 		addBookSorted(new Book("123", "Alone", "aaa", "Drama", "disc", "A5 23", true, 15));
 		addBookSorted(new Book("456", "Together", "bbb", "Romance", "An emotional journey of love", "B4 56", true, 20));
 		addBookSorted(new Book("789", "Survivor", "ccc", "Thriller", "A tale of resilience", "C3 89", false, 12));

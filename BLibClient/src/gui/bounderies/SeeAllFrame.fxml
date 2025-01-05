@@ -8,19 +8,19 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
 
-<AnchorPane prefHeight="399.0" prefWidth="669.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.SeeAllFrameController">
+<AnchorPane prefHeight="577.0" prefWidth="876.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.SeeAllFrameController">
    <children>
       <!-- Search Label -->
-      <Label layoutX="14.0" layoutY="23.0" text="Search" />
+      <Label layoutX="14.0" layoutY="23.0" text="Search by name" />
       
       <!-- Search TextField with fx:id -->
-      <TextField fx:id="searchTextField" layoutX="58.0" layoutY="19.0" prefWidth="200.0" />
+      <TextField fx:id="searchTextField" layoutX="135.0" layoutY="19.0" prefWidth="200.0" />
       
       <!-- Back Button -->
-      <Button fx:id="backButton" layoutX="603.0" layoutY="19.0" mnemonicParsing="false" onAction="#backBtn" stylesheets="@SeeAllFrame.css" text="Back" />
+      <Button fx:id="backButton" layoutX="821.0" layoutY="19.0" mnemonicParsing="false" onAction="#backBtn" stylesheets="@SeeAllFrame.css" text="Back" />
       
       <!-- ScrollPane containing FlowPane -->
-      <ScrollPane fx:id="booksScrollPane" fitToHeight="true" fitToWidth="true" layoutY="51.0" prefHeight="348.0" prefWidth="669.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <ScrollPane fx:id="booksScrollPane" fitToHeight="true" fitToWidth="true" layoutY="51.0" prefHeight="437.0" prefWidth="876.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <content>
             <FlowPane fx:id="booksPanel" hgap="50.0" vgap="10">
                 <padding>
@@ -29,5 +29,9 @@
             </FlowPane>
          </content>
       </ScrollPane>
+      <Label layoutX="14.0" layoutY="59.0" text="Search by Category" />
+      <TextField fx:id="searchTextField1" layoutX="135.0" layoutY="55.0" prefWidth="200.0" />
+      <Label layoutX="14.0" layoutY="94.0" text="Search by discription" />
+      <TextField fx:id="searchTextField11" layoutX="135.0" layoutY="90.0" prefWidth="200.0" />
    </children>
 </AnchorPane>
