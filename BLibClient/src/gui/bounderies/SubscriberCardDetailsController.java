@@ -120,7 +120,7 @@ public class SubscriberCardDetailsController {
 	}
 
 	private void navigateBack() {
-		// Logic to handle navigation
+		// Logic to handle navigation...........
 	}
 
 //	public void start(Stage primaryStage) throws Exception { 
