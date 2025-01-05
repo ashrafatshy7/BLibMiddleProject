@@ -152,6 +152,25 @@ public class EchoServer extends AbstractServer
 	            e.printStackTrace();
 	        }
 	    }
+	    else if (allData.size() > 1 && allData.get(0).equals("register") && allData.get(1).equals("subscriber")) {
+	        String readCard = allData.get(2);
+	        String email = allData.get(3);
+	        String password = allData.get(4);
+	        String username = allData.get(5);
+	        String phone = allData.get(6);
+
+	        boolean success = mysqlConnection.saveNewSubscriber(readCard, email, password, username, phone);
+	        HashMap<String, Object> response = new HashMap<>();
+	        response.put("operation", "register subscriber");
+	        response.put("success", success);
+
+	        try {
+	            client.sendToClient(response);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
 	}
   
 

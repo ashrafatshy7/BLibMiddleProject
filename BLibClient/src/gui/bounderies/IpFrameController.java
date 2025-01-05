@@ -70,19 +70,29 @@ public class IpFrameController {
 		 }
 		 ClientUI.chat = new ClientController(ipAddress, port);
 		 if(ClientUI.chat != null)
-			 goToSubscriber(event);
+			 goToMainMenu(event);
 		 else
 			 showErrorAlert("client is null");
 	}
 	 
 	 
 	 
-	 public void goToSubscriber(ActionEvent event) throws Exception {
-		 	Stage primaryStage = new Stage();
-	        ((Node)event.getSource()).getScene().getWindow().hide();
-	        ClientFrameController subscriber = new ClientFrameController();
-	        subscriber.start(primaryStage);
-	    }
+	 public void goToMainMenu(ActionEvent event) throws Exception {
+		    // סגירת החלון הנוכחי
+		    ((Node) event.getSource()).getScene().getWindow().hide();
+
+		    // טעינת מסך ה-Main Menu
+		    FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/MainMenu.fxml"));
+		    Parent root = loader.load();
+
+		    // יצירת סצנה חדשה
+		    Stage stage = new Stage();
+		    Scene scene = new Scene(root);
+
+		    stage.setTitle("Main Menu");
+		    stage.setScene(scene);
+		    stage.show();
+		}
 	 
 	 
 	 
