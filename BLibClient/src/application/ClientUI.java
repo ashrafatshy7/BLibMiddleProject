@@ -2,6 +2,7 @@ package application;
 
 
 import gui.bounderies.HomeFrameController;
+import gui.bounderies.LoanFrameController;
 import gui.bounderies.SeeAllFrameController;
 import javafx.application.Application;
 import javafx.stage.Stage;

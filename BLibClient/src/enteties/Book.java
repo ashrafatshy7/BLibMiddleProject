@@ -15,7 +15,7 @@ public class Book {
     private String shelf;
     private boolean isAvailable;
     private int availableCopies;
-    private Image cachedImage;
+    private Image image;
     private List<Loan> loan;
     private List<Reservation> reservation;
 
@@ -35,14 +35,14 @@ public class Book {
         
         
         try {
-            cachedImage = new Image(getClass().getResourceAsStream("../1003w-QHBKwQnsgzs.png"));
+            image = new Image(getClass().getResourceAsStream("../1003w-QHBKwQnsgzs.png"));
         } catch (Exception e) {
             System.err.println("Failed to load default book image: " + e.getMessage());
         }
     }
     
-    public Image getCachedImage() {
-        return cachedImage;
+    public Image getImage() {
+        return image;
     }
 
     // Getters and Setters

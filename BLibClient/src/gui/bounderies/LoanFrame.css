@@ -1,0 +1,15 @@
+
+
+.invalid-border {
+    -fx-border-color: #b3271f;
+    -fx-border-width: 2;
+}
+
+
+/* TextField default style with border radius */
+.text-field {
+    -fx-padding: 10 10 5 10;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+

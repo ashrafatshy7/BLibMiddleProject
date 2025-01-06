@@ -81,7 +81,7 @@ public class BookDetailsFrameController {
 	
 	
 	private void populateBookDetails() {
-		image.setImage(book.getCachedImage());
+		image.setImage(book.getImage());
 		image.setPreserveRatio(true);
 		
         title.setText(book.getTitle());      
