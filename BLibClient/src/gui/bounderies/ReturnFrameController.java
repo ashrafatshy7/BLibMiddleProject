@@ -51,7 +51,7 @@ public class ReturnFrameController {
         if (!isBookValid(bookBarcode)) 
         {
             showAlert(AlertType.ERROR, "Error", "Book not found. Please check the barcode.");
-            return;
+            return;//
         }
 
         if (!isReaderValid(readerCard)) 
