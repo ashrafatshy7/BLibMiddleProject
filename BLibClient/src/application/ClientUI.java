@@ -2,6 +2,7 @@ package application;
 
 
 import gui.bounderies.HomeFrameController;
+import gui.bounderies.IpFrameController;
 import gui.bounderies.LoanFrameController;
 import gui.bounderies.SeeAllFrameController;
 import javafx.application.Application;
@@ -18,7 +19,7 @@ public class ClientUI extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
     	
-    	HomeFrameController aFrame = new HomeFrameController();
+    	IpFrameController aFrame = new IpFrameController();
     	
 
         aFrame.start(primaryStage);

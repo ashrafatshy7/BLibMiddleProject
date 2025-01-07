@@ -1,5 +1,8 @@
 package enteties;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +16,6 @@ public class Book {
     private String category;
     private String description;
     private String shelf;
-    private boolean isAvailable;
     private int availableCopies;
     private Image image;
     private List<Loan> loan;
@@ -21,21 +23,30 @@ public class Book {
 
     // Constructor
     public Book(String barcode, String title, String author, String category, String description,
-                String shelf, boolean isAvailable, int availableCopies) {
-        this.barcode = barcode;
-        this.title = title;
-        this.author = author;
-        this.category = category;
-        this.description = description;
-        this.shelf = shelf;
-        this.isAvailable = isAvailable;
-        this.availableCopies = availableCopies;
-        this.loan = new ArrayList<>();
-        this.reservation = new ArrayList<>();
-        
-        
+            String shelf, int availableCopies, byte[] imageBytes) {
+    this.barcode = barcode;
+    this.title = title;
+    this.author = author;
+    this.category = category;
+    this.description = description;
+    this.shelf = shelf;
+    this.availableCopies = availableCopies;
+    this.loan = new ArrayList<>();
+    this.reservation = new ArrayList<>();
+    if (imageBytes != null) {
+        try (InputStream is = new ByteArrayInputStream(imageBytes)) {
+            this.image = new Image(is); // JavaFX image
+        } catch (Exception e) {
+        	loadDefaultImage();
+        }
+    } else {
+        loadDefaultImage();
+    }
+}
+    
+    private void loadDefaultImage() {
         try {
-            image = new Image(getClass().getResourceAsStream("../1003w-QHBKwQnsgzs.png"));
+            this.image = new Image(getClass().getResourceAsStream("../1003w-QHBKwQnsgzs.png"));
         } catch (Exception e) {
             System.err.println("Failed to load default book image: " + e.getMessage());
         }
@@ -94,15 +105,6 @@ public class Book {
         this.shelf = shelf;
     }
 
-
-    public boolean isAvailable() {
-        return isAvailable;
-    }
-
-    public void setAvailable(boolean available) {
-        isAvailable = available;
-    }
-
     public int getAvailableCopies() {
         return availableCopies;
     }
@@ -145,7 +147,6 @@ public class Book {
                 ", category='" + category + '\'' +
                 ", description='" + description + '\'' +
                 ", shelf='" + shelf + '\'' +
-                ", isAvailable=" + isAvailable +
                 ", availableCopies=" + availableCopies +
                 ", loan=" + loan +
                 ", reservation=" + reservation +
