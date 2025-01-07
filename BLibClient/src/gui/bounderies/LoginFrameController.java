@@ -39,6 +39,9 @@ public class LoginFrameController {
 
 	    @FXML
 	    private Label errorLabel;
+	    	    
+	    @FXML
+	    private Label EmailAddresserrorLabel;
 	    
 	    @FXML
 	    private Label EmailLabel;
@@ -46,23 +49,75 @@ public class LoginFrameController {
 	    @FXML
 	    private Label PasswordLabel;
 	    
+	    @FXML
+	    private void initialize() {
+	    	
+	    	passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
+	    		passwordField.getStyleClass().remove("invalid-border");
+	            errorLabel.setVisible(false);
+	        });
+	    	
+	    	emailField.textProperty().addListener((observable, oldValue, newValue) -> {
+	            emailField.getStyleClass().remove("invalid-border"); 
+	            EmailAddresserrorLabel.setVisible(false);  
+	        });
+	    	
+	    	emailField.textProperty().addListener((observable, oldValue, newValue) -> {
+	            emailField.getStyleClass().remove("invalid-border"); 
+	            errorLabel.setVisible(false);  
+	        });
+	    }
+	    
+	   
 	    public void handleLoginButtonAction(ActionEvent event) throws Exception {
 	    	
 	     String Email = emailField.getText();
  		 String password = passwordField.getText();
 
-        if (Email.isEmpty() || password.isEmpty()) {
-            showAlert(AlertType.WARNING, "Login Failed", "Please enter both username and password.");
-            return;
+        if (Email.isEmpty())
+        {
+        	errorLabel.setVisible(true);
+            if (!emailField.getStyleClass().contains("invalid-border")) 
+            {
+            	emailField.getStyleClass().add("invalid-border");
+            }
+
         }
+        else if (!isValidEmail(Email)) 
+        {
+        	EmailAddresserrorLabel.setVisible(true);
+            if (!emailField.getStyleClass().contains("invalid-border"))
+            {
+                emailField.getStyleClass().add("invalid-border");
+            }
+        }
+        else if (password.isEmpty()) {
+        	errorLabel.setVisible(true);
+        	 if (!passwordField.getStyleClass().contains("invalid-border")) 
+             {
+                 passwordField.getStyleClass().add("invalid-border");
+             }
+        	
+        }
+        
 
         // Check credentials (replace this with actual database validation)\\\ צריך חיבור לדאטא 
-        if ("admin".equals(Email) && "password".equals(password)) {
+        /*if ("admin".equals(Email) && "password".equals(password)) {
             showAlert(AlertType.INFORMATION, "Login Successful", "Welcome to BLib!");
         } else {
             showAlert(AlertType.ERROR, "Login Failed", "Invalid username or password. Try again.");
+            if (!passwordField.getStyleClass().contains("invalid-border")) {
+                passwordField.getStyleClass().add("invalid-border");
+            }
         }
+        return;*/
     }
+
+	    private boolean isValidEmail(String email)
+	    {
+	        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+	        return email.matches(emailRegex);
+	    }
 	    
 	    private void showAlert(AlertType alertType, String title, String message) {
 	        Alert alert = new Alert(alertType);

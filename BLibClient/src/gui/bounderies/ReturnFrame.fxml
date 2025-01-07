@@ -6,30 +6,32 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@ReturnFrame.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ReturnFrameController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" stylesheets="@ReturnFrame.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ReturnFrameController">
    <children>
-      <TextField fx:id="ReadercardField" layoutX="198.0" layoutY="191.0" prefHeight="38.0" prefWidth="224.0" />
-      <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" />
-      <Label fx:id="ReturnLabel" layoutX="189.0" layoutY="33.0" prefHeight="66.0" prefWidth="241.0" text="Return a Book">
+      <Label fx:id="EmptyErrorLabel" layoutX="245.0" layoutY="270.0" prefHeight="18.0" prefWidth="224.0" text="Please fill in all required fields" textAlignment="CENTER" visible="false" />
+      <TextField fx:id="ReadercardField" layoutX="317.0" layoutY="190.0" prefHeight="38.0" prefWidth="224.0" />
+      <Label fx:id="ReturnLabel" layoutX="317.0" layoutY="41.0" prefHeight="66.0" prefWidth="241.0" text="Return a Book">
          <font>
             <Font size="37.0" />
          </font>
       </Label>
-      <Label fx:id="BookbarcodeLabel" layoutX="41.0" layoutY="135.0" text="Book barcode">
+      <Label fx:id="BookbarcodeLabel" layoutX="150.0" layoutY="134.0" text="Book barcode">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <Label fx:id="ReadercardLabel" layoutX="41.0" layoutY="192.0" text="Reader card">
+      <Label fx:id="ReadercardLabel" layoutX="150.0" layoutY="191.0" text="Reader card">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <Button fx:id="Returnbutton" layoutX="265.0" layoutY="260.0" mnemonicParsing="false" onAction="#handleReturnButtonAction" prefHeight="35.0" prefWidth="88.0" text="Return">
+      <Button fx:id="Returnbutton" layoutX="309.0" layoutY="318.0" mnemonicParsing="false" onAction="#handleReturnButtonAction" prefHeight="35.0" prefWidth="88.0" text="Return">
          <font>
             <Font size="18.0" />
          </font>
       </Button>
-      <TextField fx:id="bookBarcodeField" layoutX="198.0" layoutY="134.0" prefHeight="38.0" prefWidth="224.0" />
+      <TextField fx:id="bookBarcodeField" layoutX="317.0" layoutY="133.0" prefHeight="38.0" prefWidth="224.0" />
+      <Label fx:id="InvalidErrorLabel" layoutX="241.0" layoutY="261.0" prefHeight="18.0" prefWidth="224.0" text="Incorrect details" visible="false" />
+      <Label fx:id="SuccessMessageLabel" layoutX="329.0" layoutY="243.0" prefHeight="18.0" prefWidth="206.0" text="Book has been returned successfully" visible="false" />
    </children>
 </AnchorPane>
