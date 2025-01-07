@@ -55,24 +55,24 @@
 			</font>
 		</Label>
 		<TextField fx:id="tfCardNumber" layoutX="126.0"
-			layoutY="103.0" prefHeight="25.0" prefWidth="190.0" />
+			layoutY="103.0" prefHeight="25.0" prefWidth="190.0" editable="false" />
 		<TextField fx:id="tfUserName" layoutX="103.0"
-			layoutY="135.0" prefHeight="25.0" prefWidth="214.0" />
+			layoutY="135.0" prefHeight="25.0" prefWidth="214.0" editable="false" />
 		<TextField fx:id="tfPhoneNumber" layoutX="138.0"
-			layoutY="167.0" prefHeight="25.0" prefWidth="179.0" />
+			layoutY="167.0" prefHeight="25.0" prefWidth="179.0" editable="true" />
 		<TextField fx:id="tfEmail" layoutX="71.0" layoutY="199.0"
-			prefHeight="25.0" prefWidth="247.0" />
+			prefHeight="25.0" prefWidth="247.0" editable="true" />
 		<TextField fx:id="tfInsertCardNumber" layoutX="189.0"
 			layoutY="36.0" prefHeight="25.0" prefWidth="200.0" />
 		<TableView fx:id="tableLoanHistory" layoutX="24.0"
 			layoutY="316.0" prefHeight="195.0" prefWidth="393.0">
 			<columns>
 				<TableColumn fx:id="colBookTitle" prefWidth="150.0"
-					text="Book Title" />
+					text="Book Title" editable="false" />
 				<TableColumn fx:id="colReturnDate" prefWidth="120.0"
-					text="Return Date" />
+					text="Return Date" editable="true" />
 				<TableColumn fx:id="colBorrowDate" prefWidth="120.0"
-					text="Borrow Date" />
+					text="Borrow Date" editable="false" />
 			</columns>
 		</TableView>
 		<Label fx:id="lblLoanHistory" layoutX="38.0" layoutY="282.0"
@@ -94,8 +94,8 @@
 					text="Issue Type" />
 				<TableColumn fx:id="colIssueDate" prefWidth="131.0"
 					text="Issue Date" />
-				<TableColumn fx:id="colIssueStatus" prefWidth="131.0"
-					text="Status" />
+				<TableColumn fx:id="colIssueDescription"
+					prefWidth="131.0" text="Status" />
 			</columns>
 		</TableView>
 		<Button fx:id="btnUpdateDetails" layoutX="262.0"

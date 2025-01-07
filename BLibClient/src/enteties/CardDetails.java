@@ -3,6 +3,25 @@ package enteties;
 import javafx.collections.ObservableList;
 
 public class CardDetails {
+	private String subscriberCardId;
+	public CardDetails(String subscriberCardId, String userName, String phoneNumber,
+			ObservableList<LoanHistory> loanHistory, ObservableList<IssueHistory> issuesHistory) {
+		super();
+		this.subscriberCardId = subscriberCardId;
+		this.userName = userName;
+		this.phoneNumber = phoneNumber;
+		this.loanHistory = loanHistory;
+		this.issuesHistory = issuesHistory;
+	}
+
+	public String getSubscriberCardId() {
+		return subscriberCardId;
+	}
+
+	public void setSubscriberCardId(String subscriberCardId) {
+		this.subscriberCardId = subscriberCardId;
+	}
+
 	private String userName;
 	private String phoneNumber;
 	private ObservableList<LoanHistory> loanHistory;

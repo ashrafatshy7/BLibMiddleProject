@@ -28,7 +28,7 @@ public class mysqlConnection {
 
 		try {
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/middleproject?serverTimezone=IST", "root",
-					"1234");
+					"Aa123456");
 			System.out.println("SQL connection succeed");
 
 		} catch (SQLException ex) {/* handle any errors */
@@ -185,7 +185,7 @@ public class mysqlConnection {
 	}
 
 	public static boolean isCardNumberExists(String cardNum) {
-		return true;
+		return false;
 	}
 
 }

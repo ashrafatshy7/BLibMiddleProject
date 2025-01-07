@@ -3,13 +3,16 @@ package gui.bounderies;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import application.ChatClient;
 import application.ClientUI;
 import enteties.CardDetails;
 import enteties.IssueHistory;
 import enteties.LoanHistory;
+import enteties.Subscriber;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,6 +24,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 
 public class SubscriberCardDetailsController {
@@ -91,7 +96,7 @@ public class SubscriberCardDetailsController {
 	private TableColumn<IssueHistory, LocalDate> colIssueDate;
 
 	@FXML
-	private TableColumn<IssueHistory, String> colIssueStatus;
+	private TableColumn<IssueHistory, String> colIssueDescription;
 
 	@FXML
 	private Label lblInvalidCardNumber;
@@ -103,6 +108,15 @@ public class SubscriberCardDetailsController {
 	private void initialize() {
 		// Hide all components
 		hideComponents();
+
+//		colBookTitle.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
+//		colBorrowDate.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
+//		colReturnDate.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
+//
+//		colIssueType.setCellValueFactory(new PropertyValueFactory<>("issueType"));
+//		colIssueDate.setCellValueFactory(new PropertyValueFactory<>("issueDate"));
+//		colIssueDescription.setCellValueFactory(new PropertyValueFactory<>("issueDescription"));
+
 	}
 
 	public SubscriberCardDetailsController() {
@@ -133,22 +147,41 @@ public class SubscriberCardDetailsController {
 		ClientUI.chat.accept(command);
 	}
 
+//	public void cardExist(boolean cardExists) {
+//		if (!cardExists) {
+//			// If the card does not exist, show the "Invalid Card" label
+//			hideComponents();
+//			lblInvalidCardNumber.setText("Invalid card number.");
+//			lblInvalidCardNumber.setVisible(true);
+//			tfCardNumber.clear();
+//			return;
+//		}
+//
+//		// If the card exists, hide the "Invalid Card" label
+//		lblInvalidCardNumber.setVisible(false);
+//
+//		// Make the labels and buttons visible
+//		showComponents();
+//	}
+
 	public void cardExist(boolean cardExists) {
-		System.out.println("hereeeeeeeee " + cardExists);
-		if (!cardExists) {
-			// If the card does not exist, show the "Invalid Card" label
-			hideComponents();
-			lblInvalidCardNumber.setText("Invalid card number.");
-			lblInvalidCardNumber.setVisible(true);
-			tfCardNumber.clear();
-			return;
-		}
+		System.out.println("is card exists ? " + cardExists);
+		Platform.runLater(() -> {
+			if (!cardExists) {
+				// If the card does not exist, show the "Invalid Card" label
+				hideComponents();
+				lblInvalidCardNumber.setText("Invalid card number.");
+				lblInvalidCardNumber.setVisible(true);
+				tfCardNumber.clear();
+				return;
+			}
 
-		// If the card exists, hide the "Invalid Card" label
-		lblInvalidCardNumber.setVisible(false);
+			// If the card exists, hide the "Invalid Card" label
+			lblInvalidCardNumber.setVisible(false);
 
-		// Make the labels and buttons visible
-		showComponents();
+			// Make the labels and buttons visible
+			showComponents();
+		});
 	}
 
 	@FXML

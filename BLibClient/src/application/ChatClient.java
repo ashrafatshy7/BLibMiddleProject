@@ -94,10 +94,8 @@ public class ChatClient extends AbstractClient {
 		else if (operation.equals("cardExists")) {
 			System.out.println("operation.equals(cardExists) passed");
 
-//			// Handle the cardExists operation
+			// Handle the cardExists operation
 			boolean cardExists = (boolean) response.get("exists");
-//
-//			subscriberCardDetailsController.cardExist(cardExists);
 
 			System.out.println("subscriberCardDetailsController: " + subscriberCardDetailsController);
 			if (subscriberCardDetailsController != null) {
