@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" stylesheets="@LoanFrame.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.LoanFrameController">
+   <children>
+      
+      <!-- Reader Card Field -->
+      <Label layoutX="293.0" layoutY="244.0" text="Reader Card:" />
+      <TextField fx:id="readerCardTextField" layoutX="372.0" layoutY="240.0" prefHeight="25.0" prefWidth="167.0" />
+
+      <!-- Loan Date Field -->
+      <Label layoutX="304.0" layoutY="308.0" text="Loan Date:" />
+      <DatePicker fx:id="currectDatePicker" editable="false" layoutX="372.0" layoutY="304.0" prefHeight="25.0" prefWidth="167.0" />
+      
+      <!-- Return Date Field -->
+      <Label layoutX="294.0" layoutY="358.0" text="Return Date:" />
+      <DatePicker fx:id="returnDatePicker" layoutX="372.0" layoutY="354.0" prefHeight="25.0" prefWidth="167.0" />
+
+      <!-- Set Loan Button -->
+      <Button fx:id="setLoanBtn" layoutX="412.0" layoutY="418.0" mnemonicParsing="false" onAction="#submitLoan" text="Set Loan" />
+         <TextField fx:id="barcodeTextField" layoutX="372.0" layoutY="178.0" prefHeight="32.0" prefWidth="167.0" promptText=" " styleClass="floating-textfield" />
+         <Label layoutX="285.0" layoutY="186.0" text="Book Barcode:" />
+      <Label fx:id="barcodeError" layoutX="379.0" layoutY="213.0" text="Enter 6 digits" textFill="#b3271f" />
+      <Label fx:id="readerCardError" layoutX="379.0" layoutY="277.0" text="Enter 9 digits" textFill="#b3271f" />
+      <Label fx:id="returnDateError" layoutX="377.0" layoutY="390.0" text="Enter valid date" textFill="#b3271f" />
+   </children>
+</AnchorPane>

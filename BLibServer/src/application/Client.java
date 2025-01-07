@@ -4,6 +4,7 @@ public class Client {
     private String ipAddress;
     private String hostName;
     private boolean isConnected;
+    
 
     public Client(String ipAddress, String hostName, boolean isConnected) {
         this.ipAddress = ipAddress;
