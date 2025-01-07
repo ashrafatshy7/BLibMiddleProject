@@ -105,6 +105,7 @@ public class EchoServer extends AbstractServer
    */
   public void handleMessageFromClient(Object msg, ConnectionToClient client) {
 	    String message = (String) msg;
+	    System.out.println(message);
 	    
 	    if ("QUIT".equalsIgnoreCase(message.trim())) {
 	        clientDisconnected(client);
@@ -122,7 +123,7 @@ public class EchoServer extends AbstractServer
 
 	        ArrayList<Map<String, Object>> tableData = mysqlConnection.getAllValues(tableName);
 	        HashMap<String, Object> response = new HashMap<>();
-	        response.put("operation", "getAllSubscribers");
+	        response.put("operation", "getAll"+tableName);
 	        response.put("data", tableData);
 
 	        try {
