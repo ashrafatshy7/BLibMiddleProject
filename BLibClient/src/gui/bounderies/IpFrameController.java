@@ -31,7 +31,7 @@ public class IpFrameController {
 		alert.showAndWait();
 	}
 
-	public void start(Stage primaryStage) throws Exception { 
+	public void start(Stage primaryStage) throws Exception {
 
 		Parent root = FXMLLoader.load(getClass().getResource("/gui/bounderies/IpFrame.fxml"));
 		Scene scene = new Scene(root);
@@ -56,50 +56,14 @@ public class IpFrameController {
 			return;
 		}
 		ClientUI.chat = new ClientController(ipAddress, port);
-		if (ClientUI.chat != null)
-			// goToSubscriber(event);
-			goToSubscriberDetails(event);
-		else
+		if (ClientUI.chat != null) {
+			Stage primaryStage = new Stage();
+			((Node) event.getSource()).getScene().getWindow().hide();
+			SubscriberCardDetailsController scd = new SubscriberCardDetailsController();
+			scd.start(primaryStage);
+		} else
 			showErrorAlert("client is null");
 	}
-
-	public void goToSubscriber(ActionEvent event) throws Exception {
-		Stage primaryStage = new Stage();
-		((Node) event.getSource()).getScene().getWindow().hide();
-		ClientFrameController subscriber = new ClientFrameController();
-		subscriber.start(primaryStage);
-	}
-
-	/*
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 */
-	public void goToSubscriberDetails(ActionEvent event) throws Exception {
-		((Node) event.getSource()).getScene().getWindow().hide();
-		Stage stage = new Stage();
-		Parent root = FXMLLoader.load(getClass().getResource("/gui/bounderies/SubscriberCardDetails.fxml"));
-		stage.setTitle("Subscriber Details");
-		stage.setScene(new Scene(root));
-		stage.show();
-	}
-	/*
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 */
 
 	private boolean isValidPort(String port) {
 		if (port == null || port.isEmpty()) {

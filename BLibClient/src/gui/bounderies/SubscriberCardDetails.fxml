@@ -8,70 +8,103 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.SubscriberCardDetailsController">
-   <children>
-      <Button layoutX="409.0" layoutY="35.0" mnemonicParsing="false" onDragDetected="#btnSearchClicked" prefHeight="27.0" prefWidth="57.0" text="Search" />
-      <Label layoutX="24.0" layoutY="35.0" prefHeight="27.0" prefWidth="165.0" text="Insert Card Number">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
-      <Label layoutX="220.0" layoutY="62.0" prefHeight="17.0" prefWidth="139.0" text="Invalid Card Number" textFill="RED">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label layoutX="25.0" layoutY="137.0" text="UserName :">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label layoutX="25.0" layoutY="169.0" text="Phone Number :">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label layoutX="24.0" layoutY="201.0" text="Email :">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label layoutX="25.0" layoutY="105.0" text="Card Number :">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <TextField fx:id="tfCardNumber" layoutX="126.0" layoutY="103.0" prefHeight="25.0" prefWidth="190.0" />
-      <TextField fx:id="tfUserName" layoutX="103.0" layoutY="135.0" prefHeight="25.0" prefWidth="214.0" />
-      <TextField fx:id="tfPhoneNumber" layoutX="138.0" layoutY="167.0" prefHeight="25.0" prefWidth="179.0" />
-      <TextField fx:id="tfEmail" layoutX="71.0" layoutY="199.0" prefHeight="25.0" prefWidth="247.0" />
-      <TextField fx:id="tfInsertCardNumber" layoutX="189.0" layoutY="36.0" prefHeight="25.0" prefWidth="200.0" />
-      <TableView layoutX="24.0" layoutY="316.0" prefHeight="195.0" prefWidth="393.0">
-        <columns>
-          <TableColumn fx:id="colBookTitle" prefWidth="150.0" text="Book Title" />
-            <TableColumn fx:id="colReturnDate" prefWidth="120.0" text="Return Date" />
-            <TableColumn fx:id="colBorrowDate" prefWidth="120.0" text="Borrow Date" />
-        </columns>
-      </TableView>
-      <Label layoutX="38.0" layoutY="282.0" text="Loan History">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
-      <Label layoutX="466.0" layoutY="282.0" text="Issues History">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
-      <TableView layoutX="451.0" layoutY="316.0" prefHeight="195.0" prefWidth="393.0">
-        <columns>
-          <TableColumn fx:id="colIssueType" prefWidth="131.0" text="Issue Type" />
-          <TableColumn fx:id="colIssueDate" prefWidth="131.0" text="Issue Date" />
-            <TableColumn fx:id="ColIssueStatus" prefWidth="131.0" text="Status" />
-        </columns>
-      </TableView>
-      <Button layoutX="262.0" layoutY="232.0" mnemonicParsing="false" onAction="#btnUpdateDetailsClicked" text="Update" />
-      <Button layoutX="362.0" layoutY="525.0" mnemonicParsing="false" onAction="#btnUpdateDateClicked" text="Update" />
-      <Button fx:id="btnBack" layoutX="792.0" layoutY="36.0" mnemonicParsing="false" onAction="#btnBackClicked" text="Back" />
-   </children>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity"
+	minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0"
+	prefWidth="876.0" xmlns="http://javafx.com/javafx/23.0.1"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="gui.bounderies.SubscriberCardDetailsController">
+	<children>
+		<Button layoutX="409.0" layoutY="35.0" mnemonicParsing="false"
+			onAction="#btnSearchClicked" prefHeight="27.0" prefWidth="57.0"
+			text="Search" />
+		<Label layoutX="24.0" layoutY="35.0" prefHeight="27.0"
+			prefWidth="165.0" text="Insert Card Number">
+			<font>
+				<Font size="18.0" />
+			</font>
+		</Label>
+		<Label fx:id="lblInvalidCardNumber" layoutX="220.0"
+			layoutY="62.0" prefHeight="17.0" prefWidth="139.0"
+			text="Invalid Card Number" textFill="RED">
+			<font>
+				<Font size="14.0" />
+			</font>
+		</Label>
+		<Label fx:id="lblUserName" layoutX="25.0" layoutY="137.0"
+			text="UserName :">
+			<font>
+				<Font size="14.0" />
+			</font>
+		</Label>
+		<Label fx:id="lblPhoneNumber" layoutX="25.0" layoutY="169.0"
+			text="Phone Number :">
+			<font>
+				<Font size="14.0" />
+			</font>
+		</Label>
+		<Label fx:id="lblEmail" layoutX="24.0" layoutY="201.0"
+			text="Email :">
+			<font>
+				<Font size="14.0" />
+			</font>
+		</Label>
+		<Label fx:id="lblCardNumber" layoutX="25.0" layoutY="105.0"
+			text="Card Number :">
+			<font>
+				<Font size="14.0" />
+			</font>
+		</Label>
+		<TextField fx:id="tfCardNumber" layoutX="126.0"
+			layoutY="103.0" prefHeight="25.0" prefWidth="190.0" />
+		<TextField fx:id="tfUserName" layoutX="103.0"
+			layoutY="135.0" prefHeight="25.0" prefWidth="214.0" />
+		<TextField fx:id="tfPhoneNumber" layoutX="138.0"
+			layoutY="167.0" prefHeight="25.0" prefWidth="179.0" />
+		<TextField fx:id="tfEmail" layoutX="71.0" layoutY="199.0"
+			prefHeight="25.0" prefWidth="247.0" />
+		<TextField fx:id="tfInsertCardNumber" layoutX="189.0"
+			layoutY="36.0" prefHeight="25.0" prefWidth="200.0" />
+		<TableView fx:id="tableLoanHistory" layoutX="24.0"
+			layoutY="316.0" prefHeight="195.0" prefWidth="393.0">
+			<columns>
+				<TableColumn fx:id="colBookTitle" prefWidth="150.0"
+					text="Book Title" />
+				<TableColumn fx:id="colReturnDate" prefWidth="120.0"
+					text="Return Date" />
+				<TableColumn fx:id="colBorrowDate" prefWidth="120.0"
+					text="Borrow Date" />
+			</columns>
+		</TableView>
+		<Label fx:id="lblLoanHistory" layoutX="38.0" layoutY="282.0"
+			text="Loan History">
+			<font>
+				<Font size="18.0" />
+			</font>
+		</Label>
+		<Label fx:id="lblIssueHistory" layoutX="466.0" layoutY="282.0"
+			text="Issues History">
+			<font>
+				<Font size="18.0" />
+			</font>
+		</Label>
+		<TableView fx:id="tableIssuesHistory" layoutX="451.0"
+			layoutY="316.0" prefHeight="195.0" prefWidth="393.0">
+			<columns>
+				<TableColumn fx:id="colIssueType" prefWidth="131.0"
+					text="Issue Type" />
+				<TableColumn fx:id="colIssueDate" prefWidth="131.0"
+					text="Issue Date" />
+				<TableColumn fx:id="colIssueStatus" prefWidth="131.0"
+					text="Status" />
+			</columns>
+		</TableView>
+		<Button fx:id="btnUpdateDetails" layoutX="262.0"
+			layoutY="232.0" mnemonicParsing="false"
+			onAction="#btnUpdateDetailsClicked" text="Update" />
+		<Button fx:id="btnUpdateDates" layoutX="362.0" layoutY="525.0"
+			mnemonicParsing="false" onAction="#btnUpdateDateClicked"
+			text="Update" />
+		<Button fx:id="btnBack" layoutX="792.0" layoutY="36.0"
+			mnemonicParsing="false" onAction="#btnBackClicked" text="Back" />
+	</children>
 </AnchorPane>

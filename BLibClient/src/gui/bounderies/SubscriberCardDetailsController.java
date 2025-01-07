@@ -1,9 +1,15 @@
 package gui.bounderies;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import application.ChatClient;
 import application.ClientUI;
+import enteties.CardDetails;
+import enteties.IssueHistory;
+import enteties.LoanHistory;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,8 +25,16 @@ import javafx.stage.Stage;
 
 public class SubscriberCardDetailsController {
 
+	private ChatClient chatClient;
+
 	@FXML
 	private Button btnBack;
+
+	@FXML
+	private Button btnUpdateDetails;
+
+	@FXML
+	private Button btnUpdateDates;
 
 	@FXML
 	private TextField tfInsertCardNumber;
@@ -38,98 +52,188 @@ public class SubscriberCardDetailsController {
 	private TextField tfEmail;
 
 	@FXML
-	private TableColumn<?, ?> colBookTitle;
+	private Label lblUserName;
 
 	@FXML
-	private TableColumn<?, ?> colBorrowDate;
+	private Label lblPhoneNumber;
 
 	@FXML
-	private TableColumn<?, ?> colReturnDate;
+	private Label lblEmail;
 
 	@FXML
-	private TableView<?> tableLoanHistory;
+	private Label lblCardNumber;
 
 	@FXML
-	private TableColumn<?, ?> colIssueType;
+	private Label lblLoanHistory;
 
 	@FXML
-	private TableColumn<?, ?> colIssueDate;
+	private Label lblIssueHistory;
 
 	@FXML
-	private TableColumn<?, ?> colIssueStatus;
+	private TableView<LoanHistory> tableLoanHistory;
 
 	@FXML
-	private TableView<?> tableIssuesHistory;
+	private TableColumn<LoanHistory, String> colBookTitle;
+
+	@FXML
+	private TableColumn<LoanHistory, LocalDate> colBorrowDate;
+
+	@FXML
+	private TableColumn<LoanHistory, LocalDate> colReturnDate;
+
+	@FXML
+	private TableView<IssueHistory> tableIssuesHistory;
+
+	@FXML
+	private TableColumn<IssueHistory, String> colIssueType;
+
+	@FXML
+	private TableColumn<IssueHistory, LocalDate> colIssueDate;
+
+	@FXML
+	private TableColumn<IssueHistory, String> colIssueStatus;
 
 	@FXML
 	private Label lblInvalidCardNumber;
 
+	private List<LoanHistory> loanHistoryList = new ArrayList<>();
+	private List<IssueHistory> issueHistoryList = new ArrayList<>();
+
+	@FXML
+	private void initialize() {
+		// Hide all components
+		hideComponents();
+	}
+
+	public SubscriberCardDetailsController() {
+		chatClient = ClientUI.chat.getClient();
+	}
+
+	public void setChatClient(ChatClient chatClient) {
+		System.out.println("setChatClient check ");
+		this.chatClient = chatClient;
+		this.chatClient.setSubscriberCardDetailsController(this);
+	}
+
 	@FXML
 	private void btnSearchClicked(ActionEvent event) {
-//        String cardNumber = tfInsertCardNumber.getText();
-//
-//        if (cardNumber == null || cardNumber.isEmpty() || !isValidCardNumber(cardNumber)) {
-//            lblInvalidCardNumber.setVisible(true);
-//        } else {
-//            lblInvalidCardNumber.setVisible(false);
-//            // Logic to fetch and populate subscriber details
-//            populateSubscriberDetails(cardNumber);
-//        }
+		// Get the inserted card number from the TextField
+		String cardNumber = tfInsertCardNumber.getText();
+
+		// Check if the card number is empty
+		if (cardNumber.isEmpty()) {
+			hideComponents();
+			lblInvalidCardNumber.setText("Please enter a card number.");
+			lblInvalidCardNumber.setVisible(true);
+			tfCardNumber.clear();
+			return;
+		}
+
+		String command = String.format("cardDetails %s", cardNumber);
+		ClientUI.chat.accept(command);
+	}
+
+	public void cardExist(boolean cardExists) {
+		System.out.println("hereeeeeeeee " + cardExists);
+		if (!cardExists) {
+			// If the card does not exist, show the "Invalid Card" label
+			hideComponents();
+			lblInvalidCardNumber.setText("Invalid card number.");
+			lblInvalidCardNumber.setVisible(true);
+			tfCardNumber.clear();
+			return;
+		}
+
+		// If the card exists, hide the "Invalid Card" label
+		lblInvalidCardNumber.setVisible(false);
+
+		// Make the labels and buttons visible
+		showComponents();
 	}
 
 	@FXML
 	private void btnUpdateDetailsClicked(ActionEvent event) {
-//        String cardNumber = tfCardNumber.getText();
-//        String userName = tfUserName.getText();
-//        String phoneNumber = tfPhoneNumber.getText();
-//        String email = tfEmail.getText();
-//
-//        // Logic to update the subscriber details
-//        updateSubscriberDetails(cardNumber, userName, phoneNumber, email);
+
 	}
 
 	@FXML
 	private void btnUpdateDateClicked(ActionEvent event) {
-//        // Logic to update loan or issue details
-//        updateLoanOrIssueDetails();
+
 	}
 
 	@FXML
 	private void btnBackClicked(ActionEvent event) {
-		// Logic to navigate back to the previous screen
-		// navigateBack();
+
 	}
 
-	private boolean isValidCardNumber(String cardNumber) {
-		// Logic to validate the card number
-		// return cardNumber.matches("\\d+"); // Example: Only digits are allowed
-		return false;
+	private void hideComponents() {
+		lblInvalidCardNumber.setVisible(false);
+
+		lblCardNumber.setVisible(false);
+		tfCardNumber.setVisible(false);
+
+		lblUserName.setVisible(false);
+		tfUserName.setVisible(false);
+
+		lblPhoneNumber.setVisible(false);
+		tfPhoneNumber.setVisible(false);
+
+		lblEmail.setVisible(false);
+		tfEmail.setVisible(false);
+
+		btnUpdateDetails.setVisible(false);
+
+		lblLoanHistory.setVisible(false);
+		tableLoanHistory.setVisible(false);
+
+		lblIssueHistory.setVisible(false);
+		tableIssuesHistory.setVisible(false);
+
+		btnUpdateDates.setVisible(false);
 	}
 
-	private void populateSubscriberDetails(String cardNumber) {
-		// Logic to fetch subscriber details from the database and populate the fields
-		// Example: tfUserName.setText(fetchedUserName);
+	private void showComponents() {
+		lblCardNumber.setVisible(true);
+		tfCardNumber.setVisible(true);
+
+		lblUserName.setVisible(true);
+		tfUserName.setVisible(true);
+
+		lblPhoneNumber.setVisible(true);
+		tfPhoneNumber.setVisible(true);
+
+		lblEmail.setVisible(true);
+		tfEmail.setVisible(true);
+
+		btnUpdateDetails.setVisible(true);
+
+		lblLoanHistory.setVisible(true);
+		tableLoanHistory.setVisible(true);
+
+		lblIssueHistory.setVisible(true);
+		tableIssuesHistory.setVisible(true);
+
+		btnUpdateDates.setVisible(true);
 	}
 
-	private void updateSubscriberDetails(String cardNumber, String userName, String phoneNumber, String email) {
-		// Logic to update subscriber details in the database
-	}
+	public void start(Stage primaryStage) throws Exception {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/SubscriberCardDetails.fxml"));
+			Parent root = loader.load();
+			SubscriberCardDetailsController controller = loader.getController();
+			if (this.chatClient != null) {
+				controller.setChatClient(this.chatClient);
+			}
 
-	private void updateLoanOrIssueDetails() {
-		// Logic to update loan or issue details in the database
-	}
+			System.out.println("im in SubscriberCardDetailsController start  ");
 
-	private void navigateBack() {
-		// Logic to handle navigation...........
-	}
+			Scene scene = new Scene(root);
+			primaryStage.setTitle("subscriber details");
+			primaryStage.setScene(scene);
+			primaryStage.show();
 
-//	public void start(Stage primaryStage) throws Exception { 
-//
-//		Parent root = FXMLLoader.load(getClass().getResource("/gui/bounderies/SubscriberCardDetails.fxml"));
-//		Scene scene = new Scene(root);
-//		primaryStage.setTitle("Subscriber Card Details");
-//		primaryStage.setScene(scene);
-//		primaryStage.show();
-//
-//	}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
