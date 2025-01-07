@@ -32,14 +32,12 @@ public class IpFrameController {
 	}
 
 	public void start(Stage primaryStage) throws Exception {
-
 		Parent root = FXMLLoader.load(getClass().getResource("/gui/bounderies/IpFrame.fxml"));
 		Scene scene = new Scene(root);
 		scene.getStylesheets().add(getClass().getResource("/gui/bounderies/IpFrame.css").toExternalForm());
 		primaryStage.setTitle("Connect");
 		primaryStage.setScene(scene);
 		primaryStage.show();
-
 	}
 
 	public void connect(ActionEvent event) throws Exception {
@@ -57,12 +55,27 @@ public class IpFrameController {
 		}
 		ClientUI.chat = new ClientController(ipAddress, port);
 		if (ClientUI.chat != null) {
-			Stage primaryStage = new Stage();
-			((Node) event.getSource()).getScene().getWindow().hide();
-			HomeFrameController homePage = new HomeFrameController();
-			homePage.start(primaryStage);
-		} else
+			goToMainMenu(event);
+		} else {
 			showErrorAlert("client is null");
+		}
+	}
+
+	public void goToMainMenu(ActionEvent event) throws Exception {
+		// סגירת החלון הנוכחי
+		((Node) event.getSource()).getScene().getWindow().hide();
+
+		// טעינת מסך ה-Main Menu
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/MainMenu.fxml"));
+		Parent root = loader.load();
+
+		// יצירת סצנה חדשה
+		Stage stage = new Stage();
+		Scene scene = new Scene(root);
+
+		stage.setTitle("Main Menu");
+		stage.setScene(scene);
+		stage.show();
 	}
 
 	private boolean isValidPort(String port) {
@@ -106,5 +119,4 @@ public class IpFrameController {
 
 		return true;
 	}
-
 }
