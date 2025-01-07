@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javafx.scene.control.Alert;
+
 
 public class mysqlConnection {
 	
@@ -197,8 +199,9 @@ public class mysqlConnection {
 	        checkStmt.setString(2, email);
 	        ResultSet rs = checkStmt.executeQuery();
 	        if (rs.next() && rs.getInt(1) > 0) {
-	            System.out.println("Duplicate ReadCard or Email found in database.");
-	            return false; // שגיאה אם יש כפילות
+	        	
+	        	System.out.println("Duplicate ReadCard or Email found in database.");
+	        	return false;
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
