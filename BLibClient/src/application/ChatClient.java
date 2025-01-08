@@ -92,14 +92,17 @@ public class ChatClient extends AbstractClient {
 		}
 
 		else if (operation.equals("cardExists")) {
-			System.out.println("operation.equals(cardExists) passed");
 
+			System.out.println("chatClient recieved : " + response.get("cardDetails"));
 			// Handle the cardExists operation
-			boolean cardExists = (boolean) response.get("exists");
+			boolean cardExists = (boolean) response.get("exists"); // Get the boolean value indicating if the card
+																	// exists
+			Map<String, Object> cardDetails = (Map<String, Object>) response.get("cardDetails"); // Get the card details
+																									// if they exist
 
-			System.out.println("subscriberCardDetailsController: " + subscriberCardDetailsController);
+			// Pass the data to the controller
 			if (subscriberCardDetailsController != null) {
-				subscriberCardDetailsController.cardExist(cardExists);
+				subscriberCardDetailsController.cardExist(cardExists, cardDetails);
 			} else {
 				System.out.println("subscriberCardDetailsController is null.");
 			}

@@ -18,6 +18,7 @@ public class mysqlConnection {
 	private static Connection conn;
 
 	public static void connectToDB() {
+		System.out.println("in connectToDB");
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
 			System.out.println("Driver definition succeed");
@@ -184,8 +185,64 @@ public class mysqlConnection {
 		}
 	}
 
-	public static boolean isCardNumberExists(String cardNum) {
-		return false;
+	public static Map<String, Object> getCardDetailsIfExists(String cardNum) {
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		Map<String, Object> result = new HashMap<>(); // Contains the existence check and the card details
+
+		try {
+			// Step 1: Check if the cardNum exists
+			String checkQuery = "SELECT COUNT(*) FROM subscribercarddata WHERE cardNum = ?";
+			preparedStatement = conn.prepareStatement(checkQuery);
+			preparedStatement.setString(1, cardNum);
+
+			resultSet = preparedStatement.executeQuery();
+			boolean exists = false;
+
+			if (resultSet.next()) {
+				exists = resultSet.getInt(1) > 0; // Check if the cardNum exists
+			}
+
+			result.put("exists", exists); // Add the existence check to the result
+
+			resultSet.close(); // Close previous resultSet
+			preparedStatement.close(); // Close previous preparedStatement
+
+			// Step 2: If cardNum exists, fetch the card details
+			if (exists) {
+				String detailsQuery = "SELECT * FROM subscribercarddata WHERE cardNum = ?";
+				preparedStatement = conn.prepareStatement(detailsQuery);
+				preparedStatement.setString(1, cardNum);
+
+				resultSet = preparedStatement.executeQuery();
+
+				if (resultSet.next()) {
+					ResultSetMetaData metaData = resultSet.getMetaData();
+					int columnCount = metaData.getColumnCount();
+
+					// Fetch all columns for the cardNum
+					for (int i = 1; i <= columnCount; i++) {
+						String columnName = metaData.getColumnName(i);
+						Object value = resultSet.getObject(i);
+						result.put(columnName, value);
+					}
+				}
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// Close resources to prevent memory leaks
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (preparedStatement != null)
+					preparedStatement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
 	}
 
 }

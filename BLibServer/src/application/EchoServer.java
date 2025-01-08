@@ -146,16 +146,29 @@ public class EchoServer extends AbstractServer {
 
 		else if (allData.get(0).equals("cardDetails")) {
 			String cardNum = allData.get(1);
-			// Check if the card exists in the database
-			boolean cardExists = mysqlConnection.isCardNumberExists(cardNum);
 
+			// Check if the card exists in the database and retrieve the details if it does
+			Map<String, Object> cardDetailsIfExists = mysqlConnection.getCardDetailsIfExists(cardNum);
+
+			// Prepare a response to send back to the client
 			HashMap<String, Object> response = new HashMap<>();
 
+			// Check if the card exists based on the "exists" key in the map
+			boolean exists = (boolean) cardDetailsIfExists.get("exists");
+
+			// Add the "exists" value at the beginning of the response
 			response.put("operation", "cardExists");
-			response.put("exists", cardExists);
+			response.put("exists", exists);
 
-			System.out.println("echo server exists = " + cardExists);
+			if (exists) {
+				response.put("cardDetails", cardDetailsIfExists);
+			} else {
+				response.put("cardDetails", null); // No details to return if the card doesn't exist
+			}
 
+			System.out.println("EchoServer: Response = " + response.toString());
+
+			// Send the response back to the client
 			try {
 				client.sendToClient(response);
 			} catch (IOException e) {

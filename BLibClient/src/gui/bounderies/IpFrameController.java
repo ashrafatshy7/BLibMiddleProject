@@ -43,18 +43,22 @@ public class IpFrameController {
 	}
 
 	public void connect(ActionEvent event) throws Exception {
-		String ipAddress = ipText.getText();
-
-		if (!isValidPort(portText.getText())) {
-			showErrorAlert("port is invalid");
-			return;
-		}
-		int port = Integer.parseInt(portText.getText());
-		if (!isValidIPv4(ipAddress)) {
-			showErrorAlert("IP address is invalid");
-			ipText.clear();
-			return;
-		}
+		String ipAddress = "10.10.9.61";
+		int port = 5555;
+//		String ipAddress = ipText.getText();
+//
+//		if (!isValidPort(portText.getText())) {
+//			showErrorAlert("port is invalid");
+//			return;
+//		}
+//		
+//		int port = Integer.parseInt(portText.getText());
+//		if (!isValidIPv4(ipAddress)) {
+//			showErrorAlert("IP address is invalid");
+//			ipText.clear();
+//			return;
+//		}
+//		ClientUI.chat = new ClientController(ipAddress, port);
 		ClientUI.chat = new ClientController(ipAddress, port);
 		if (ClientUI.chat != null) {
 			Stage primaryStage = new Stage();

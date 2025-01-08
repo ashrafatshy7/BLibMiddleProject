@@ -147,25 +147,8 @@ public class SubscriberCardDetailsController {
 		ClientUI.chat.accept(command);
 	}
 
-//	public void cardExist(boolean cardExists) {
-//		if (!cardExists) {
-//			// If the card does not exist, show the "Invalid Card" label
-//			hideComponents();
-//			lblInvalidCardNumber.setText("Invalid card number.");
-//			lblInvalidCardNumber.setVisible(true);
-//			tfCardNumber.clear();
-//			return;
-//		}
-//
-//		// If the card exists, hide the "Invalid Card" label
-//		lblInvalidCardNumber.setVisible(false);
-//
-//		// Make the labels and buttons visible
-//		showComponents();
-//	}
-
-	public void cardExist(boolean cardExists) {
-		System.out.println("is card exists ? " + cardExists);
+	public void cardExist(boolean cardExists, Map<String, Object> cardDetails) {
+		// Use Platform.runLater to update the UI on the JavaFX Application Thread
 		Platform.runLater(() -> {
 			if (!cardExists) {
 				// If the card does not exist, show the "Invalid Card" label
@@ -173,6 +156,9 @@ public class SubscriberCardDetailsController {
 				lblInvalidCardNumber.setText("Invalid card number.");
 				lblInvalidCardNumber.setVisible(true);
 				tfCardNumber.clear();
+				tfUserName.clear();
+				tfPhoneNumber.clear();
+				tfEmail.clear();
 				return;
 			}
 
@@ -181,6 +167,20 @@ public class SubscriberCardDetailsController {
 
 			// Make the labels and buttons visible
 			showComponents();
+
+			// Set the card details in the respective TextFields
+			if (cardDetails != null) {
+				tfCardNumber.setText((String) cardDetails.get("cardNum"));
+				tfUserName.setText((String) cardDetails.get("username"));
+				tfPhoneNumber.setText((String) cardDetails.get("phoneNumber"));
+				tfEmail.setText((String) cardDetails.get("email"));
+			} else {
+				// If card details are missing, clear the fields to avoid showing invalid data
+				tfCardNumber.clear();
+				tfUserName.clear();
+				tfPhoneNumber.clear();
+				tfEmail.clear();
+			}
 		});
 	}
 
@@ -200,8 +200,6 @@ public class SubscriberCardDetailsController {
 	}
 
 	private void hideComponents() {
-		lblInvalidCardNumber.setVisible(false);
-
 		lblCardNumber.setVisible(false);
 		tfCardNumber.setVisible(false);
 
