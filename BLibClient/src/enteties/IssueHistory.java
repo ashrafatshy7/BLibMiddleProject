@@ -1,45 +1,25 @@
 package enteties;
 
 public class IssueHistory {
-	private String issueType; // E.g., "Late return", "Damaged book", "Fine"
+	private String issueType;
 	private String issueDate;
-	private String description; // Additional details about the issue
+	private String issueDescription;
 
-	// Constructor
-	public IssueHistory(String issueType, String issueDate, String description) {
+	public IssueHistory(String issueType, String issueDate, String issueDescription) {
 		this.issueType = issueType;
 		this.issueDate = issueDate;
-		this.description = description;
+		this.issueDescription = issueDescription;
 	}
 
-	// Getters and setters
 	public String getIssueType() {
 		return issueType;
-	}
-
-	public void setIssueType(String issueType) {
-		this.issueType = issueType;
 	}
 
 	public String getIssueDate() {
 		return issueDate;
 	}
 
-	public void setIssueDate(String issueDate) {
-		this.issueDate = issueDate;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	@Override
-	public String toString() {
-		return "IssueHistory [issueType=" + issueType + ", issueDate=" + issueDate + ", description=" + description
-				+ "]";
+	public String getIssueDescription() {
+		return issueDescription;
 	}
 }

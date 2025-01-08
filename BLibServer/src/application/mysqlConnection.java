@@ -188,10 +188,11 @@ public class mysqlConnection {
 	public static Map<String, Object> getCardDetailsIfExists(String cardNum) {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		Map<String, Object> result = new HashMap<>(); // Contains the existence check and the card details
+		Map<String, Object> result = new HashMap<>(); // Contains the existence check, card details, and table data
 
 		try {
 			// Step 1: Check if the cardNum exists
+			System.out.println("first enterance BUULULULULU");
 			String checkQuery = "SELECT COUNT(*) FROM subscribercarddata WHERE cardNum = ?";
 			preparedStatement = conn.prepareStatement(checkQuery);
 			preparedStatement.setString(1, cardNum);
@@ -226,7 +227,57 @@ public class mysqlConnection {
 						Object value = resultSet.getObject(i);
 						result.put(columnName, value);
 					}
+
+					System.out.println("shown details : " + result.toString());
 				}
+
+				resultSet.close();
+				preparedStatement.close();
+
+				// Step 3: Fetch loan history for the cardNum
+				String loanHistoryQuery = "SELECT bookTitle, returnDate, borrowDate FROM loanhistory WHERE cardNum = ?";
+				preparedStatement = conn.prepareStatement(loanHistoryQuery);
+				preparedStatement.setString(1, cardNum);
+
+				resultSet = preparedStatement.executeQuery();
+
+				List<Map<String, Object>> loanHistory = new ArrayList<>();
+
+				while (resultSet.next()) {
+					Map<String, Object> row = new HashMap<>();
+					row.put("bookTitle", resultSet.getString("bookTitle"));
+					row.put("returnDate", resultSet.getDate("returnDate"));
+					row.put("borrowDate", resultSet.getDate("borrowDate"));
+					loanHistory.add(row);
+				}
+
+				result.put("loanHistory", loanHistory);
+
+				System.out.println("after loan history : " + result.toString());
+
+				resultSet.close();
+				preparedStatement.close();
+
+				// Step 4: Fetch issues history for the cardNum
+				String issuesHistoryQuery = "SELECT issueType, issueDate, issueDescription FROM issuehistory WHERE cardNum = ?";
+				preparedStatement = conn.prepareStatement(issuesHistoryQuery);
+				preparedStatement.setString(1, cardNum);
+
+				resultSet = preparedStatement.executeQuery();
+
+				List<Map<String, Object>> issuesHistory = new ArrayList<>();
+
+				while (resultSet.next()) {
+					Map<String, Object> row = new HashMap<>();
+					row.put("issueType", resultSet.getString("issueType"));
+					row.put("issueDate", resultSet.getDate("issueDate"));
+					row.put("issueDescription", resultSet.getString("issueDescription"));
+					issuesHistory.add(row);
+				}
+
+				result.put("issuesHistory", issuesHistory);
+
+				System.out.println("after issue history : " + result.toString());
 			}
 
 		} catch (SQLException e) {
@@ -244,5 +295,97 @@ public class mysqlConnection {
 		}
 		return result;
 	}
+
+//	public static Map<String, Object> getCardDetailsIfExists(String cardNum) {
+//		PreparedStatement preparedStatement = null;
+//		ResultSet resultSet = null;
+//		Map<String, Object> result = new HashMap<>(); // Contains the existence check and the card details
+//
+//		try {
+//			// Step 1: Check if the cardNum exists
+//			String checkQuery = "SELECT COUNT(*) FROM subscribercarddata WHERE cardNum = ?";
+//			preparedStatement = conn.prepareStatement(checkQuery);
+//			preparedStatement.setString(1, cardNum);
+//
+//			resultSet = preparedStatement.executeQuery();
+//			boolean exists = false;
+//
+//			if (resultSet.next()) {
+//				exists = resultSet.getInt(1) > 0; // Check if the cardNum exists
+//			}
+//
+//			result.put("exists", exists); // Add the existence check to the result
+//
+//			resultSet.close(); // Close previous resultSet
+//			preparedStatement.close(); // Close previous preparedStatement
+//
+//			// Step 2: If cardNum exists, fetch the card details
+//			if (exists) {
+//				String detailsQuery = "SELECT * FROM subscribercarddata WHERE cardNum = ?";
+//				preparedStatement = conn.prepareStatement(detailsQuery);
+//				preparedStatement.setString(1, cardNum);
+//
+//				resultSet = preparedStatement.executeQuery();
+//
+//				if (resultSet.next()) {
+//					ResultSetMetaData metaData = resultSet.getMetaData();
+//					int columnCount = metaData.getColumnCount();
+//
+//					// Fetch all columns for the cardNum
+//					for (int i = 1; i <= columnCount; i++) {
+//						String columnName = metaData.getColumnName(i);
+//						Object value = resultSet.getObject(i);
+//						result.put(columnName, value);
+//					}
+//				}
+//			}
+//
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} finally {
+//			// Close resources to prevent memory leaks
+//			try {
+//				if (resultSet != null)
+//					resultSet.close();
+//				if (preparedStatement != null)
+//					preparedStatement.close();
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		return result;
+//	}
+
+//	{
+//	    "exists": true,
+//	    "cardNum": "12345",
+//	    "userName": "John Doe",
+//	    "phoneNumber": "123456789",
+//	    "email": "john.doe@example.com",
+//	    "loanHistory": [
+//	        {
+//	            "bookTitle": "Book A",
+//	            "returnDate": "2025-01-01",
+//	            "borrowDate": "2024-12-20"
+//	        },
+//	        {
+//	            "bookTitle": "Book B",
+//	            "returnDate": "2025-01-05",
+//	            "borrowDate": "2024-12-25"
+//	        }
+//	    ],
+//	    "issuesHistory": [
+//	        {
+//	            "issueType": "Late Return",
+//	            "issueDate": "2024-12-30",
+//	            "issueDescription": "Returned 5 days late."
+//	        },
+//	        {
+//	            "issueType": "Lost Book",
+//	            "issueDate": "2024-12-10",
+//	            "issueDescription": "Lost Book C."
+//	        }
+//	    ]
+//	}
 
 }

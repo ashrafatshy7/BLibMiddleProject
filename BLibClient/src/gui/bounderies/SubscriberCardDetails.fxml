@@ -94,7 +94,7 @@
 				<TableColumn fx:id="colIssueDate" prefWidth="131.0"
 					text="Issue Date" />
 				<TableColumn fx:id="colIssueDescription"
-					prefWidth="131.0" text="Status" />
+					prefWidth="131.0" text="Description" />
 			</columns>
 		</TableView>
 		<Button fx:id="btnUpdateDetails" layoutX="262.0"

@@ -109,13 +109,13 @@ public class SubscriberCardDetailsController {
 		// Hide all components
 		hideComponents();
 
-//		colBookTitle.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
-//		colBorrowDate.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
-//		colReturnDate.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
-//
-//		colIssueType.setCellValueFactory(new PropertyValueFactory<>("issueType"));
-//		colIssueDate.setCellValueFactory(new PropertyValueFactory<>("issueDate"));
-//		colIssueDescription.setCellValueFactory(new PropertyValueFactory<>("issueDescription"));
+		colBookTitle.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
+		colBorrowDate.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
+		colReturnDate.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
+
+		colIssueType.setCellValueFactory(new PropertyValueFactory<>("issueType"));
+		colIssueDate.setCellValueFactory(new PropertyValueFactory<>("issueDate"));
+		colIssueDescription.setCellValueFactory(new PropertyValueFactory<>("issueDescription"));
 
 	}
 
@@ -159,6 +159,8 @@ public class SubscriberCardDetailsController {
 				tfUserName.clear();
 				tfPhoneNumber.clear();
 				tfEmail.clear();
+				tableLoanHistory.getItems().clear(); // Clear the loan history table
+				tableIssuesHistory.getItems().clear(); // Clear the issues history table
 				return;
 			}
 
@@ -174,14 +176,54 @@ public class SubscriberCardDetailsController {
 				tfUserName.setText((String) cardDetails.get("username"));
 				tfPhoneNumber.setText((String) cardDetails.get("phoneNumber"));
 				tfEmail.setText((String) cardDetails.get("email"));
+
+				// Populate the loan history table
+				List<Map<String, Object>> loanHistory = (List<Map<String, Object>>) cardDetails.get("loanHistory");
+				if (loanHistory != null) {
+					tableLoanHistory.getItems().clear();
+					for (Map<String, Object> loan : loanHistory) {
+						// Convert borrowDate and returnDate to String if they are java.sql.Date
+						String borrowDateStr = formatDate(loan.get("borrowDate"));
+						String returnDateStr = formatDate(loan.get("returnDate"));
+
+						tableLoanHistory.getItems()
+								.add(new LoanHistory((String) loan.get("bookTitle"), borrowDateStr, returnDateStr));
+					}
+				}
+
+				// Populate the issues history table
+				List<Map<String, Object>> issuesHistory = (List<Map<String, Object>>) cardDetails.get("issuesHistory");
+				if (issuesHistory != null) {
+					tableIssuesHistory.getItems().clear();
+					for (Map<String, Object> issue : issuesHistory) {
+						// Convert issueDate to String if it is java.sql.Date
+						String issueDateStr = formatDate(issue.get("issueDate"));
+
+						tableIssuesHistory.getItems().add(new IssueHistory((String) issue.get("issueType"),
+								issueDateStr, (String) issue.get("issueDescription")));
+					}
+				}
 			} else {
-				// If card details are missing, clear the fields to avoid showing invalid data
+				// If card details are missing, clear all fields and tables to avoid showing
+				// invalid data
 				tfCardNumber.clear();
 				tfUserName.clear();
 				tfPhoneNumber.clear();
 				tfEmail.clear();
+				tableLoanHistory.getItems().clear();
+				tableIssuesHistory.getItems().clear();
 			}
 		});
+	}
+
+	// Utility method to format java.sql.Date or other date objects to String
+	private String formatDate(Object dateObject) {
+		if (dateObject instanceof java.sql.Date) {
+			java.sql.Date sqlDate = (java.sql.Date) dateObject;
+			return sqlDate.toString(); // Default formatting (YYYY-MM-DD)
+		}
+		// You can add more date object handling here if needed
+		return dateObject != null ? dateObject.toString() : "";
 	}
 
 	@FXML

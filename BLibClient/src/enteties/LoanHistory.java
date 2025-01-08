@@ -4,54 +4,24 @@ import java.time.LocalDate;
 
 public class LoanHistory {
 	private String bookTitle;
-	private String loanDate;
-	private String dueDate;
-	private boolean returned; // Indicates whether the book has been returned
+	private String borrowDate;
+	private String returnDate;
 
-	// Constructor
-	public LoanHistory(String bookTitle, String loanDate, String dueDate, boolean returned) {
+	public LoanHistory(String bookTitle, String borrowDate, String returnDate) {
 		this.bookTitle = bookTitle;
-		this.loanDate = loanDate;
-		this.dueDate = dueDate;
-		this.returned = returned;
+		this.borrowDate = borrowDate;
+		this.returnDate = returnDate;
 	}
 
-	// Getters and setters
 	public String getBookTitle() {
 		return bookTitle;
 	}
 
-	public void setBookTitle(String bookTitle) {
-		this.bookTitle = bookTitle;
+	public String getBorrowDate() {
+		return borrowDate;
 	}
 
-	public String getLoanDate() {
-		return loanDate;
-	}
-
-	public void setLoanDate(String loanDate) {
-		this.loanDate = loanDate;
-	}
-
-	public String getDueDate() {
-		return dueDate;
-	}
-
-	public void setDueDate(String dueDate) {
-		this.dueDate = dueDate;
-	}
-
-	public boolean isReturned() {
-		return returned;
-	}
-
-	public void setReturned(boolean returned) {
-		this.returned = returned;
-	}
-
-	@Override
-	public String toString() {
-		return "LoanHistory [bookTitle=" + bookTitle + ", loanDate=" + loanDate + ", dueDate=" + dueDate + ", returned="
-				+ returned + "]";
+	public String getReturnDate() {
+		return returnDate;
 	}
 }
