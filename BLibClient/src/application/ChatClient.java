@@ -85,10 +85,10 @@ public class ChatClient extends AbstractClient
           for (Map<String, Object> row : rawRows) {
   
         	  Subscriber sub = new Subscriber(
-                      row.get("id").toString(),
-                      row.get("username").toString(),
-                      row.get("phoneNumber").toString(),
-                      row.get("email").toString(),
+                      row.get("subscriber_id").toString(),
+                      row.get("subscriber_name").toString(),
+                      row.get("subscriber_phone_number").toString(),
+                      row.get("subscriber_email").toString(),
                       Integer.parseInt(row.get("detailed_subscription_history").toString())
                   );
         	  subscribers.add(sub);
