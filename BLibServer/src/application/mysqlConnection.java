@@ -296,6 +296,91 @@ public class mysqlConnection {
 		return result;
 	}
 
+	public static boolean updateSubscriberEmailAndPhoneNumber(String email, String phoneNumber, String cardNum) {
+		String sql = "UPDATE subscribercarddata SET email = ?, phoneNumber = ? WHERE cardNum = ?";
+		PreparedStatement stmt = null;
+
+		try {
+			// Prepare the SQL statement
+			stmt = conn.prepareStatement(sql);
+
+			// Bind parameters
+			stmt.setString(1, email);
+			stmt.setString(2, phoneNumber);
+			stmt.setString(3, cardNum);
+
+			// Execute the update
+			int rowsUpdated = stmt.executeUpdate();
+
+			// Return true if at least one row was updated, otherwise false
+			return rowsUpdated > 0;
+
+		} catch (SQLException e) {
+			// Log the exception and return false
+			e.printStackTrace();
+			return false;
+
+		} finally {
+			// Close the statement
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+//	public static boolean updateReturnDate(String newDate, String cardNum) {
+//		String sql = "UPDATE loanhistory SET returnDate = ? WHERE cardNum = ?";
+//		PreparedStatement stmt = null;
+//
+//		try {
+//			// Prepare the SQL statement
+//			stmt = conn.prepareStatement(sql);
+//
+//			// Bind parameters
+//			stmt.setString(1, newDate);
+//			stmt.setString(2, cardNum);
+//
+//			// Execute the update
+//			int rowsUpdated = stmt.executeUpdate();
+//
+//			// Return true if at least one row was updated, otherwise false
+//			return rowsUpdated > 0;
+//
+//		} catch (SQLException e) {
+//			// Log the exception and return false
+//			e.printStackTrace();
+//			return false;
+//
+//		} finally {
+//			// Close the statement
+//			try {
+//				if (stmt != null) {
+//					stmt.close();
+//				}
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
+
+	public static boolean updateReturnDate(String newReturnDate, String cardNum, String borrowDate) {
+		String query = "UPDATE loanhistory SET returnDate = ? WHERE cardNum = ? AND borrowDate = ?";
+		try (PreparedStatement stmt = conn.prepareStatement(query)) {
+			stmt.setString(1, newReturnDate);
+			stmt.setString(2, cardNum);
+			stmt.setString(3, borrowDate);
+			int rowsUpdated = stmt.executeUpdate();
+			return rowsUpdated > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 //	public static Map<String, Object> getCardDetailsIfExists(String cardNum) {
 //		PreparedStatement preparedStatement = null;
 //		ResultSet resultSet = null;

@@ -108,6 +108,31 @@ public class ChatClient extends AbstractClient {
 			}
 		}
 
+		else if (operation.equals("updateEmailAndPhone")) {
+			// Get the boolean value indicating if the update was successful
+			boolean updateSuccessful = (boolean) response.get("success");
+
+			// Call the method btnUpdateDetailsClickedCheck with the result
+			if (subscriberCardDetailsController != null) {
+				subscriberCardDetailsController.btnUpdateDetailsClickedCheck(updateSuccessful);
+			} else {
+				System.out.println("subscriberCardDetailsController is null.");
+			}
+		}
+
+//		else if (operation.equals("updateReturnDates")) {
+//			System.out.println("in chatClient updateReturnDate");
+//			// Get the boolean value indicating if the update was successful
+//			boolean updateSuccessful = (boolean) response.get("success");
+//
+//			// Call the method btnUpdateDetailsClickedCheck with the result
+//			if (subscriberCardDetailsController != null) {
+//				subscriberCardDetailsController.btnUpdateReturnDateCheck(updateSuccessful);
+//			} else {
+//				System.out.println("subscriberCardDetailsController is null.");
+//			}
+//		}
+
 	}
 
 	/**

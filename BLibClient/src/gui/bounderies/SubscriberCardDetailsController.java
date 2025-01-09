@@ -2,6 +2,8 @@ package gui.bounderies;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +21,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -101,6 +104,18 @@ public class SubscriberCardDetailsController {
 	@FXML
 	private Label lblInvalidCardNumber;
 
+	@FXML
+	private Label lblPhoneNumberMessage;
+
+	@FXML
+	private Label lblEmailmessage;
+
+	@FXML
+	private Label lblEmailPhonemessage;
+
+	@FXML
+	private Label lblUpdateDateMessage;
+
 	private List<LoanHistory> loanHistoryList = new ArrayList<>();
 	private List<IssueHistory> issueHistoryList = new ArrayList<>();
 
@@ -108,6 +123,9 @@ public class SubscriberCardDetailsController {
 	private void initialize() {
 		// Hide all components
 		hideComponents();
+
+		// Set the TableView to editable
+		tableLoanHistory.setEditable(true);
 
 		colBookTitle.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
 		colBorrowDate.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
@@ -228,13 +246,173 @@ public class SubscriberCardDetailsController {
 
 	@FXML
 	private void btnUpdateDetailsClicked(ActionEvent event) {
+		// Get the inserted details from the text fields
+		String email = tfEmail.getText();
+		String phoneNumber = tfPhoneNumber.getText();
+		String cardNumber = tfCardNumber.getText();
 
+		// Validate the email format
+		if (!isValidEmail(email)) {
+			lblEmailmessage.setVisible(true);
+			lblEmailmessage.setText("Invalid email format.");
+			lblEmailmessage.setStyle("-fx-text-fill: red;");
+			return;
+		} else {
+			lblEmailmessage.setText(""); // Clear any previous error message
+		}
+
+		// Validate the phone number format (assuming it should only contain digits and
+		// be 10 characters long)
+		if (!isValidPhoneNumber(phoneNumber)) {
+			lblPhoneNumberMessage.setVisible(true);
+			lblPhoneNumberMessage.setText("Invalid phone number format.");
+			lblPhoneNumberMessage.setStyle("-fx-text-fill: red;");
+			return;
+		} else {
+			lblPhoneNumberMessage.setText(""); // Clear any previous error message
+		}
+
+		// Create the command to send to the server
+		String command = String.format("emailAndPhone %s %s %s", email, phoneNumber, cardNumber);
+
+		// Send the command via ClientUI.chat
+		try {
+			ClientUI.chat.accept(command);
+		} catch (Exception e) {
+			lblPhoneNumberMessage.setText("Error connecting to the server.");
+			lblPhoneNumberMessage.setStyle("-fx-text-fill: red;");
+			e.printStackTrace();
+		}
+	}
+
+	// Helper method to validate email format
+	private boolean isValidEmail(String email) {
+		return email != null
+				&& email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
+	}
+
+	// Helper method to validate phone number format
+	private boolean isValidPhoneNumber(String phoneNumber) {
+		return phoneNumber != null && phoneNumber.matches("\\d{10}");
+	}
+
+	public void btnUpdateDetailsClickedCheck(boolean isUpdated) {
+		Platform.runLater(() -> {
+			if (isUpdated) {
+				// Show success message in green
+				lblEmailPhonemessage.setVisible(true);
+				lblEmailPhonemessage.setText("Details updated successfully!");
+				lblEmailPhonemessage.setStyle("-fx-text-fill: green;");
+
+				lblPhoneNumberMessage.setText("");
+				lblEmailmessage.setText("");
+			} else {
+				// Show failure message in red
+				lblEmailPhonemessage.setText("Failed to update details. Please try again.");
+				lblEmailPhonemessage.setStyle("-fx-text-fill: red;");
+			}
+		});
 	}
 
 	@FXML
 	private void btnUpdateDateClicked(ActionEvent event) {
-
 	}
+
+//	@FXML
+//	private void btnUpdateDateClicked(ActionEvent event) {
+//		// Get the inserted new return date
+//		String newDate = colReturnDate.getText();
+//
+//		// Validate the date format (assuming it should follow the format "yyyy-MM-dd")
+//		if (!isValidDate(newDate)) {
+//			lblUpdateDateMessage.setVisible(true);
+//			lblUpdateDateMessage.setText("Invalid date format. Use yyyy-MM-dd.");
+//			lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
+//			return;
+//		} else {
+//			lblUpdateDateMessage.setText(""); // Clear any previous error message
+//		}
+//
+//		// Create the command to send to the server
+//		String command = String.format("updateReturnDate %s", newDate);
+//
+//		// Send the command via ClientUI.chat
+//		try {
+//			ClientUI.chat.accept(command);
+//		} catch (Exception e) {
+//			lblUpdateDateMessage.setText("Error connecting to the server.");
+//			lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	@FXML
+//	private void btnUpdateDateClicked(ActionEvent event) {
+//		// Map to store the updates
+//		Map<String, Map<String, String>> updates = new HashMap<>();
+//
+//		// Iterate through each row in the TableView
+//		for (LoanHistory record : tableLoanHistory.getItems()) {
+//			// Get the values from the TableView columns
+//			String cardNum = record.getCardNum(); // Assume this is available from the LoanHistory object
+//			String borrowDate = colBorrowDate.getCellData(record).toString(); // Convert LocalDate to String
+//			String newReturnDate = colReturnDate.getCellData(record).toString(); // Convert LocalDate to String
+//
+//			// Check if the return date is null or empty (if required)
+//			if (newReturnDate == null || newReturnDate.isEmpty()) {
+//				continue; // Skip rows with no return date
+//			}
+//
+//			// Add the data to the map
+//			updates.computeIfAbsent(cardNum, k -> new HashMap<>()).put(borrowDate, newReturnDate);
+//		}
+//
+//		// At this point, 'updates' contains all the updates you need
+//		System.out.println("Updates to send to the database: " + updates);
+//
+//		// Send the updates to the server or database
+//		try {
+//			// Serialize the map to a JSON string (or any format you prefer)
+//			String command = "updateReturnDates " + updates.toString();
+//
+//			// Send the command via ClientUI.chat
+//			ClientUI.chat.accept(command);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	private boolean isValidDate(String date) {
+//		// Validate the date format (yyyy-MM-dd)
+//		if (date == null || date.isEmpty()) {
+//			return false;
+//		}
+//
+//		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//		try {
+//			LocalDate.parse(date, dateFormatter);
+//			return true;
+//		} catch (DateTimeParseException e) {
+//			return false;
+//		}
+//	}
+//
+//	public void btnUpdateReturnDateCheck(boolean isUpdated) {
+//		Platform.runLater(() -> {
+//			if (isUpdated) {
+//				// Show success message in green
+//				lblUpdateDateMessage.setVisible(true);
+//				lblUpdateDateMessage.setText("Details updated successfully!");
+//				lblUpdateDateMessage.setStyle("-fx-text-fill: green;");
+//
+//			} else {
+//				// Show failure message in red
+//				lblUpdateDateMessage.setText("Failed to update details. Please try again.");
+//				lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
+//			}
+//		});
+//
+//	}
 
 	@FXML
 	private void btnBackClicked(ActionEvent event) {
@@ -242,6 +420,7 @@ public class SubscriberCardDetailsController {
 	}
 
 	private void hideComponents() {
+
 		lblCardNumber.setVisible(false);
 		tfCardNumber.setVisible(false);
 
@@ -263,6 +442,10 @@ public class SubscriberCardDetailsController {
 		tableIssuesHistory.setVisible(false);
 
 		btnUpdateDates.setVisible(false);
+
+		lblEmailPhonemessage.setVisible(false);
+		lblEmailmessage.setVisible(false);
+		lblPhoneNumberMessage.setVisible(false);
 	}
 
 	private void showComponents() {
