@@ -193,7 +193,7 @@ public class mysqlConnection {
 		try {
 			// Step 1: Check if the cardNum exists
 			System.out.println("first enterance BUULULULULU");
-			String checkQuery = "SELECT COUNT(*) FROM subscribercarddata WHERE cardNum = ?";
+			String checkQuery = "SELECT COUNT(*) FROM users WHERE id = ?";
 			preparedStatement = conn.prepareStatement(checkQuery);
 			preparedStatement.setString(1, cardNum);
 
@@ -205,15 +205,18 @@ public class mysqlConnection {
 			}
 
 			result.put("exists", exists); // Add the existence check to the result
+			
 
 			resultSet.close(); // Close previous resultSet
 			preparedStatement.close(); // Close previous preparedStatement
 
 			// Step 2: If cardNum exists, fetch the card details
 			if (exists) {
-				String detailsQuery = "SELECT * FROM subscribercarddata WHERE cardNum = ?";
+				String detailsQuery = "SELECT id, userName, phoneNumber, email FROM users WHERE id = ?";
+
 				preparedStatement = conn.prepareStatement(detailsQuery);
 				preparedStatement.setString(1, cardNum);
+				result.put("cardNum", cardNum);
 
 				resultSet = preparedStatement.executeQuery();
 
@@ -222,7 +225,7 @@ public class mysqlConnection {
 					int columnCount = metaData.getColumnCount();
 
 					// Fetch all columns for the cardNum
-					for (int i = 1; i <= columnCount; i++) {
+					for (int i = 2; i <= columnCount; i++) {
 						String columnName = metaData.getColumnName(i);
 						Object value = resultSet.getObject(i);
 						result.put(columnName, value);
@@ -235,7 +238,7 @@ public class mysqlConnection {
 				preparedStatement.close();
 
 				// Step 3: Fetch loan history for the cardNum
-				String loanHistoryQuery = "SELECT bookTitle, returnDate, borrowDate FROM loanhistory WHERE cardNum = ?";
+				String loanHistoryQuery = "SELECT bookTitle, returnDate, borrowDate FROM loan WHERE id = ?";
 				preparedStatement = conn.prepareStatement(loanHistoryQuery);
 				preparedStatement.setString(1, cardNum);
 
@@ -297,7 +300,7 @@ public class mysqlConnection {
 	}
 
 	public static boolean updateSubscriberEmailAndPhoneNumber(String email, String phoneNumber, String cardNum) {
-		String sql = "UPDATE subscribercarddata SET email = ?, phoneNumber = ? WHERE cardNum = ?";
+		String sql = "UPDATE users SET email = ?, phoneNumber = ? WHERE id = ?";
 		PreparedStatement stmt = null;
 
 		try {
@@ -332,43 +335,10 @@ public class mysqlConnection {
 		}
 	}
 
-//	public static boolean updateReturnDate(String newDate, String cardNum) {
-//		String sql = "UPDATE loanhistory SET returnDate = ? WHERE cardNum = ?";
-//		PreparedStatement stmt = null;
-//
-//		try {
-//			// Prepare the SQL statement
-//			stmt = conn.prepareStatement(sql);
-//
-//			// Bind parameters
-//			stmt.setString(1, newDate);
-//			stmt.setString(2, cardNum);
-//
-//			// Execute the update
-//			int rowsUpdated = stmt.executeUpdate();
-//
-//			// Return true if at least one row was updated, otherwise false
-//			return rowsUpdated > 0;
-//
-//		} catch (SQLException e) {
-//			// Log the exception and return false
-//			e.printStackTrace();
-//			return false;
-//
-//		} finally {
-//			// Close the statement
-//			try {
-//				if (stmt != null) {
-//					stmt.close();
-//				}
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
+
 
 	public static boolean updateReturnDate(String newReturnDate, String cardNum, String borrowDate) {
-		String query = "UPDATE loanhistory SET returnDate = ? WHERE cardNum = ? AND borrowDate = ?";
+		String query = "UPDATE loan SET returnDate = ? WHERE id = ? AND borrowDate = ?";
 		try (PreparedStatement stmt = conn.prepareStatement(query)) {
 			stmt.setString(1, newReturnDate);
 			stmt.setString(2, cardNum);
@@ -381,65 +351,7 @@ public class mysqlConnection {
 		}
 	}
 
-//	public static Map<String, Object> getCardDetailsIfExists(String cardNum) {
-//		PreparedStatement preparedStatement = null;
-//		ResultSet resultSet = null;
-//		Map<String, Object> result = new HashMap<>(); // Contains the existence check and the card details
-//
-//		try {
-//			// Step 1: Check if the cardNum exists
-//			String checkQuery = "SELECT COUNT(*) FROM subscribercarddata WHERE cardNum = ?";
-//			preparedStatement = conn.prepareStatement(checkQuery);
-//			preparedStatement.setString(1, cardNum);
-//
-//			resultSet = preparedStatement.executeQuery();
-//			boolean exists = false;
-//
-//			if (resultSet.next()) {
-//				exists = resultSet.getInt(1) > 0; // Check if the cardNum exists
-//			}
-//
-//			result.put("exists", exists); // Add the existence check to the result
-//
-//			resultSet.close(); // Close previous resultSet
-//			preparedStatement.close(); // Close previous preparedStatement
-//
-//			// Step 2: If cardNum exists, fetch the card details
-//			if (exists) {
-//				String detailsQuery = "SELECT * FROM subscribercarddata WHERE cardNum = ?";
-//				preparedStatement = conn.prepareStatement(detailsQuery);
-//				preparedStatement.setString(1, cardNum);
-//
-//				resultSet = preparedStatement.executeQuery();
-//
-//				if (resultSet.next()) {
-//					ResultSetMetaData metaData = resultSet.getMetaData();
-//					int columnCount = metaData.getColumnCount();
-//
-//					// Fetch all columns for the cardNum
-//					for (int i = 1; i <= columnCount; i++) {
-//						String columnName = metaData.getColumnName(i);
-//						Object value = resultSet.getObject(i);
-//						result.put(columnName, value);
-//					}
-//				}
-//			}
-//
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		} finally {
-//			// Close resources to prevent memory leaks
-//			try {
-//				if (resultSet != null)
-//					resultSet.close();
-//				if (preparedStatement != null)
-//					preparedStatement.close();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//		return result;
-//	}
+
 
 //	{
 //	    "exists": true,
