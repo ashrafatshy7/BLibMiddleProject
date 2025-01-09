@@ -89,7 +89,7 @@ public class BookDetailsFrameController {
         barcode.setText(barcode.getText()+book.getBarcode());
         category.setText(category.getText()+book.getCategory());
         isAvailable.setText(isAvailable.getText()+(book.getAvailableCopies() > 0 ? "Yes" : "No"));
-        shelf.setText(shelf.getText()+book.getShelf());
+//        shelf.setText(shelf.getText()+book.getShelf());
         description.setText(book.getDescription());
     }
 	

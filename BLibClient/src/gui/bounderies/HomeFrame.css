@@ -6,7 +6,7 @@
 }
 
 /* Header section */
-#status {
+#activeFrozen {
     -fx-font-weight: bold;
     -fx-text-fill: #2e7d32;
     -fx-background-color: rgba(46, 125, 50, 0.1);
@@ -75,7 +75,7 @@
 }
 
 /* Book Names */
-#name1, #name2, #name3, #name4, #name5 {
+#topBookName1, #topBookName2, #topBookName3, #topBookName4, #topBookName5 {
     -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: #424242;
@@ -117,3 +117,16 @@
 * {
     -fx-transition: -fx-background-color 0.2s, -fx-translate-y 0.2s, -fx-scale-x 0.2s, -fx-scale-y 0.2s;
 }
+
+
+/* In HomeFrame.css */
+.book-box {
+   
+    -fx-padding: 10;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-alignment: center;
+    -fx-cursor: hand; /* Changes cursor to hand on hover */
+}
+
+

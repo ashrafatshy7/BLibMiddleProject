@@ -1,6 +1,9 @@
 package application;
 
 
+import enteties.Librarian;
+import enteties.Subscriber;
+import enteties.User;
 import gui.bounderies.HomeFrameController;
 import gui.bounderies.IpFrameController;
 import gui.bounderies.LoanFrameController;
@@ -10,6 +13,7 @@ import javafx.stage.Stage;
 
 public class ClientUI extends Application {
     public static ClientController chat; //only one instance
+    public static User user;
 
     public static void main( String args[] ) throws Exception
        { 
@@ -18,6 +22,9 @@ public class ClientUI extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+//    	user = null;
+//    	user = new Subscriber("123", "aaa", "234567", "aaa@gmail.com", 5);
+    	user = new Librarian("123", "aaa", "234567", "aaa@gmail.com");
     	
     	IpFrameController aFrame = new IpFrameController();
     	

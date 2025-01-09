@@ -180,7 +180,6 @@ public class ClientFrameController {
     		ClientUI.chat.accept(str);
     		str = "";
     	}
-    	
     } 
     
     

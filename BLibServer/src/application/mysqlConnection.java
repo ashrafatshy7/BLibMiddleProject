@@ -1,5 +1,6 @@
 package application;
 
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+import enteties.Book;
 
 
 public class mysqlConnection {
@@ -80,7 +83,77 @@ public class mysqlConnection {
 	}
 	
 	
-	// stmt.executeUpdate("UPDATE subscriber SET phoneNumber='333333', email='kian@gmail.com' WHERE subscriber_id='211613708'");
+	public static ArrayList<Book> getTop5LoanedBooks() {
+        Statement stmt = null;
+        ResultSet resultSet = null;
+        ArrayList<Book> books = new ArrayList<>();
+        
+        try {
+            String query = ""
+                + "SELECT b.*\n"
+                + "FROM books b\n"
+                + "JOIN (\n"
+                + "    SELECT t.*, (@rank := @rank + 1) AS rn\n"
+                + "    FROM top5LoanedBooks t, (SELECT @rank := 0) r\n"
+                + "    ORDER BY t.loanedCount DESC, t.barcode ASC\n"
+                + ") AS ranked_books ON b.barcode = ranked_books.barcode\n"
+                + "WHERE ranked_books.rn <= 5\n"
+                + "ORDER BY ranked_books.loanedCount DESC, ranked_books.barcode ASC;";
+
+            stmt = conn.createStatement();
+            resultSet = stmt.executeQuery(query);
+
+            while (resultSet.next()) {
+                // Extract data from the current row
+                String barcode = resultSet.getString("barcode");
+                String title = resultSet.getString("title");
+                String author = resultSet.getString("author");
+                String category = resultSet.getString("category");
+                String description = resultSet.getString("description");
+                int availableCopies = resultSet.getInt("availableCopies");
+                
+                // Assuming the image is stored in a column named "image" as a BLOB
+                byte[] imageBytes = null;
+                Blob imageBlob = resultSet.getBlob("image");
+                if (imageBlob != null) {
+                    imageBytes = imageBlob.getBytes(1, (int) imageBlob.length());
+                }
+
+                // Create a new Book object
+                Book book = new Book(
+                    barcode,
+                    title,
+                    author,
+                    category,
+                    description,
+                    availableCopies,
+                    imageBytes
+                );
+
+                books.add(book);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in reverse order of their opening
+            try {
+                if (resultSet != null) resultSet.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (stmt != null) stmt.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return books;
+    }
+
+
+	
 	public static void updateValues(Object msg) {
 		PreparedStatement pstmt = null;
 	    ArrayList<String> data = (ArrayList<String>) msg;
@@ -105,74 +178,7 @@ public class mysqlConnection {
 	
 	
 	
-	public static void updateSubscriberDetails(Object msg) {
-	    PreparedStatement pstmt = null;
-	    try {
-	        ArrayList<String> userData = (ArrayList<String>) msg;
-	        String subscriberId = userData.get(0);
-	        
-	        // List to hold individual column assignments
-	        List<String> assignments = new ArrayList<>();
-	        
-	        // Iterate over the key-value pairs starting from index 1
-	        for (int i = 1; i < userData.size(); i += 2) {
-	            String field = userData.get(i);
-	            String value = userData.get(i + 1);
-	            String dbField = null;
-	            
-	            switch (field) {
-	                case "phoneNumber":
-	                    dbField = "subscriber_phone_number";
-	                    break;
-	                case "email":
-	                    dbField = "subscriber_email";
-	                    break;
-	                default:
-	                    // Handle unknown fields or skip
-	                    continue;
-	            }
-	            
-	            assignments.add(dbField + " = ?");
-	        }
-	        
-	        
-	        String setClause = String.join(", ", assignments);
-	        
-	        String query = "UPDATE subscribers SET " + setClause + " WHERE subscriber_id = ?";
-	        pstmt = conn.prepareStatement(query);
-	        
-	        int paramIndex = 1;
-	        for (int i = 1; i < userData.size(); i += 2) {
-	            String field = userData.get(i);
-	            String value = userData.get(i + 1);
-	            
-	            switch (field) {
-	                case "phoneNumber":
-	                case "email":
-	                    pstmt.setString(paramIndex++, value);
-	                    break;
-	            }
-	        }
-	        
-	        // Set the subscriber_id parameter
-	        pstmt.setLong(paramIndex, Long.parseLong(subscriberId));
-	        
-	        // Execute the update
-	        pstmt.executeUpdate();
-	        
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } finally {
-	        // Close the PreparedStatement
-	        if (pstmt != null) {
-	            try {
-	                pstmt.close();
-	            } catch (SQLException e) {
-	                e.printStackTrace();
-	            }
-	        }
-	    }
-	}
+	
 
 	
 	
@@ -194,6 +200,7 @@ public class mysqlConnection {
 	        e.printStackTrace();
 	    }
 	}
+	
 	
 	
 	

@@ -5,6 +5,10 @@ import ocsf.client.*;
 import common.ChatIF;
 import gui.bounderies.ClientFrameController;
 import gui.bounderies.HomeFrameController;
+import gui.bounderies.SeeAllFrameController;
+import javafx.scene.image.Image;
+import message.Message;
+import message.MessageType;
 
 import java.io.*;
 import java.sql.Blob;
@@ -30,6 +34,7 @@ public class ChatClient extends AbstractClient {
 
 	private ClientFrameController clientFrameController;
 	private HomeFrameController homeFrameController;
+	private SeeAllFrameController seeAllFrameController;
 
 	/**
 	 * The interface type variable. It allows the implementation of the display
@@ -58,10 +63,14 @@ public class ChatClient extends AbstractClient {
 	public void setClientFrameController(ClientFrameController clientFrameController) {
 		this.clientFrameController = clientFrameController;
 	}
-	
+
+	public void setSeeAllFrameController(SeeAllFrameController seeAllFrameController) {
+		this.seeAllFrameController = seeAllFrameController;
+	}
+
 	public void setHomeFrameController(HomeFrameController homeFrameController) {
-        this.homeFrameController = homeFrameController;
-    }
+		this.homeFrameController = homeFrameController;
+	}
 
 	/**
 	 * This method handles all data that comes in from the server.
@@ -71,41 +80,74 @@ public class ChatClient extends AbstractClient {
 	@SuppressWarnings("unchecked")
 	public void handleMessageFromServer(Object msg) {
 		awaitResponse = false;
-		HashMap<String, Object> response = (HashMap<String, Object>) msg;
 
-		String operation = (String) response.get("operation");
+		Message message = (Message) msg;
+		MessageType messageType = message.getMessageType();
 
-		Object data = response.get("data");
-
-		if (operation.equals("getAllsubscribers")) {
-
-			ArrayList<Map<String, Object>> rawRows = (ArrayList<Map<String, Object>>) data;
-			// Convert each row (Map<String,Object>) to a Subscriber object
-			ArrayList<Subscriber> subscribers = new ArrayList<>();
-			for (Map<String, Object> row : rawRows) {
-
-				Subscriber sub = new Subscriber((String) row.get("subscriber_id"), (String) row.get("subscriber_name"),
-						(String) row.get("subscriber_phone_number"), (String) row.get("subscriber_email"),
-						(int) row.get("detailed_subscription_history"));
-				subscribers.add(sub);
+		switch (messageType) {
+		case getTop5LoanedBooks:
+			try {
+				ArrayList<Book> books = (ArrayList<Book>) message.getMessageData();
+				if (homeFrameController != null) {
+                    homeFrameController.setBooks(books);
+                } else {
+                    System.err.println("HomeFrameController is not set in ChatClient.");
+                }
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
 			}
 
-			clientFrameController.setSubscribers(subscribers);
-
-		} else if (operation.equals("getAllbooks")) {
-			ArrayList<Map<String, Object>> rawRows = (ArrayList<Map<String, Object>>) data;
-			ArrayList<Book> books = new ArrayList<>();
-			for (Map<String, Object> row : rawRows) {
-				
-				Book book = new Book((String) row.get("barcode"), (String) row.get("title"), (String) row.get("author"),
-						(String) row.get("category"), (String) row.get("description"), (String) row.get("shelf"),
-						(int) row.get("availableCopies"), (byte[]) row.get("image"));
-				books.add(book);
-			}
-			homeFrameController.setBooks(books);
-			
-			
+			break;
 		}
+//
+//		if (operation.equals("getAllsubscribers")) {
+//
+//			ArrayList<Map<String, Object>> rawRows = (ArrayList<Map<String, Object>>) data;
+//			ArrayList<Subscriber> subscribers = new ArrayList<>();
+//			for (Map<String, Object> row : rawRows) {
+//
+//				Subscriber sub = new Subscriber((String) row.get("subscriber_id"), (String) row.get("subscriber_name"),
+//						(String) row.get("subscriber_phone_number"), (String) row.get("subscriber_email"),
+//						(int) row.get("detailed_subscription_history"));
+//				subscribers.add(sub);
+//			}
+//
+//			clientFrameController.setSubscribers(subscribers);
+//
+//		} else if (operation.equals("getAllbooks")) {
+//			try {
+//				ArrayList<Map<String, Object>> rawRows = (ArrayList<Map<String, Object>>) data;
+//				ArrayList<Book> books = new ArrayList<>();
+//				for (Map<String, Object> row : rawRows) {
+//
+//					Book book = new Book((String) row.get("barcode"), (String) row.get("title"),
+//							(String) row.get("author"), (String) row.get("category"), (String) row.get("description"),
+//							(String) row.get("shelf"), (int) row.get("availableCopies"), (byte[]) row.get("image"));
+//					books.add(book);
+//				}
+//				seeAllFrameController.setBooks(books);
+//			} catch (Exception e) {
+//				System.out.println(e.getMessage());
+//			}
+//
+//		} else if (operation.equals("getTop5LoanedBooks")) {
+//			try {
+//				ArrayList<Map<String, Object>> rawRows = (ArrayList<Map<String, Object>>) data;
+//				ArrayList<Book> books = new ArrayList<>();
+//				for (Map<String, Object> row : rawRows) {
+//
+//					Book book = new Book((String) row.get("barcode"), (String) row.get("title"),
+//							(String) row.get("author"), (String) row.get("category"), (String) row.get("description"),
+//							(String) row.get("shelf"), (int) row.get("availableCopies"), (byte[]) row.get("image"));
+//					books.add(book);
+//				}
+//
+//				homeFrameController.setBooks(books);
+//			} catch (Exception e) {
+//				System.out.println(e.getMessage());
+//			}
+//
+//		}
 
 	}
 
@@ -115,11 +157,11 @@ public class ChatClient extends AbstractClient {
 	 * @param message The message from the UI.
 	 */
 
-	public void handleMessageFromClientUI(String message) {
+	public void handleMessageFromClientUI(Object obj) {
 		try {
 			openConnection();// in order to send more than one message
 			awaitResponse = true;
-			sendToServer(message);
+			sendToServer(obj);
 			// wait for response
 			while (awaitResponse) {
 				try {
@@ -140,7 +182,8 @@ public class ChatClient extends AbstractClient {
 	 */
 	public void quit() {
 		try {
-			ClientUI.chat.accept("QUIT");
+			Message sendToServer = new Message(MessageType.disconnectFromServer);
+			ClientUI.chat.accept(sendToServer);
 			closeConnection();
 		} catch (IOException e) {
 			e.printStackTrace();
