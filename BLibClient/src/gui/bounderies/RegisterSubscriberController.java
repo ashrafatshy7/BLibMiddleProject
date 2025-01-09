@@ -81,7 +81,7 @@ public class RegisterSubscriberController {
         }
 
         // Send data to server
-        String command = String.format("register subscriber %s %s %s %s %s active 0", readCard, email, password, username, phone);
+        String command = String.format("register subscriber %s %s %s %s %s student active", readCard, email, password, username, phone);
         ClientUI.chat.accept(command);
     }
 

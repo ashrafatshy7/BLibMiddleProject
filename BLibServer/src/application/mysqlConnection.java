@@ -178,7 +178,7 @@ public class mysqlConnection {
 
 	
 	public static boolean isFieldUnique(String fieldName, String value) {
-	    String query = "SELECT COUNT(*) FROM subscribers WHERE " + fieldName + " = ?";
+	    String query = "SELECT COUNT(*) FROM users WHERE " + fieldName + " = ?";
 	    try (PreparedStatement pstmt = conn.prepareStatement(query)) {
 	        pstmt.setString(1, value);
 	        ResultSet rs = pstmt.executeQuery();
@@ -192,41 +192,35 @@ public class mysqlConnection {
 	}
 
 	public static boolean saveNewSubscriber(String readCard, String email, String password, String username, String phone) {
-	    // בדיקה אם ReadCard או Email קיימים
-	    String checkQuery = "SELECT COUNT(*) FROM subscribers WHERE subscriber_id = ? OR subscriber_email = ?";
+	    // בדיקה אם ReadCard או Email כבר קיימים
+	    String checkQuery = "SELECT COUNT(*) FROM users WHERE id = ? OR email = ?";
 	    try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
 	        checkStmt.setString(1, readCard);
 	        checkStmt.setString(2, email);
 	        ResultSet rs = checkStmt.executeQuery();
 	        if (rs.next() && rs.getInt(1) > 0) {
-	        	
-	        	System.out.println("Duplicate ReadCard or Email found in database.");
-	        	return false;
+	            System.out.println("Duplicate ReadCard or Email found in database.");
+	            return false;
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	        return false;
 	    }
 
-	    // הוספת מנוי לטבלה הראשית
-	    String subscriberQuery = "INSERT INTO subscribers (subscriber_id, subscriber_email, subscriber_name, subscriber_phone_number, status, detailed_subscription_history) VALUES (?, ?, ?, ?, 'active', 0)";
-	    // הוספת סיסמה לטבלת auth
-	    String authQuery = "INSERT INTO subscriber_auth (subscriber_id, password) VALUES (?, ?)";
+	    // הוספת מנוי לטבלה
+	    String subscriberQuery = 
+	        "INSERT INTO users (id, email, password, username, phoneNumber, type, status) "
+	        + "VALUES (?, ?, ?, ?, ?, 'student', 'active')";
 
-	    try (PreparedStatement subscriberStmt = conn.prepareStatement(subscriberQuery);
-	         PreparedStatement authStmt = conn.prepareStatement(authQuery)) {
-
-	        subscriberStmt.setString(1, readCard);
-	        subscriberStmt.setString(2, email);
-	        subscriberStmt.setString(3, username);
-	        subscriberStmt.setString(4, phone);
-
-	        authStmt.setString(1, readCard);
-	        authStmt.setString(2, password);
+	    try (PreparedStatement subscriberStmt = conn.prepareStatement(subscriberQuery)) {
+	        // הגדרת הפרמטרים לפי הסדר הנכון:
+	        subscriberStmt.setString(1, readCard);   // id
+	        subscriberStmt.setString(2, email);      // email
+	        subscriberStmt.setString(3, password);   // password
+	        subscriberStmt.setString(4, username);   // username
+	        subscriberStmt.setString(5, phone);      // phoneNumber
 
 	        subscriberStmt.executeUpdate();
-	        authStmt.executeUpdate();
-
 	        return true; // הצלחה
 	    } catch (SQLException e) {
 	        e.printStackTrace();
@@ -234,13 +228,14 @@ public class mysqlConnection {
 	    }
 	}
 
+
 	
 	
 	
 	
 	// בדיקה אם subscriber_id קיים
 	public static boolean isSubscriberIdExists(String id) {
-	    String query = "SELECT 1 FROM subscribers WHERE subscriber_id = ?";
+	    String query = "SELECT 1 FROM users WHERE id = ?";
 	    try (PreparedStatement pstmt = conn.prepareStatement(query)) {
 	        pstmt.setString(1, id);
 	        ResultSet rs = pstmt.executeQuery();
@@ -253,7 +248,7 @@ public class mysqlConnection {
 
 	// בדיקה אם email קיים
 	public static boolean isEmailExists(String email) {
-	    String query = "SELECT 1 FROM subscribers WHERE subscriber_email = ?";
+	    String query = "SELECT 1 FROM users WHERE email = ?";
 	    try (PreparedStatement pstmt = conn.prepareStatement(query)) {
 	        pstmt.setString(1, email);
 	        ResultSet rs = pstmt.executeQuery();
@@ -264,45 +259,6 @@ public class mysqlConnection {
 	    }
 	}
 
-	
-	
-	
-	
-	public static boolean saveUserPassword(String subscriberId, String password) {
-	    String query = "INSERT INTO user_credentials (subscriber_id, password) VALUES (?, ?)";
-	    try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-	        pstmt.setString(1, subscriberId);
-	        pstmt.setString(2, password);
-	        pstmt.executeUpdate();
-	        return true;
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        return false;
-	    }
-	}
 
-	
-	
-	
-	
-	public static void saveUserToDB(Object msg) {
-	    Statement stmt;
-	    try {
-	        ArrayList<String> userData = (ArrayList<String>) msg;
-	        String userName = userData.get(0);
-	        String id = userData.get(1);       
-	        String department = userData.get(2);
-	        String tel = userData.get(3);     
-	        String query = "INSERT INTO users (UserName, ID, Department, Tel) VALUES ('"+ userName + "', "+ id + ", '"+ department + "', '"+ tel + "')";
-
-	        stmt = conn.createStatement();
-	        stmt.executeUpdate(query);
-	        stmt.close();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	}
-	
-	
 	
 }
