@@ -68,9 +68,6 @@ public class SeeAllFrameController {
 
 	@FXML
 	public void initialize() {
-		Message sendToServer = new Message(MessageType.getAllBooks);
-    	ClientUI.chat.accept(sendToServer);
-		
 
 		// Setup listeners for search fields
 		setupSearchListeners();
@@ -111,6 +108,10 @@ public class SeeAllFrameController {
 			primaryStage.setTitle("Search A Book");
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			
+			
+			Message sendToServer = new Message(MessageType.getAllBooks);
+	    	ClientUI.chat.accept(sendToServer);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -167,15 +168,29 @@ public class SeeAllFrameController {
 			bookButton.getStyleClass().add("clear-button");
 
 			bookButton.setOnAction(event -> {
-				try {
-					((Node) event.getSource()).getScene().getWindow().hide();
-					Stage primaryStage = new Stage();
-					BookDetailsFrameController bookDetails = new BookDetailsFrameController();
-					bookDetails.setBook(book);
-					bookDetails.start(primaryStage); // Ensure BookDetailsFrameController is similarly set up
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				 try {
+                     ((Node) event.getSource()).getScene().getWindow().hide();
+                     Stage primaryStage = new Stage();
+                     
+                     // Load FXML
+                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/BookDetailsFrame.fxml"));
+                     Parent root = loader.load();
+
+                     // Get the controller and set properties
+                     BookDetailsFrameController controller = loader.getController();
+                     controller.setSource("SeeAllFrameController"); // Set the source appropriately
+                     controller.setBook(book);
+
+                     // Set up the scene
+                     Scene scene = new Scene(root);
+                     scene.getStylesheets().add(getClass().getResource("/gui/bounderies/BookDetailsFrame.css").toExternalForm());
+                     primaryStage.setTitle("Book Details");
+                     primaryStage.setScene(scene);
+                     primaryStage.show();
+
+                 } catch (Exception e) {
+                     e.printStackTrace();
+                 }
 			});
 
 			// Add the button to the FlowPane

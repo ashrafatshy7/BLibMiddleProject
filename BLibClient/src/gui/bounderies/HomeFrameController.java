@@ -168,7 +168,6 @@ public class HomeFrameController {
      * @param books List of top 5 loaned books.
      */
     public void setBooks(ArrayList<Book> books) {
-    	System.out.println("HHHHHH "+books);
         // Populate the top books UI
         populateTopBooks(books);
     }
@@ -184,56 +183,70 @@ public class HomeFrameController {
             topBooksContainer.getChildren().clear(); // Clear existing content
 
             for (Book book : topBooks) {
-                // Create a VBox to hold ImageView and Label
                 VBox bookBox = new VBox();
-                bookBox.setSpacing(5); // Adjust spacing as needed
-
-                // Create ImageView for the book cover using book.getImage()
-                System.out.println(book.getImage());
+                bookBox.setSpacing(5); 
                 ImageView imageView = new ImageView(book.getImage());
                 imageView.setFitWidth(109.0);
                 imageView.setFitHeight(182.0);
                 imageView.setPreserveRatio(true);
 
-                // Create Label for the book title
                 Label bookName = new Label(book.getTitle());
-                bookName.setWrapText(true); // Allow text to wrap if necessary
-                bookName.setMaxWidth(109.0); // Match ImageView width
-                bookName.setStyle("-fx-alignment: center;"); // Center align text
+                bookName.setWrapText(true);
+                bookName.setMaxWidth(109.0);
+                bookName.setStyle("-fx-alignment: center;");
 
-                // Make the image clickable to open Book Details
                 imageView.setOnMouseClicked(event -> {
                     try {
                         ((Node) event.getSource()).getScene().getWindow().hide();
                         Stage primaryStage = new Stage();
-                        BookDetailsFrameController bookDetails = new BookDetailsFrameController();
-                        bookDetails.setBook(book);
-                        bookDetails.start(primaryStage);
+                        
+                        // Load FXML
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/BookDetailsFrame.fxml"));
+                        Parent root = loader.load();
+
+                        // Get the controller and set properties
+                        BookDetailsFrameController controller = loader.getController();
+                        controller.setSource("HomeFrameController"); // Set the source appropriately
+                        controller.setBook(book);
+
+                        // Set up the scene
+                        Scene scene = new Scene(root);
+                        scene.getStylesheets().add(getClass().getResource("/gui/bounderies/BookDetailsFrame.css").toExternalForm());
+                        primaryStage.setTitle("Book Details");
+                        primaryStage.setScene(scene);
+                        primaryStage.show();
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
 
-                // Optionally, make the entire VBox clickable (image and label)
+                // Optionally, make the entire VBox clickable
                 bookBox.setOnMouseClicked(event -> {
                     try {
                         ((Node) event.getSource()).getScene().getWindow().hide();
                         Stage primaryStage = new Stage();
-                        BookDetailsFrameController bookDetails = new BookDetailsFrameController();
-                        bookDetails.setBook(book);
-                        bookDetails.start(primaryStage);
+
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/BookDetailsFrame.fxml"));
+                        Parent root = loader.load();
+
+                        BookDetailsFrameController controller = loader.getController();
+                        controller.setSource("HomeFrameController"); // Set the source appropriately
+                        controller.setBook(book);
+
+                        Scene scene = new Scene(root);
+                        scene.getStylesheets().add(getClass().getResource("/gui/bounderies/BookDetailsFrame.css").toExternalForm());
+                        primaryStage.setTitle("Book Details");
+                        primaryStage.setScene(scene);
+                        primaryStage.show();
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
 
-                // Add ImageView and Label to the VBox
                 bookBox.getChildren().addAll(imageView, bookName);
-
-                // Optionally, add a style class for better styling
-                bookBox.getStyleClass().add("book-box"); // Define in CSS
-
-                // Add the VBox to the FlowPane
+                bookBox.getStyleClass().add("book-box");
                 topBooksContainer.getChildren().add(bookBox);
             }
         });

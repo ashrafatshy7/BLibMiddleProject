@@ -49,38 +49,64 @@ public class mysqlConnection {
    	}
 	
 	
-	// subscribers
-	public static ArrayList<Map<String, Object>> getAllValues(Object msg) {
-	    Statement stmt;
-	    ResultSet resultSet;
-	    String tableName = (String) msg;
-	    ArrayList<Map<String, Object>> tableData = new ArrayList<>();
+	
+	public static ArrayList<Book> getAllValues(Object msg) {
+        Statement stmt = null;
+        ResultSet resultSet = null;
+        String tableName = (String) msg;
+        ArrayList<Book> books = new ArrayList<>();
 
-	    try {
-	        String query = "SELECT * FROM " + tableName;
-	        stmt = conn.createStatement();
-	        resultSet = stmt.executeQuery(query);
+        try {
+            String query = "SELECT * FROM " + tableName;
+            stmt = conn.createStatement();
+            resultSet = stmt.executeQuery(query);
 
-	        while (resultSet.next()) {
-	            Map<String, Object> row = new HashMap<>();
-	            ResultSetMetaData metaData = resultSet.getMetaData();
-	            int columnCount = metaData.getColumnCount();
+            while (resultSet.next()) {
+                String barcode = resultSet.getString("barcode");
+                String title = resultSet.getString("title");
+                String author = resultSet.getString("author");
+                String category = resultSet.getString("category");
+                String description = resultSet.getString("description");
+                int availableCopies = resultSet.getInt("availableCopies");
 
-	            for (int i = 1; i <= columnCount; i++) {
-	                String columnName = metaData.getColumnName(i);
-	                Object value = resultSet.getObject(i);
-	                row.put(columnName, value);
-	            }
-	            tableData.add(row);
-	        }
+                byte[] imageBytes = null;
+                Blob imageBlob = resultSet.getBlob("image");
+                if (imageBlob != null) {
+                    imageBytes = imageBlob.getBytes(1, (int) imageBlob.length());
+                }
 
-	        resultSet.close();
-	        stmt.close();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return tableData;
-	}
+                // Create a new Book object
+                Book book = new Book(
+                    barcode,
+                    title,
+                    author,
+                    category,
+                    description,
+                    availableCopies,
+                    imageBytes
+                );
+
+                books.add(book);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in reverse order of their opening
+            try {
+                if (resultSet != null) resultSet.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (stmt != null) stmt.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return books;
+    }
 	
 	
 	public static ArrayList<Book> getTop5LoanedBooks() {
@@ -115,6 +141,7 @@ public class mysqlConnection {
                 // Assuming the image is stored in a column named "image" as a BLOB
                 byte[] imageBytes = null;
                 Blob imageBlob = resultSet.getBlob("image");
+            
                 if (imageBlob != null) {
                     imageBytes = imageBlob.getBytes(1, (int) imageBlob.length());
                 }
@@ -138,6 +165,7 @@ public class mysqlConnection {
         } finally {
             // Close resources in reverse order of their opening
             try {
+            	
                 if (resultSet != null) resultSet.close();
             } catch (SQLException se) {
                 se.printStackTrace();

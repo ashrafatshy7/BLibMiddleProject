@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 public class BookDetailsFrameController {
 	private Book book;
+	private String source;
 	
 	@FXML
 	private Label title;
@@ -57,28 +58,9 @@ public class BookDetailsFrameController {
         }
     }
 	
-	
-	public void start(Stage primaryStage) throws Exception {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/BookDetailsFrame.fxml"));
-			Parent root = loader.load();
-					
-            BookDetailsFrameController controller = loader.getController();
-            controller.setBook(this.book);
-					
-			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("/gui/bounderies/BookDetailsFrame.css").toExternalForm());
-			primaryStage.setTitle("Details");
-			primaryStage.setScene(scene);
-			primaryStage.show();
-			
-			
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void setSource(String source) {
+		this.source = source;
 	}
-	
 	
 	private void populateBookDetails() {
 		image.setImage(book.getImage());
@@ -98,8 +80,14 @@ public class BookDetailsFrameController {
 	public void backBtn(ActionEvent event) throws Exception {
 		Stage primaryStage = new Stage();
 		((Node) event.getSource()).getScene().getWindow().hide();
-		SeeAllFrameController bookDetails = new SeeAllFrameController();
-		bookDetails.start(primaryStage);
+		if(source.equals("SeeAllFrameController")) {
+			SeeAllFrameController bookDetails = new SeeAllFrameController();
+			bookDetails.start(primaryStage);
+		}
+		else if(source.equals("HomeFrameController")) {
+			HomeFrameController homePage = new HomeFrameController();
+			homePage.start(primaryStage);
+		}
 	}
 	
 }

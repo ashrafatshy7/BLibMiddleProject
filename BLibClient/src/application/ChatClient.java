@@ -96,8 +96,18 @@ public class ChatClient extends AbstractClient {
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
-
 			break;
+		case getAllBooks:
+			try {
+				ArrayList<Book> books = (ArrayList<Book>) message.getMessageData();
+				if (seeAllFrameController != null) {
+					seeAllFrameController.setBooks(books);
+                } else {
+                    System.err.println("HomeFrameController is not set in ChatClient.");
+                }
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
 		}
 //
 //		if (operation.equals("getAllsubscribers")) {

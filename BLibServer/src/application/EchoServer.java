@@ -105,23 +105,19 @@ public class EchoServer extends AbstractServer {
 	        
 	        switch (messageType) {
 	            case disconnectFromServer:
-	                clientDisconnected(client);/////////////////////
+	                clientDisconnected(client);
 	                client.sendToClient(new Message(MessageType.disconnectFromServer, "You have been disconnected."));
 	                return;
 	            case getAllBooks:
-	                ArrayList<Map<String, Object>> tableData = mysqlConnection.getAllValues("books");
-	                messageFromServer = new Message(MessageType.getAllBooks, tableData);
+	                ArrayList<Book> allBooks = mysqlConnection.getAllValues("books");
+	                messageFromServer = new Message(MessageType.getAllBooks, allBooks);
 	                client.sendToClient(messageFromServer);
 	                break;
 	            case getTop5LoanedBooks:
-	                ArrayList<Book> books = mysqlConnection.getTop5LoanedBooks();
-	                messageFromServer = new Message(MessageType.getTop5LoanedBooks, books);
-	                System.out.println(books.get(0).getImage());
+	                ArrayList<Book> topLoaned = mysqlConnection.getTop5LoanedBooks();
+	                messageFromServer = new Message(MessageType.getTop5LoanedBooks, topLoaned);
 	                client.sendToClient(messageFromServer);
 	                break;
-	            // Handle other message types as needed
-	            default:
-	                System.err.println("Unhandled message type: " + messageType);
 	        }
 	    } catch (IOException e) {
 	        System.err.println("IOException while handling message: " + e.getMessage());
@@ -130,55 +126,6 @@ public class EchoServer extends AbstractServer {
 	        System.err.println("Unexpected exception while handling message: " + e.getMessage());
 	        e.printStackTrace();
 	    }
-
-//		ArrayList<String> allData = new ArrayList<>(Arrays.asList(message.split(" ")));
-//		if (allData.get(0).equals("getAllValues")) {
-//			String tableName = allData.get(1);
-//
-//			ArrayList<Map<String, Object>> tableData = mysqlConnection.getAllValues(tableName);
-//			HashMap<String, Object> response = new HashMap<>();
-//			response.put("operation", "getAll" + tableName);
-//			response.put("data", tableData);
-//
-//			try {
-//				client.sendToClient(response);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		} else if (allData.get(0).equals("update")) {
-//			ArrayList<String> updatedData = new ArrayList<String>();
-//			for (int i = 1; i < allData.size(); i++) {
-//				if (allData.get(1).equals("subscribers") && allData.get(i).equals("phoneNumber"))
-//					updatedData.add("subscriber_phone_number");
-//				else if (allData.get(1).equals("subscribers") && allData.get(i).equals("email"))
-//					updatedData.add("subscriber_email");
-//				else
-//					updatedData.add(allData.get(i));
-//			}
-//			mysqlConnection.updateValues(updatedData);
-//			ArrayList<Map<String, Object>> tableData = mysqlConnection.getAllValues(updatedData.get(0));
-//
-//			try {
-//				HashMap<String, Object> response = new HashMap<>();
-//				response.put("operation", "getAllSubscribers");
-//				response.put("data", tableData);
-//				client.sendToClient(response);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		} else if (allData.get(0).equals("getTop5LoanedBooks")) {
-//
-//			ArrayList<Map<String, Object>> tableData = mysqlConnection.getTop5LoanedBooks();
-//			HashMap<String, Object> response = new HashMap<>();
-//			response.put("operation", "getTop5LoanedBooks");
-//			response.put("data", tableData);
-//
-//			try {
-//				client.sendToClient(response);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
 	}
 
 	/**
