@@ -109,56 +109,6 @@ public class ChatClient extends AbstractClient {
 				System.out.println(e.getMessage());
 			}
 		}
-//
-//		if (operation.equals("getAllsubscribers")) {
-//
-//			ArrayList<Map<String, Object>> rawRows = (ArrayList<Map<String, Object>>) data;
-//			ArrayList<Subscriber> subscribers = new ArrayList<>();
-//			for (Map<String, Object> row : rawRows) {
-//
-//				Subscriber sub = new Subscriber((String) row.get("subscriber_id"), (String) row.get("subscriber_name"),
-//						(String) row.get("subscriber_phone_number"), (String) row.get("subscriber_email"),
-//						(int) row.get("detailed_subscription_history"));
-//				subscribers.add(sub);
-//			}
-//
-//			clientFrameController.setSubscribers(subscribers);
-//
-//		} else if (operation.equals("getAllbooks")) {
-//			try {
-//				ArrayList<Map<String, Object>> rawRows = (ArrayList<Map<String, Object>>) data;
-//				ArrayList<Book> books = new ArrayList<>();
-//				for (Map<String, Object> row : rawRows) {
-//
-//					Book book = new Book((String) row.get("barcode"), (String) row.get("title"),
-//							(String) row.get("author"), (String) row.get("category"), (String) row.get("description"),
-//							(String) row.get("shelf"), (int) row.get("availableCopies"), (byte[]) row.get("image"));
-//					books.add(book);
-//				}
-//				seeAllFrameController.setBooks(books);
-//			} catch (Exception e) {
-//				System.out.println(e.getMessage());
-//			}
-//
-//		} else if (operation.equals("getTop5LoanedBooks")) {
-//			try {
-//				ArrayList<Map<String, Object>> rawRows = (ArrayList<Map<String, Object>>) data;
-//				ArrayList<Book> books = new ArrayList<>();
-//				for (Map<String, Object> row : rawRows) {
-//
-//					Book book = new Book((String) row.get("barcode"), (String) row.get("title"),
-//							(String) row.get("author"), (String) row.get("category"), (String) row.get("description"),
-//							(String) row.get("shelf"), (int) row.get("availableCopies"), (byte[]) row.get("image"));
-//					books.add(book);
-//				}
-//
-//				homeFrameController.setBooks(books);
-//			} catch (Exception e) {
-//				System.out.println(e.getMessage());
-//			}
-//
-//		}
-
 	}
 
 	/**
