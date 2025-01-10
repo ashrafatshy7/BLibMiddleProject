@@ -138,6 +138,12 @@ public class SubscriberCardDetailsController {
 		colIssueType.setCellValueFactory(new PropertyValueFactory<>("issueType"));
 		colIssueDate.setCellValueFactory(new PropertyValueFactory<>("issueDate"));
 		colIssueDescription.setCellValueFactory(new PropertyValueFactory<>("issueDescription"));
+		
+		//
+		tfInsertCardNumber.getStylesheets().add("textField.css");
+		tfCardNumber.getStylesheets().add("textField.css");
+		tfUserName.getStylesheets().add("textField.css");
+		tfPhoneNumber.getStylesheets().add("textField.css");
 
 	}
 
@@ -265,29 +271,34 @@ public class SubscriberCardDetailsController {
 		String phoneNumber = tfPhoneNumber.getText();
 		String cardNumber = tfCardNumber.getText();
 
-		// Validate the email format
-		if (!isValidEmail(email)) {
-			lblEmailmessage.setVisible(true);
-			lblEmailmessage.setText("Invalid email format.");
-			tfEmail.getStyleClass().add("text-field-invalid");
-			lblEmailmessage.setStyle("-fx-text-fill: red;");
-			tfInsertCardNumber.getStyleClass().add("text-field-invalid");
+		if (!isValidEmail(email) || !isValidPhoneNumber(phoneNumber)) {
+			// Validate the email format
+			if (!isValidEmail(email)) {
+				lblEmailmessage.setVisible(true);
+				lblEmailmessage.setText("Invalid email format.");
+				tfEmail.getStyleClass().add("text-field-invalid");
+				lblEmailmessage.setStyle("-fx-text-fill: red;");
+			} else {
+				lblEmailmessage.setText(""); // Clear any previous error message
+				tfEmail.getStyleClass().remove("text-field-invalid");
+			}
+
+			// Validate the phone number format (assuming it should only contain digits and
+			// be 10 characters long)
+			if (!isValidPhoneNumber(phoneNumber)) {
+				lblPhoneNumberMessage.setVisible(true);
+				lblPhoneNumberMessage.setText("Invalid phone number format.");
+				tfPhoneNumber.getStyleClass().add("text-field-invalid");
+				lblPhoneNumberMessage.setStyle("-fx-text-fill: red;");
+			} else {
+				lblPhoneNumberMessage.setText(""); // Clear any previous error message
+				tfPhoneNumber.getStyleClass().remove("text-field-invalid");
+			}
 			return;
-		} else {
-			lblEmailmessage.setText(""); // Clear any previous error message
 		}
 
-		// Validate the phone number format (assuming it should only contain digits and
-		// be 10 characters long)
-		if (!isValidPhoneNumber(phoneNumber)) {
-			lblPhoneNumberMessage.setVisible(true);
-			lblPhoneNumberMessage.setText("Invalid phone number format.");
-			tfPhoneNumber.getStyleClass().add("text-field-invalid");
-			lblPhoneNumberMessage.setStyle("-fx-text-fill: red;");
-			return;
-		} else {
-			lblPhoneNumberMessage.setText(""); // Clear any previous error message
-		}
+		tfPhoneNumber.getStyleClass().remove("text-field-invalid");
+		tfEmail.getStyleClass().remove("text-field-invalid");
 
 		// Create the command to send to the server
 		String command = String.format("emailAndPhone %s %s %s", email, phoneNumber, cardNumber);
