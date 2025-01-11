@@ -13,9 +13,11 @@
       <Label fx:id="barcode" layoutX="141.0" layoutY="97.0" text="Barcode: " />
       <Label fx:id="category" layoutX="140.0" layoutY="121.0" text="Category:" />
       <Label layoutX="14.0" layoutY="200.0" text="Description: " />
-      <Label fx:id="shelf" layoutX="143.0" layoutY="179.0" text="Shelf: " />
+      <Label fx:id="shelfReturnDate" layoutX="147.0" layoutY="172.0" />
       <Label fx:id="isAvailable" layoutX="133.0" layoutY="146.0" text="Is Available: " />
       <Label fx:id="description" alignment="TOP_LEFT" layoutX="14.0" layoutY="223.0" prefHeight="168.0" prefWidth="676.0" />
       <Button layoutX="633.0" layoutY="25.0" mnemonicParsing="false" onAction="#backBtn" text="Back" />
+      <Button fx:id="order" layoutX="630.0" layoutY="142.0" mnemonicParsing="false" onAction="#orderBtn" text="Order" />
+      <Label fx:id="bookOrdered" layoutX="555.0" layoutY="181.0" text="You ordered this book!" textFill="#b3271f" />
    </children>
 </AnchorPane>

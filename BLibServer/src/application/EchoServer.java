@@ -109,7 +109,7 @@ public class EchoServer extends AbstractServer {
 	                client.sendToClient(new Message(MessageType.disconnectFromServer, "You have been disconnected."));
 	                return;
 	            case getAllBooks:
-	                ArrayList<Book> allBooks = mysqlConnection.getAllValues("books");
+	                ArrayList<Book> allBooks = mysqlConnection.getAllBooks();
 	                messageFromServer = new Message(MessageType.getAllBooks, allBooks);
 	                client.sendToClient(messageFromServer);
 	                break;
@@ -118,6 +118,21 @@ public class EchoServer extends AbstractServer {
 	                messageFromServer = new Message(MessageType.getTop5LoanedBooks, topLoaned);
 	                client.sendToClient(messageFromServer);
 	                break;
+	            case getEarliestReturnDate:
+	            	String date = mysqlConnection.getEarliestReturnDate(message.getMessageData());
+	            	messageFromServer = new Message(MessageType.getEarliestReturnDate, date);
+	                client.sendToClient(messageFromServer);
+	            	break;
+	            case orderBook:
+	            	boolean order = mysqlConnection.orderBook(message.getMessageData());
+	            	messageFromServer = new Message(MessageType.orderBook, order);
+	                client.sendToClient(messageFromServer);
+	            	break;
+	            case checkOderBook:
+	            	boolean ordered = mysqlConnection.checkOrderedBook(message.getMessageData());
+	            	messageFromServer = new Message(MessageType.checkOderBook, ordered);
+	                client.sendToClient(messageFromServer);
+	            	break;
 	        }
 	    } catch (IOException e) {
 	        System.err.println("IOException while handling message: " + e.getMessage());

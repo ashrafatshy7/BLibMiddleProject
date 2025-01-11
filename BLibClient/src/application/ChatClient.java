@@ -3,6 +3,7 @@ package application;
 import ocsf.client.*;
 
 import common.ChatIF;
+import gui.bounderies.BookDetailsFrameController;
 import gui.bounderies.ClientFrameController;
 import gui.bounderies.HomeFrameController;
 import gui.bounderies.SeeAllFrameController;
@@ -35,6 +36,7 @@ public class ChatClient extends AbstractClient {
 	private ClientFrameController clientFrameController;
 	private HomeFrameController homeFrameController;
 	private SeeAllFrameController seeAllFrameController;
+	private BookDetailsFrameController bookDetailsFrameController;
 
 	/**
 	 * The interface type variable. It allows the implementation of the display
@@ -70,6 +72,10 @@ public class ChatClient extends AbstractClient {
 
 	public void setHomeFrameController(HomeFrameController homeFrameController) {
 		this.homeFrameController = homeFrameController;
+	}
+	
+	public void setBookDetailsFrameController(BookDetailsFrameController bookDetailsFrameController) {
+		this.bookDetailsFrameController = bookDetailsFrameController;
 	}
 
 	/**
@@ -108,6 +114,43 @@ public class ChatClient extends AbstractClient {
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
+			break;
+		case getEarliestReturnDate:
+			try {
+				String date = (String) message.getMessageData();
+				if (bookDetailsFrameController != null) {
+					bookDetailsFrameController.setEarliestReturnDate(date);
+                } else {
+                    System.err.println("bookDetailsFrameController is not set in ChatClient.");
+                }
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+			break;
+		case orderBook:
+			try {
+				boolean ordered = (boolean) message.getMessageData();
+				if (bookDetailsFrameController != null) {
+					bookDetailsFrameController.setAlreadyOrdered(ordered);
+                } else {
+                    System.err.println("bookDetailsFrameController is not set in ChatClient.");
+                }
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+			break;
+		case checkOderBook:
+			try {
+				boolean ordered = (boolean) message.getMessageData();
+				if (bookDetailsFrameController != null) {
+					bookDetailsFrameController.setAlreadyOrdered(ordered);
+                } else {
+                    System.err.println("bookDetailsFrameController is not set in ChatClient.");
+                }
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+			break;
 		}
 	}
 
@@ -119,7 +162,7 @@ public class ChatClient extends AbstractClient {
 
 	public void handleMessageFromClientUI(Object obj) {
 		try {
-			openConnection();// in order to send more than one message
+			openConnection();
 			awaitResponse = true;
 			sendToServer(obj);
 			// wait for response

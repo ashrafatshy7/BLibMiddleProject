@@ -105,7 +105,7 @@ public class SeeAllFrameController {
 		try {
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/gui/bounderies/SeeAllFrame.css").toExternalForm());
-			primaryStage.setTitle("Search A Book");
+			primaryStage.setTitle("Search a book");
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			
@@ -151,52 +151,36 @@ public class SeeAllFrameController {
 	}
 
 	private void booksResultPanel(ArrayList<Book> books) {
-		booksPanel.getChildren().clear();
+        booksPanel.getChildren().clear();
 
-		for (Book book : books) {
-			// Create the ImageView for the book cover
-			ImageView imageView = new ImageView(book.getImage());
-			imageView.setFitWidth(115);
-			imageView.setFitHeight(182);
-			imageView.setPreserveRatio(true);
+        for (Book book : books) {
+            ImageView imageView = new ImageView(book.getImage());
+            imageView.setFitWidth(115);
+            imageView.setFitHeight(182);
+            imageView.setPreserveRatio(true);
 
-			// Create a Button that combines the image and title
-			Button bookButton = new Button(book.getTitle());
-			bookButton.setMaxWidth(imageView.getFitWidth());
-			bookButton.setGraphic(imageView);
-			bookButton.setContentDisplay(ContentDisplay.TOP); // Image on top, text below
-			bookButton.getStyleClass().add("clear-button");
+            Button bookButton = new Button(book.getTitle());
+            bookButton.setMaxWidth(imageView.getFitWidth());
+            bookButton.setGraphic(imageView);
+            bookButton.setContentDisplay(ContentDisplay.TOP);
+            bookButton.getStyleClass().add("clear-button");
 
-			bookButton.setOnAction(event -> {
-				 try {
-                     ((Node) event.getSource()).getScene().getWindow().hide();
-                     Stage primaryStage = new Stage();
-                     
-                     // Load FXML
-                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/BookDetailsFrame.fxml"));
-                     Parent root = loader.load();
+            bookButton.setOnAction(event -> {
+                try {
+                    Stage primaryStage = new Stage();
+                    BookDetailsFrameController bookDetails = new BookDetailsFrameController();
+                    bookDetails.setBook(book);
+                    bookDetails.setSource("SeeAllFrameController");
+                    bookDetails.start(primaryStage);
+                    ((Node) event.getSource()).getScene().getWindow().hide();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
 
-                     // Get the controller and set properties
-                     BookDetailsFrameController controller = loader.getController();
-                     controller.setSource("SeeAllFrameController"); // Set the source appropriately
-                     controller.setBook(book);
-
-                     // Set up the scene
-                     Scene scene = new Scene(root);
-                     scene.getStylesheets().add(getClass().getResource("/gui/bounderies/BookDetailsFrame.css").toExternalForm());
-                     primaryStage.setTitle("Book Details");
-                     primaryStage.setScene(scene);
-                     primaryStage.show();
-
-                 } catch (Exception e) {
-                     e.printStackTrace();
-                 }
-			});
-
-			// Add the button to the FlowPane
-			booksPanel.getChildren().add(bookButton);
-		}
-	}
+            booksPanel.getChildren().add(bookButton);
+        }
+    }
 
 	// Back Button Action
 	@FXML

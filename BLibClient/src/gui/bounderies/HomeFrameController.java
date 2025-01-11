@@ -180,11 +180,11 @@ public class HomeFrameController {
      */
     private void populateTopBooks(List<Book> topBooks) {
         Platform.runLater(() -> {
-            topBooksContainer.getChildren().clear(); // Clear existing content
+            topBooksContainer.getChildren().clear();
 
             for (Book book : topBooks) {
                 VBox bookBox = new VBox();
-                bookBox.setSpacing(5); 
+                bookBox.setSpacing(5);
                 ImageView imageView = new ImageView(book.getImage());
                 imageView.setFitWidth(109.0);
                 imageView.setFitHeight(182.0);
@@ -195,51 +195,15 @@ public class HomeFrameController {
                 bookName.setMaxWidth(109.0);
                 bookName.setStyle("-fx-alignment: center;");
 
-                imageView.setOnMouseClicked(event -> {
-                    try {
-                        ((Node) event.getSource()).getScene().getWindow().hide();
-                        Stage primaryStage = new Stage();
-                        
-                        // Load FXML
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/BookDetailsFrame.fxml"));
-                        Parent root = loader.load();
-
-                        // Get the controller and set properties
-                        BookDetailsFrameController controller = loader.getController();
-                        controller.setSource("HomeFrameController"); // Set the source appropriately
-                        controller.setBook(book);
-
-                        // Set up the scene
-                        Scene scene = new Scene(root);
-                        scene.getStylesheets().add(getClass().getResource("/gui/bounderies/BookDetailsFrame.css").toExternalForm());
-                        primaryStage.setTitle("Book Details");
-                        primaryStage.setScene(scene);
-                        primaryStage.show();
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
-
-                // Optionally, make the entire VBox clickable
                 bookBox.setOnMouseClicked(event -> {
                     try {
-                        ((Node) event.getSource()).getScene().getWindow().hide();
                         Stage primaryStage = new Stage();
-
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/BookDetailsFrame.fxml"));
-                        Parent root = loader.load();
-
-                        BookDetailsFrameController controller = loader.getController();
-                        controller.setSource("HomeFrameController"); // Set the source appropriately
-                        controller.setBook(book);
-
-                        Scene scene = new Scene(root);
-                        scene.getStylesheets().add(getClass().getResource("/gui/bounderies/BookDetailsFrame.css").toExternalForm());
-                        primaryStage.setTitle("Book Details");
-                        primaryStage.setScene(scene);
-                        primaryStage.show();
-
+                        BookDetailsFrameController bookDetails = new BookDetailsFrameController();
+                        bookDetails.setBook(book);
+                        bookDetails.setSource("HomeFrameController");
+                        bookDetails.start(primaryStage);
+                        
+                        ((Node) event.getSource()).getScene().getWindow().hide();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

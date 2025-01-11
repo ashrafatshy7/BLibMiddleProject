@@ -20,6 +20,7 @@ public class Book implements Serializable {
     private int availableCopies;
     private byte[] imageBytes;
     private transient Image image;
+    private List<String> shelfs;
     private List<Loan> loan;
     private List<Reservation> reservation;
 
@@ -32,6 +33,7 @@ public class Book implements Serializable {
     this.description = description;
     this.availableCopies = availableCopies;
     this.imageBytes = imageBytes;
+    this.shelfs = new ArrayList<>();
     this.loan = new ArrayList<>();
     this.reservation = new ArrayList<>();
     if (imageBytes != null) {
@@ -64,7 +66,6 @@ public class Book implements Serializable {
         }
     }
     
-    
     private void loadDefaultImage() {
         try {
             this.image = new Image(getClass().getResourceAsStream("../1003w-QHBKwQnsgzs.png"));
@@ -83,6 +84,9 @@ public class Book implements Serializable {
         }
         return image;
     }
+    
+    
+    
 
     // Getters and Setters
     public String getBarcode() {
@@ -91,6 +95,10 @@ public class Book implements Serializable {
 
     public void setBarcode(String barcode) {
         this.barcode = barcode;
+    }
+    
+    public List<String> getShelfs(){
+    	return shelfs;
     }
 
     public String getTitle() {
