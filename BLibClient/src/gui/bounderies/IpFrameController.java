@@ -59,8 +59,10 @@ public class IpFrameController {
 		if (ClientUI.chat != null) {
 			Stage primaryStage = new Stage();
 			((Node) event.getSource()).getScene().getWindow().hide();
-			HomeFrameController homePage = new HomeFrameController();
-			homePage.start(primaryStage);
+			
+			LoginFrameController login = new LoginFrameController();
+			login.start(primaryStage);
+
 		} else
 			showErrorAlert("client is null");
 	}

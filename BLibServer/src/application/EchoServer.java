@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import enteties.User;
+import message.Message;
+import message.MessageType;
 import ocsf.server.*;
 
 /**
@@ -104,55 +107,42 @@ public class EchoServer extends AbstractServer
    * @param 
    */
   public void handleMessageFromClient(Object msg, ConnectionToClient client) {
-	    String message = (String) msg;
-	    System.out.println(message);
+	  
 	    
-	    if ("QUIT".equalsIgnoreCase(message.trim())) {
-	        clientDisconnected(client);
-	        try {
-	            client.sendToClient("");
-	        } catch (IOException e) {
-	            e.printStackTrace();
+	    try {
+	        Message message = (Message) msg;
+	        MessageType messageType = message.getMessageType();
+	        Message messageFromServer = null;
+	        System.out.println("Message arrived to server: " + messageType);
+	    
+	        switch (messageType) {
+	        case login:
+	        	User user = mysqlConnection.login(message.getMessageData());
+	        	messageFromServer = new Message(MessageType.login, user);
+                client.sendToClient(messageFromServer);
+	        	break;
+	        	
 	        }
-	        return; 
+	    
+	    
+	    
+	    } catch (IOException e) {
+	        System.err.println("IOException while handling message: " + e.getMessage());
+	        e.printStackTrace();
+	    } catch (Exception e) {
+	        System.err.println("Unexpected exception while handling message: " + e.getMessage());
+	        e.printStackTrace();
 	    }
 	    
-	    ArrayList<String> allData = new ArrayList<>(Arrays.asList(message.split(" ")));
-	    if (allData.get(0).equals("getAllValues")) {
-	        String tableName = allData.get(1);
-
-	        ArrayList<Map<String, Object>> tableData = mysqlConnection.getAllValues(tableName);
-	        HashMap<String, Object> response = new HashMap<>();
-	        response.put("operation", "getAll"+tableName);
-	        response.put("data", tableData);
-
-	        try {
-	            client.sendToClient(response);
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    else if(allData.get(0).equals("update")) {
-	    	ArrayList<String> updatedData = new ArrayList<String>();
-	    	for(int i=1; i<allData.size(); i++) {
-	    		if(allData.get(1).equals("subscribers") && allData.get(i).equals("phoneNumber")) 
-	    			updatedData.add("subscriber_phone_number");
-	    		else if(allData.get(1).equals("subscribers") && allData.get(i).equals("email"))
-	    			updatedData.add("subscriber_email");
-	    		else updatedData.add(allData.get(i));
-	    	}
-            mysqlConnection.updateValues(updatedData);
-            ArrayList<Map<String, Object>> tableData = mysqlConnection.getAllValues(updatedData.get(0));
-	        
-	        try {
-	        	HashMap<String, Object> response = new HashMap<>();
-		        response.put("operation", "getAllSubscribers");
-		        response.put("data", tableData);
-	            client.sendToClient(response);
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	    }
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	
 	}
   
 

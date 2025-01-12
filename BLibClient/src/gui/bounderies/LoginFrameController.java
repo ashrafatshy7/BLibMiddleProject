@@ -1,7 +1,11 @@
 package gui.bounderies;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import application.ChatClient;
+import application.ClientUI;
+import enteties.User;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,6 +18,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
+import message.Message;
+import message.MessageType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -21,6 +27,7 @@ import javafx.scene.control.TextField;
 /*import javafx.stage.Stage;
 import javafx.event.ActionEvent;*/
 public class LoginFrameController {
+	private ChatClient chatClient;
 	
 	    @FXML
 	    private Label LoginLabel;
@@ -68,28 +75,53 @@ public class LoginFrameController {
 	        });
 	    }
 	    
+	    
+	    public void setUser(User user) {
+	    	if(user != null) {
+	    		ClientUI.user = user;
+	    		System.out.println(user.getClass());
+	    	}
+	    	else {
+	    		System.out.println("User Not Found");
+	    	}
+	    	
+	    }
+	    
+	    public LoginFrameController() {
+			chatClient = ClientUI.chat.getClient();
+		}
+	    
+	    public void setChatClient(ChatClient chatClient) {
+			this.chatClient = chatClient;
+			this.chatClient.setLoginFrameController(this);
+		}
+	    
 	   
 	    public void handleLoginButtonAction(ActionEvent event) throws Exception {
 	    	
-	     String Email = emailField.getText();
+	     String email = emailField.getText();
  		 String password = passwordField.getText();
 
-        if (Email.isEmpty())
+        if (email.isEmpty())
         {
         	errorLabel.setVisible(true);
+        	
             if (!emailField.getStyleClass().contains("invalid-border")) 
             {
             	emailField.getStyleClass().add("invalid-border");
+            	
             }
+            return;
 
         }
-        else if (!isValidEmail(Email)) 
+        else if (!isValidEmail(email)) 
         {
         	EmailAddresserrorLabel.setVisible(true);
             if (!emailField.getStyleClass().contains("invalid-border"))
             {
                 emailField.getStyleClass().add("invalid-border");
             }
+            return;
         }
         else if (password.isEmpty()) {
         	errorLabel.setVisible(true);
@@ -97,8 +129,15 @@ public class LoginFrameController {
              {
                  passwordField.getStyleClass().add("invalid-border");
              }
+        	 return;
         	
         }
+        
+        ArrayList<String> login = new ArrayList<>();
+        login.add(email);
+        login.add(password);
+        Message sendToServer = new Message(MessageType.login, login);
+        ClientUI.chat.accept(sendToServer);
         
 
         // Check credentials (replace this with actual database validation)\\\ צריך חיבור לדאטא 
@@ -150,6 +189,14 @@ public class LoginFrameController {
 	            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/LoginFrame.fxml"));
 	            Parent root = loader.load();
 	            LoginFrameController controller = loader.getController();
+	            
+	            if (this.chatClient != null) {
+					controller.setChatClient(this.chatClient);
+				} else {
+					// Handle the case where chatClient is null
+					System.err.println("ChatClient is not initialized.");
+				}
+	            
 	            Scene scene = new Scene(root);
 	            scene.getStylesheets().add(getClass().getResource("/gui/bounderies/LoginFrame.css").toExternalForm());
 	            primaryStage.setTitle("Client");

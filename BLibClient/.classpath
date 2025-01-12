@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/LibericaJDK-17-Full"/>
+	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.base.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.controls.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.fxml.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.graphics.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.media.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.swing.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.web.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx-swt.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="/OCSF"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

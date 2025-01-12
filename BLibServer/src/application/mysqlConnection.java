@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import enteties.Librarian;
+import enteties.Subscriber;
+import enteties.User;
+
 
 public class mysqlConnection {
 	
@@ -44,6 +48,73 @@ public class mysqlConnection {
             System.out.println("VendorError: " + ex.getErrorCode());
             }
    	}
+	
+	
+	
+	
+	
+	
+	public static User login(Object message) {
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    User user = null; // Assuming a User class exists to map the result
+	    ArrayList<String> loginDetails = (ArrayList<String>) message;
+
+	    String email = loginDetails.get(0);
+	    String password = loginDetails.get(1);
+
+	    try {
+	        String query = "SELECT * FROM users WHERE email = ? AND password = ?";
+	        
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, email);
+	        pstmt.setString(2, password);
+
+	        rs = pstmt.executeQuery();
+	        
+	        
+	      
+	        if (rs.next()) {
+	        	
+	        	String type = rs.getString("type");
+	        	System.out.println(type);
+	        	if(type.equals("Subscriber")) {
+	        		user = new Subscriber(rs.getString("id"), rs.getString("username"), rs.getString("phoneNumber"), rs.getString("email"));
+	        	}else if(type.equals("Librarian")) {
+	        		user = new Librarian(rs.getString("id"), rs.getString("username"), rs.getString("phoneNumber"), rs.getString("email"));
+	        	}
+	        	
+	        	
+	        }
+	        
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        // Close the ResultSet and PreparedStatement
+	        try {
+	            if (rs != null) rs.close();
+	        } catch (SQLException se) {
+	            se.printStackTrace();
+	        }
+	        try {
+	            if (pstmt != null) pstmt.close();
+	        } catch (SQLException se) {
+	            se.printStackTrace();
+	        }
+	    }
+	    System.out.println(user);
+	    return user; 
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	// subscribers
