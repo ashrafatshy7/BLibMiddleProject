@@ -1,13 +1,14 @@
 package enteties;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 
-public class LoanHistory {
+public class Loan implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private String bookTitle;
 	private String borrowDate;
 	private String returnDate;
 
-	public LoanHistory(String bookTitle, String borrowDate, String returnDate) {
+	public Loan(String bookTitle, String borrowDate, String returnDate) {
 		this.bookTitle = bookTitle;
 		this.borrowDate = borrowDate;
 		this.returnDate = returnDate;
@@ -23,5 +24,9 @@ public class LoanHistory {
 
 	public String getReturnDate() {
 		return returnDate;
+	}
+
+	public void setReturnDate(String returnDate) {
+		this.returnDate = returnDate;
 	}
 }

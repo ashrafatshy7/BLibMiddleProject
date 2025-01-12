@@ -1,121 +1,175 @@
 package enteties;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
-public class Book {
-	private String ID;
-	private String title;
-	private String author;
-	private String subject;
-	private String description;
-	private String locationOnTheShelf;
-	private boolean isAvailable;
-	private int availableCopies;
-	private List<LoanHistory> loan;
-	private List<Reservation> reservation;
 
-	// Constructor
-	public Book(String ID, String title, String author, String subject, String description, String locationOnTheShelf,
-			boolean isAvailable, int availableCopies, List<LoanHistory> loan, List<Reservation> reservation) {
-		this.ID = ID;
-		this.title = title;
-		this.author = author;
-		this.subject = subject;
-		this.description = description;
-		this.locationOnTheShelf = locationOnTheShelf;
-		this.isAvailable = isAvailable;
-		this.availableCopies = availableCopies;
-		this.loan = loan;
-		this.reservation = reservation;
-	}
+import javafx.scene.image.Image;
 
-	// Getters and Setters
-	public String getID() {
-		return ID;
-	}
+public class Book implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
+    private String barcode;
+    private String title;
+    private String author;
+    private String category;
+    private String description;
+    private int availableCopies;
+    private byte[] imageBytes;
+    private transient Image image;
+    private List<Loan> loan;
+    private List<Reservation> reservation;
 
-	public void setID(String ID) {
-		this.ID = ID;
-	}
+    // Constructor
+    public Book(String barcode, String title, String author, String category, String description, int availableCopies, byte[] imageBytes) {
+    this.barcode = barcode;
+    this.title = title;
+    this.author = author;
+    this.category = category;
+    this.description = description;
+    this.availableCopies = availableCopies;
+    this.imageBytes = imageBytes;
+    this.loan = new ArrayList<>();
+    this.reservation = new ArrayList<>();
+    if (imageBytes != null) {
+        try (InputStream is = new ByteArrayInputStream(imageBytes)) {
+            this.image = new Image(is); // JavaFX image
+        } catch (Exception e) {
+        	loadDefaultImage();
+        }
+    } else {
+        loadDefaultImage();
+    }
+}
+    
+    
+    public byte[] getImageBytes() {
+        return imageBytes;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    // Setter for imageBytes (if needed)
+    public void setImageBytes(byte[] imageBytes) {
+        this.imageBytes = imageBytes;
+        if (imageBytes != null) {
+            try (InputStream is = new ByteArrayInputStream(imageBytes)) {
+                this.image = new Image(is);
+            } catch (Exception e) {
+                loadDefaultImage();
+            }
+        } else {
+            loadDefaultImage();
+        }
+    }
+    
+    
+    private void loadDefaultImage() {
+        try {
+            this.image = new Image(getClass().getResourceAsStream("../1003w-QHBKwQnsgzs.png"));
+        } catch (Exception e) {
+            System.err.println("Failed to load default book image: " + e.getMessage());
+        }
+    }
+    
+    public Image getImage() {
+        if (image == null && imageBytes != null) {
+            try (InputStream is = new ByteArrayInputStream(imageBytes)) {
+                this.image = new Image(is);
+            } catch (Exception e) {
+                loadDefaultImage();
+            }
+        }
+        return image;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    // Getters and Setters
+    public String getBarcode() {
+        return barcode;
+    }
 
-	public String getAuthor() {
-		return author;
-	}
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
 
-	public void setAuthor(String author) {
-		this.author = author;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public String getSubject() {
-		return subject;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
+    public String getAuthor() {
+        return author;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+    
+    public String getCategory() {
+        return category;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setCategory(String category) {
+        this.category = category;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getLocationOnTheShelf() {
-		return locationOnTheShelf;
-	}
 
-	public void setLocationOnTheShelf(String locationOnTheShelf) {
-		this.locationOnTheShelf = locationOnTheShelf;
-	}
+    public int getAvailableCopies() {
+        return availableCopies;
+    }
 
-	public boolean isAvailable() {
-		return isAvailable;
-	}
+    public void setAvailableCopies(int availableCopies) {
+        this.availableCopies = availableCopies;
+    }
 
-	public void setAvailable(boolean available) {
-		isAvailable = available;
-	}
+    public List<Loan> getLoan() {
+        return loan;
+    }
 
-	public int getAvailableCopies() {
-		return availableCopies;
-	}
+    public void setLoan(List<Loan> loan) {
+        this.loan = loan;
+    }
+    
+    public void addLoan(Loan loan) {
+        this.loan.add(loan);
+    }
 
-	public void setAvailableCopies(int availableCopies) {
-		this.availableCopies = availableCopies;
-	}
+    public List<Reservation> getReservation() {
+        return reservation;
+    }
 
-	public List<LoanHistory> getLoan() {
-		return loan;
-	}
+    public void setReservation(List<Reservation> reservation) {
+        this.reservation = reservation;
+    }
+    
+    public void addReservation(Reservation reservation) {
+        this.reservation.add(reservation);
+    }
 
-	public void setLoan(List<LoanHistory> loan) {
-		this.loan = loan;
-	}
-
-	public List<Reservation> getReservation() {
-		return reservation;
-	}
-
-	public void setReservation(List<Reservation> reservation) {
-		this.reservation = reservation;
-	}
-
-	// Override toString method
-	@Override
-	public String toString() {
-		return "Book{" + "ID='" + ID + '\'' + ", title='" + title + '\'' + ", author='" + author + '\'' + ", subject='"
-				+ subject + '\'' + ", description='" + description + '\'' + ", locationOnTheShelf='"
-				+ locationOnTheShelf + '\'' + ", isAvailable=" + isAvailable + ", availableCopies=" + availableCopies
-				+ ", loan=" + loan + ", reservation=" + reservation + '}';
-	}
+    // Override toString method
+    @Override
+    public String toString() {
+        return "Book{" +
+                "barcode='" + barcode + '\'' +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", category='" + category + '\'' +
+                ", description='" + description + '\'' +
+                ", availableCopies=" + availableCopies +
+                ", loan=" + loan +
+                ", reservation=" + reservation +
+                '}';
+    }
 }

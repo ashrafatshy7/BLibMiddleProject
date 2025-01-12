@@ -2,6 +2,8 @@ package application;
 
 import java.io.*;
 import java.net.InetAddress;
+import message.Message;
+import message.MessageType;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import enteties.Book;
 import ocsf.server.*;
 
 /**
@@ -94,111 +97,132 @@ public class EchoServer extends AbstractServer {
 	 * @param
 	 */
 	public void handleMessageFromClient(Object msg, ConnectionToClient client) {
-		String message = (String) msg;
+		try {
+			Message message = (Message) msg;
+			MessageType messageType = message.getMessageType();
+			Message messageFromServer = null;
 
-		if ("QUIT".equalsIgnoreCase(message.trim())) {
-			clientDisconnected(client);
-			try {
-				client.sendToClient("");
-			} catch (IOException e) {
-				e.printStackTrace();
+			switch (messageType) {
+			case disconnectFromServer:
+				clientDisconnected(client);
+				client.sendToClient(new Message(MessageType.disconnectFromServer, "You have been disconnected."));
+				return;
+			case cardNumber:
+				Map<String, Object> cardDetailsIfExists = mysqlConnection
+						.getCardDetailsIfExists(message.getMessageData().toString());
+				messageFromServer = new Message(MessageType.cardNumber, cardDetailsIfExists);
+
+				client.sendToClient(messageFromServer);
+				break;
+
+			case updateEmailAndPhone:
+				// Extract the required data
+				ArrayList<String> allData = new ArrayList<>(
+						Arrays.asList(((String) message.getMessageData()).split(" ")));
+				String email = allData.get(0);
+				String phoneNumber = allData.get(1);
+				String cardNum = allData.get(2); // Card number from the client data
+
+				// Update the subscriber's email and phone number in the database
+				boolean isUpdated = mysqlConnection.updateSubscriberEmailAndPhoneNumber(email, phoneNumber, cardNum);
+
+				// Populate the response with operation result
+
+				Message isUpdatedMessage = new Message(MessageType.updateEmailAndPhone, isUpdated);
+
+				// Send the response back to the client
+				try {
+					client.sendToClient(isUpdatedMessage);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				break;
+			case getAllBooks:
+				break;
+			case getTop5LoanedBooks:
+				break;
+			default:
+				break;
+
 			}
-			return;
+		} catch (IOException e) {
+			System.err.println("IOException while handling message: " + e.getMessage());
+			e.printStackTrace();
+		} catch (Exception e) {
+			System.err.println("Unexpected exception while handling message: " + e.getMessage());
+			e.printStackTrace();
 		}
 
-		ArrayList<String> allData = new ArrayList<>(Arrays.asList(message.split(" ")));
-
-		if (allData.get(0).equals("getAllValues")) {
-			String tableName = allData.get(1);
-
-			ArrayList<Map<String, Object>> tableData = mysqlConnection.getAllValues(tableName);
-			HashMap<String, Object> response = new HashMap<>();
-			response.put("operation", "getAllSubscribers");
-			response.put("data", tableData);
-
-			try {
-				client.sendToClient(response);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else if (allData.get(0).equals("update")) {
-			ArrayList<String> updatedData = new ArrayList<String>();
-			for (int i = 1; i < allData.size(); i++) {
-				if (allData.get(1).equals("subscribers") && allData.get(i).equals("phoneNumber"))
-					updatedData.add("subscriber_phone_number");
-				else if (allData.get(1).equals("subscribers") && allData.get(i).equals("email"))
-					updatedData.add("subscriber_email");
-				else
-					updatedData.add(allData.get(i));
-			}
-			mysqlConnection.updateValues(updatedData);
-			ArrayList<Map<String, Object>> tableData = mysqlConnection.getAllValues(updatedData.get(0));
-
-			try {
-				HashMap<String, Object> response = new HashMap<>();
-				response.put("operation", "getAllSubscribers");
-				response.put("data", tableData);
-				client.sendToClient(response);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		else if (allData.get(0).equals("cardDetails")) {
-			String cardNum = allData.get(1);
-
-			// Check if the card exists in the database and retrieve the details if it does
-			Map<String, Object> cardDetailsIfExists = mysqlConnection.getCardDetailsIfExists(cardNum);
-
-			// Prepare a response to send back to the client
-			HashMap<String, Object> response = new HashMap<>();
-
-			// Check if the card exists based on the "exists" key in the map
-			boolean exists = (boolean) cardDetailsIfExists.get("exists");
-
-			// Add the "exists" value at the beginning of the response
-			response.put("operation", "cardExists");
-			response.put("exists", exists);
-
-			if (exists) {
-				response.put("cardDetails", cardDetailsIfExists);
-			} else {
-				response.put("cardDetails", null); // No details to return if the card doesn't exist
-			}
-
-			System.out.println("EchoServer: Response = " + response.toString());
-
-			// Send the response back to the client
-			try {
-				client.sendToClient(response);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		else if ("emailAndPhone".equals(allData.get(0))) {
-			// Extract the required data
-			String email = allData.get(1);
-			String phoneNumber = allData.get(2);
-			String cardNum = allData.get(3); // Card number from the client data
-
-			// Prepare a response to send back to the client
-			Map<String, Object> response = new HashMap<>();
-
-			// Update the subscriber's email and phone number in the database
-			boolean isUpdated = mysqlConnection.updateSubscriberEmailAndPhoneNumber(email, phoneNumber, cardNum);
-
-			// Populate the response with operation result
-			response.put("operation", "updateEmailAndPhone");
-			response.put("success", isUpdated);
-
-			// Send the response back to the client
-			try {
-				client.sendToClient(response);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+//		String message = (String) msg;
+//
+//		if ("QUIT".equalsIgnoreCase(message.trim())) {
+//			clientDisconnected(client);
+//			try {
+//				client.sendToClient("");
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//			return;
+//		}
+//
+//		ArrayList<String> allData = new ArrayList<>(Arrays.asList(message.split(" ")));
+//
+//
+//		else if (allData.get(0).equals("cardDetails")) {
+//			String cardNum = allData.get(1);
+//
+//			// Check if the card exists in the database and retrieve the details if it does
+//			Map<String, Object> cardDetailsIfExists = mysqlConnection.getCardDetailsIfExists(cardNum);
+//
+//			// Prepare a response to send back to the client
+//			HashMap<String, Object> response = new HashMap<>();
+//
+//			// Check if the card exists based on the "exists" key in the map
+//			boolean exists = (boolean) cardDetailsIfExists.get("exists");
+//
+//			// Add the "exists" value at the beginning of the response
+//			response.put("operation", "cardExists");
+//			response.put("exists", exists);
+//
+//			if (exists) {
+//				response.put("cardDetails", cardDetailsIfExists);
+//			} else {
+//				response.put("cardDetails", null); // No details to return if the card doesn't exist
+//			}
+//
+//			System.out.println("EchoServer: Response = " + response.toString());
+//
+//			// Send the response back to the client
+//			try {
+//				client.sendToClient(response);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//
+//		else if ("emailAndPhone".equals(allData.get(0))) {
+//			// Extract the required data
+//			String email = allData.get(1);
+//			String phoneNumber = allData.get(2);
+//			String cardNum = allData.get(3); // Card number from the client data
+//
+//			// Prepare a response to send back to the client
+//			Map<String, Object> response = new HashMap<>();
+//
+//			// Update the subscriber's email and phone number in the database
+//			boolean isUpdated = mysqlConnection.updateSubscriberEmailAndPhoneNumber(email, phoneNumber, cardNum);
+//
+//			// Populate the response with operation result
+//			response.put("operation", "updateEmailAndPhone");
+//			response.put("success", isUpdated);
+//
+//			// Send the response back to the client
+//			try {
+//				client.sendToClient(response);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
 
 //		else if ("updateReturnDate".equals(allData.get(0))) {
 //			System.out.println("echo server updateReturnDate in");

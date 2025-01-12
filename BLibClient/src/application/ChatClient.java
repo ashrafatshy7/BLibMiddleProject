@@ -6,6 +6,8 @@ import gui.bounderies.*;
 import common.ChatIF;
 import gui.bounderies.ClientFrameController;
 import javafx.application.Platform;
+import message.Message;
+import message.MessageType;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -71,69 +73,98 @@ public class ChatClient extends AbstractClient {
 	@SuppressWarnings("unchecked")
 	public void handleMessageFromServer(Object msg) {
 		awaitResponse = false;
-		HashMap<String, Object> response = (HashMap<String, Object>) msg;
 
-		String operation = (String) response.get("operation");
+		Message message = (Message) msg;
+		MessageType messageType = message.getMessageType();
 
-		if (operation.equals("getAllSubscribers")) {
-			Object data = response.get("data");
-			ArrayList<Map<String, Object>> rawRows = (ArrayList<Map<String, Object>>) data;
-			// Convert each row (Map<String,Object>) to a Subscriber object
-			ArrayList<Subscriber> subscribers = new ArrayList<>();
-			for (Map<String, Object> row : rawRows) {
+		switch (messageType) {
+		case getTop5LoanedBooks:
 
-				Subscriber sub = new Subscriber((String) row.get("subscriber_id"), (String) row.get("subscriber_name"),
-						(String) row.get("subscriber_phone_number"), (String) row.get("subscriber_email"),
-						(int) row.get("detailed_subscription_history"));
-				subscribers.add(sub);
-			}
+			break;
+		case getAllBooks:
+			break;
 
-			clientFrameController.getSubscribers(subscribers);
-		}
-
-		else if (operation.equals("cardExists")) {
-
-			System.out.println("chatClient recieved : " + response.get("cardDetails"));
-			// Handle the cardExists operation
-			boolean cardExists = (boolean) response.get("exists"); // Get the boolean value indicating if the card
-																	// exists
-			Map<String, Object> cardDetails = (Map<String, Object>) response.get("cardDetails"); // Get the card details
-																									// if they exist
+		case cardNumber:
+			HashMap<String, Object> response = (HashMap<String, Object>) ((Message) msg).getMessageData();
 
 			// Pass the data to the controller
 			if (subscriberCardDetailsController != null) {
-				subscriberCardDetailsController.cardExist(cardExists, cardDetails);
+				subscriberCardDetailsController.cardExist(response);
 			} else {
 				System.out.println("subscriberCardDetailsController is null.");
 			}
-		}
-
-		else if (operation.equals("updateEmailAndPhone")) {
+			break;
+		case updateEmailAndPhone:
 			// Get the boolean value indicating if the update was successful
-			boolean updateSuccessful = (boolean) response.get("success");
-
+			boolean isUpdateSuccessful = (boolean) message.getMessageData();
+			System.out.println("is update sussessss??? " + isUpdateSuccessful);
 			// Call the method btnUpdateDetailsClickedCheck with the result
 			if (subscriberCardDetailsController != null) {
-				subscriberCardDetailsController.btnUpdateDetailsClickedCheck(updateSuccessful);
+				subscriberCardDetailsController.btnUpdateDetailsClickedCheck(isUpdateSuccessful);
 			} else {
 				System.out.println("subscriberCardDetailsController is null.");
 			}
-		}
+			break;
 
-//		else if (operation.equals("updateReturnDates")) {
-//			System.out.println("in chatClient updateReturnDate");
+		}
+	}
+
+//	/**
+//	 * This method handles all data that comes in from the server.
+//	 *
+//	 * @param msg The message from the server.
+//	 */
+//	@SuppressWarnings("unchecked")
+//	public void handleMessageFromServer(Object msg) {
+//		awaitResponse = false;
+//		HashMap<String, Object> response = (HashMap<String, Object>) msg;
+//
+//		String operation = (String) response.get("operation");
+//
+//
+//		if (operation.equals("cardExists")) {
+//
+//			System.out.println("chatClient recieved : " + response.get("cardDetails"));
+//			// Handle the cardExists operation
+//			boolean cardExists = (boolean) response.get("exists"); // Get the boolean value indicating if the card
+//																	// exists
+//			Map<String, Object> cardDetails = (Map<String, Object>) response.get("cardDetails"); // Get the card details
+//																									// if they exist
+//
+//			// Pass the data to the controller
+//			if (subscriberCardDetailsController != null) {
+//				subscriberCardDetailsController.cardExist(cardExists, cardDetails);
+//			} else {
+//				System.out.println("subscriberCardDetailsController is null.");
+//			}
+//		}
+//
+//		else if (operation.equals("updateEmailAndPhone")) {
 //			// Get the boolean value indicating if the update was successful
 //			boolean updateSuccessful = (boolean) response.get("success");
 //
 //			// Call the method btnUpdateDetailsClickedCheck with the result
 //			if (subscriberCardDetailsController != null) {
-//				subscriberCardDetailsController.btnUpdateReturnDateCheck(updateSuccessful);
+//				subscriberCardDetailsController.btnUpdateDetailsClickedCheck(updateSuccessful);
 //			} else {
 //				System.out.println("subscriberCardDetailsController is null.");
 //			}
 //		}
-
-	}
+//
+////		else if (operation.equals("updateReturnDates")) {
+////			System.out.println("in chatClient updateReturnDate");
+////			// Get the boolean value indicating if the update was successful
+////			boolean updateSuccessful = (boolean) response.get("success");
+////
+////			// Call the method btnUpdateDetailsClickedCheck with the result
+////			if (subscriberCardDetailsController != null) {
+////				subscriberCardDetailsController.btnUpdateReturnDateCheck(updateSuccessful);
+////			} else {
+////				System.out.println("subscriberCardDetailsController is null.");
+////			}
+////		}
+//
+//	}
 
 	/**
 	 * This method handles all data coming from the UI
@@ -141,7 +172,7 @@ public class ChatClient extends AbstractClient {
 	 * @param message The message from the UI.
 	 */
 
-	public void handleMessageFromClientUI(String message) {
+	public void handleMessageFromClientUI(Object message) {
 		try {
 			openConnection();// in order to send more than one message
 			awaitResponse = true;

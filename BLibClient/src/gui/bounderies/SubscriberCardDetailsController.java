@@ -2,6 +2,9 @@ package gui.bounderies;
 
 import java.io.IOException;
 import javafx.util.converter.LocalDateStringConverter;
+import message.Message;
+import message.MessageType;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -14,7 +17,8 @@ import application.ChatClient;
 import application.ClientUI;
 import enteties.CardDetails;
 import enteties.IssueHistory;
-import enteties.LoanHistory;
+import enteties.Loan;
+import enteties.LoanHistoryRow;
 import enteties.Subscriber;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -79,16 +83,16 @@ public class SubscriberCardDetailsController {
 	private Label lblIssueHistory;
 
 	@FXML
-	private TableView<LoanHistory> tableLoanHistory;
+	private TableView<Loan> tableLoanHistory;
 
 	@FXML
-	private TableColumn<LoanHistory, String> colBookTitle;
+	private TableColumn<LoanHistoryRow, String> colBookTitle;
 
 	@FXML
-	private TableColumn<LoanHistory, LocalDate> colBorrowDate;
+	private TableColumn<LoanHistoryRow, LocalDate> colBorrowDate;
 
 	@FXML
-	private TableColumn<LoanHistory, LocalDate> colReturnDate;
+	private TableColumn<LoanHistoryRow, LocalDate> colReturnDate;
 
 	@FXML
 	private TableView<IssueHistory> tableIssuesHistory;
@@ -117,8 +121,10 @@ public class SubscriberCardDetailsController {
 	@FXML
 	private Label lblUpdateDateMessage;
 
-	private List<LoanHistory> loanHistoryList = new ArrayList<>();
+	private List<Loan> loanHistoryList = new ArrayList<>();
 	private List<IssueHistory> issueHistoryList = new ArrayList<>();
+	
+	private Map<String, Map<String, String>> changedLoantable = new HashMap<>();
 
 	public static String type = "subscriber";
 
@@ -127,23 +133,33 @@ public class SubscriberCardDetailsController {
 		// Hide all components
 		hideComponents();
 
+		// Configure table columns
 		colBookTitle.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
 		colBorrowDate.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
 		colReturnDate.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
 
-		// Enable editing for Return Date column
-		tableLoanHistory.setEditable(true);
-		colReturnDate.setEditable(true);
-
 		colIssueType.setCellValueFactory(new PropertyValueFactory<>("issueType"));
 		colIssueDate.setCellValueFactory(new PropertyValueFactory<>("issueDate"));
 		colIssueDescription.setCellValueFactory(new PropertyValueFactory<>("issueDescription"));
+
+
+		colReturnDate.setOnEditCommit(event -> {
+			LoanHistoryRow loanRow = event.getRowValue();
+			loanRow.setReturnDate(event.getNewValue());
+			
+			
+        });
 		
-		//
-		tfInsertCardNumber.getStylesheets().add("textField.css");
-		tfCardNumber.getStylesheets().add("textField.css");
-		tfUserName.getStylesheets().add("textField.css");
-		tfPhoneNumber.getStylesheets().add("textField.css");
+		
+		// tesxt field design
+		tfInsertCardNumber.getStylesheets().add("text-field");
+		tfInsertCardNumber.getStylesheets().add("text-field:focused");
+		tfCardNumber.getStylesheets().add("text-field");
+		tfCardNumber.getStylesheets().add("text-field:focused");
+		tfUserName.getStylesheets().add("text-field");
+		tfUserName.getStylesheets().add("text-field:focused");
+		tfPhoneNumber.getStylesheets().add("text-field");
+		tfPhoneNumber.getStylesheets().add("text-field:focused");
 
 	}
 
@@ -171,11 +187,14 @@ public class SubscriberCardDetailsController {
 			return;
 		}
 
-		String command = String.format("cardDetails %s", cardNumber);
-		ClientUI.chat.accept(command);
+		Message sendToServer = new Message(MessageType.cardNumber, cardNumber);
+		ClientUI.chat.accept(sendToServer);
 	}
 
-	public void cardExist(boolean cardExists, Map<String, Object> cardDetails) {
+	public void cardExist(Map<String, Object> cardDetails) {
+
+		HashMap<String, Object> response = (HashMap<String, Object>) cardDetails;
+		boolean cardExists = (boolean) response.get("exists");
 
 		// Use Platform.runLater to update the UI on the JavaFX Application Thread
 		Platform.runLater(() -> {
@@ -225,7 +244,7 @@ public class SubscriberCardDetailsController {
 						String returnDateStr = formatDate(loan.get("returnDate"));
 
 						tableLoanHistory.getItems()
-								.add(new LoanHistory((String) loan.get("bookTitle"), borrowDateStr, returnDateStr));
+								.add(new Loan((String) loan.get("bookTitle"), borrowDateStr, returnDateStr));
 					}
 				}
 
@@ -301,16 +320,11 @@ public class SubscriberCardDetailsController {
 		tfEmail.getStyleClass().remove("text-field-invalid");
 
 		// Create the command to send to the server
-		String command = String.format("emailAndPhone %s %s %s", email, phoneNumber, cardNumber);
+		String command = String.format("%s %s %s", email, phoneNumber, cardNumber);
 
 		// Send the command via ClientUI.chat
-		try {
-			ClientUI.chat.accept(command);
-		} catch (Exception e) {
-			lblPhoneNumberMessage.setText("Error connecting to the server.");
-			lblPhoneNumberMessage.setStyle("-fx-text-fill: red;");
-			e.printStackTrace();
-		}
+		Message sendToServer = new Message(MessageType.updateEmailAndPhone, command);
+		ClientUI.chat.accept(sendToServer);
 	}
 
 	// Helper method to validate email format
@@ -344,37 +358,13 @@ public class SubscriberCardDetailsController {
 		});
 	}
 
-//	@FXML
-//	private void btnUpdateDateClicked(ActionEvent event) {
-//		// Get the inserted new return date
-//		String newDate = colReturnDate.getText();
-//		String cardNum = tfCardNumber.getText();
-//		String borrowDate = BorrowDate.
-//		// Validate the date format (assuming it should follow the format "yyyy-MM-dd")
-//		if (!isValidDate(newDate)) {
-//			lblUpdateDateMessage.setVisible(true);
-//			lblUpdateDateMessage.setText("Invalid date format. Use yyyy-MM-dd.");
-//			lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
-//			return;
-//		} else {
-//			lblUpdateDateMessage.setText(""); // Clear any previous error message
-//		}
-//
-//		// Create the command to send to the server
-//		String command = String.format("updateReturnDate %s %s %s", newDate);
-//
-//		// Send the command via ClientUI.chat
-//		try {
-//			ClientUI.chat.accept(command);
-//		} catch (Exception e) {
-//			lblUpdateDateMessage.setText("Error connecting to the server.");
-//			lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
-//			e.printStackTrace();
-//		}
-//	}
+
 
 	@FXML
 	private void btnUpdateDateClicked(ActionEvent event) {
+		
+		
+		
 //	    // Get selected rows (from the table view)
 //	    ObservableList<TableViewData> selectedRows = tableView.getSelectionModel().getSelectedItems();
 //	    

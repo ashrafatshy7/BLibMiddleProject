@@ -70,6 +70,7 @@ public class ServerFrameController {
     		showClientsBtn.setDisable(true);
     		return;
     	}
+    	portTxt.setText("5555");
         String p= portTxt.getText();
         //check if the portTxt is not empty and contains only numbers.
         if(p.trim().isEmpty() || !p.trim().matches("\\d+")) {

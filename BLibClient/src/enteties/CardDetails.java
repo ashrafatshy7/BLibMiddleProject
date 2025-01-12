@@ -1,11 +1,15 @@
 package enteties;
 
+import java.io.Serializable;
+
 import javafx.collections.ObservableList;
 
-public class CardDetails {
+public class CardDetails implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private String subscriberCardId;
-	public CardDetails(String subscriberCardId, String userName, String phoneNumber,
-			ObservableList<LoanHistory> loanHistory, ObservableList<IssueHistory> issuesHistory) {
+
+	public CardDetails(String subscriberCardId, String userName, String phoneNumber, ObservableList<Loan> loanHistory,
+			ObservableList<IssueHistory> issuesHistory) {
 		super();
 		this.subscriberCardId = subscriberCardId;
 		this.userName = userName;
@@ -24,7 +28,7 @@ public class CardDetails {
 
 	private String userName;
 	private String phoneNumber;
-	private ObservableList<LoanHistory> loanHistory;
+	private ObservableList<Loan> loanHistory;
 	private ObservableList<IssueHistory> issuesHistory;
 
 	// Getters and setters for the fields
@@ -44,11 +48,11 @@ public class CardDetails {
 		this.phoneNumber = phoneNumber;
 	}
 
-	public ObservableList<LoanHistory> getLoanHistory() {
+	public ObservableList<Loan> getLoanHistory() {
 		return loanHistory;
 	}
 
-	public void setLoanHistory(ObservableList<LoanHistory> loanHistory) {
+	public void setLoanHistory(ObservableList<Loan> loanHistory) {
 		this.loanHistory = loanHistory;
 	}
 

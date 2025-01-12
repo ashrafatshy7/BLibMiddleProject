@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import com.mysql.cj.protocol.Message;
+
+import message.MessageType;
+
 public class mysqlConnection {
 
 	private static Connection conn;
@@ -185,6 +189,7 @@ public class mysqlConnection {
 		}
 	}
 
+
 	public static Map<String, Object> getCardDetailsIfExists(String cardNum) {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -192,7 +197,6 @@ public class mysqlConnection {
 
 		try {
 			// Step 1: Check if the cardNum exists
-			System.out.println("first enterance BUULULULULU");
 			String checkQuery = "SELECT COUNT(*) FROM users WHERE id = ?";
 			preparedStatement = conn.prepareStatement(checkQuery);
 			preparedStatement.setString(1, cardNum);
@@ -255,8 +259,6 @@ public class mysqlConnection {
 				}
 
 				result.put("loanHistory", loanHistory);
-
-				System.out.println("after loan history : " + result.toString());
 
 				resultSet.close();
 				preparedStatement.close();
@@ -335,8 +337,6 @@ public class mysqlConnection {
 		}
 	}
 
-
-
 	public static boolean updateReturnDate(String newReturnDate, String cardNum, String borrowDate) {
 		String query = "UPDATE loan SET returnDate = ? WHERE id = ? AND borrowDate = ?";
 		try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -350,39 +350,5 @@ public class mysqlConnection {
 			return false;
 		}
 	}
-
-
-
-//	{
-//	    "exists": true,
-//	    "cardNum": "12345",
-//	    "userName": "John Doe",
-//	    "phoneNumber": "123456789",
-//	    "email": "john.doe@example.com",
-//	    "loanHistory": [
-//	        {
-//	            "bookTitle": "Book A",
-//	            "returnDate": "2025-01-01",
-//	            "borrowDate": "2024-12-20"
-//	        },
-//	        {
-//	            "bookTitle": "Book B",
-//	            "returnDate": "2025-01-05",
-//	            "borrowDate": "2024-12-25"
-//	        }
-//	    ],
-//	    "issuesHistory": [
-//	        {
-//	            "issueType": "Late Return",
-//	            "issueDate": "2024-12-30",
-//	            "issueDescription": "Returned 5 days late."
-//	        },
-//	        {
-//	            "issueType": "Lost Book",
-//	            "issueDate": "2024-12-10",
-//	            "issueDescription": "Lost Book C."
-//	        }
-//	    ]
-//	}
 
 }
