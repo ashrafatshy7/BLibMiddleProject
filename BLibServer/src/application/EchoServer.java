@@ -103,6 +103,10 @@ public class EchoServer extends AbstractServer {
 			Message messageFromServer = null;
 
 			switch (messageType) {
+			case getAllBooks:
+				break;
+			case getTop5LoanedBooks:
+				break;
 			case disconnectFromServer:
 				clientDisconnected(client);
 				client.sendToClient(new Message(MessageType.disconnectFromServer, "You have been disconnected."));
@@ -137,10 +141,14 @@ public class EchoServer extends AbstractServer {
 					e.printStackTrace();
 				}
 				break;
-			case getAllBooks:
+
+			case updateReturnDate:
+				boolean isReturnDateUpdated = mysqlConnection.updateReturnDate(message.getMessageData());
+				messageFromServer = new Message(MessageType.updateReturnDate, isReturnDateUpdated);
+
+				client.sendToClient(messageFromServer);
 				break;
-			case getTop5LoanedBooks:
-				break;
+
 			default:
 				break;
 

@@ -189,7 +189,6 @@ public class mysqlConnection {
 		}
 	}
 
-
 	public static Map<String, Object> getCardDetailsIfExists(String cardNum) {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -209,7 +208,6 @@ public class mysqlConnection {
 			}
 
 			result.put("exists", exists); // Add the existence check to the result
-			
 
 			resultSet.close(); // Close previous resultSet
 			preparedStatement.close(); // Close previous preparedStatement
@@ -337,14 +335,39 @@ public class mysqlConnection {
 		}
 	}
 
-	public static boolean updateReturnDate(String newReturnDate, String cardNum, String borrowDate) {
-		String query = "UPDATE loan SET returnDate = ? WHERE id = ? AND borrowDate = ?";
+	public static boolean updateReturnDate(Object messageData) {
+		// Cast the messageData to the expected Map format
+		Map<String, String> temp = (Map<String, String>) messageData;
+
+		// Check if the map is empty
+		if (temp == null || temp.isEmpty()) {
+			return false;
+		}
+
+		// Query to update the return date based on the book title
+		String query = "UPDATE loan SET returnDate = ? WHERE bookTitle = ?";
+
 		try (PreparedStatement stmt = conn.prepareStatement(query)) {
-			stmt.setString(1, newReturnDate);
-			stmt.setString(2, cardNum);
-			stmt.setString(3, borrowDate);
-			int rowsUpdated = stmt.executeUpdate();
-			return rowsUpdated > 0;
+			// Iterate through the map entries
+			for (Map.Entry<String, String> entry : temp.entrySet()) {
+				System.out.println("book title and return date : " + entry.toString());
+				String bookTitle = entry.getKey(); // Get the book title (key)
+				String returnDate = entry.getValue(); // Get the return date (value)
+
+				// Set parameters in the prepared statement
+				stmt.setString(1, returnDate);
+				stmt.setString(2, bookTitle);
+
+				// Execute the update
+				int rowsUpdated = stmt.executeUpdate();
+				if (rowsUpdated == 0) {
+					System.err.println("Failed to update book: " + bookTitle);
+				} else {
+					System.out.println("Successfully updated book: " + bookTitle);
+				}
+			}
+
+			return true; // All updates completed successfully
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;

@@ -106,6 +106,16 @@ public class ChatClient extends AbstractClient {
 			}
 			break;
 
+		case updateReturnDate:
+			boolean isDateUpdated = (boolean) message.getMessageData();
+			// Pass the data to the controller
+			if (subscriberCardDetailsController != null) {
+				subscriberCardDetailsController.btnUpdateReturnDateCheck(isDateUpdated);
+			} else {
+				System.out.println("subscriberCardDetailsController is null.");
+			}
+			break;
+
 		}
 	}
 

@@ -29,4 +29,8 @@ public class Loan implements Serializable {
 	public void setReturnDate(String returnDate) {
 		this.returnDate = returnDate;
 	}
+
+	public void setBookTitle(String bookTitle) {
+		this.bookTitle = bookTitle;
+	}
 }

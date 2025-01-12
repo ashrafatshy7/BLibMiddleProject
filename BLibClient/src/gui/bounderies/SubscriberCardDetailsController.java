@@ -18,7 +18,6 @@ import application.ClientUI;
 import enteties.CardDetails;
 import enteties.IssueHistory;
 import enteties.Loan;
-import enteties.LoanHistoryRow;
 import enteties.Subscriber;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -86,13 +85,13 @@ public class SubscriberCardDetailsController {
 	private TableView<Loan> tableLoanHistory;
 
 	@FXML
-	private TableColumn<LoanHistoryRow, String> colBookTitle;
+	private TableColumn<Loan, String> colBookTitle;
 
 	@FXML
-	private TableColumn<LoanHistoryRow, LocalDate> colBorrowDate;
+	private TableColumn<Loan, String> colBorrowDate;
 
 	@FXML
-	private TableColumn<LoanHistoryRow, LocalDate> colReturnDate;
+	private TableColumn<Loan, String> colReturnDate;
 
 	@FXML
 	private TableView<IssueHistory> tableIssuesHistory;
@@ -101,7 +100,7 @@ public class SubscriberCardDetailsController {
 	private TableColumn<IssueHistory, String> colIssueType;
 
 	@FXML
-	private TableColumn<IssueHistory, LocalDate> colIssueDate;
+	private TableColumn<IssueHistory, String> colIssueDate;
 
 	@FXML
 	private TableColumn<IssueHistory, String> colIssueDescription;
@@ -123,10 +122,10 @@ public class SubscriberCardDetailsController {
 
 	private List<Loan> loanHistoryList = new ArrayList<>();
 	private List<IssueHistory> issueHistoryList = new ArrayList<>();
-	
-	private Map<String, Map<String, String>> changedLoantable = new HashMap<>();
 
-	public static String type = "subscriber";
+	private Map<String, String> updatedReturnDates = new HashMap<>();
+
+	public static String type = "Librarian";
 
 	@FXML
 	private void initialize() {
@@ -138,19 +137,26 @@ public class SubscriberCardDetailsController {
 		colBorrowDate.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
 		colReturnDate.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
 
+		colReturnDate.setCellFactory(TextFieldTableCell.forTableColumn());
+
 		colIssueType.setCellValueFactory(new PropertyValueFactory<>("issueType"));
 		colIssueDate.setCellValueFactory(new PropertyValueFactory<>("issueDate"));
 		colIssueDescription.setCellValueFactory(new PropertyValueFactory<>("issueDescription"));
 
-
+		// Handle editing of the Return Date column
 		colReturnDate.setOnEditCommit(event -> {
-			LoanHistoryRow loanRow = event.getRowValue();
-			loanRow.setReturnDate(event.getNewValue());
-			
-			
-        });
-		
-		
+			Loan loanRow = event.getRowValue(); // Get the current row
+			String newReturnDate = event.getNewValue(); // Get the new value entered
+			String bookTitle = loanRow.getBookTitle(); // Get the book title for the row
+
+			// Update the Loan object
+			loanRow.setReturnDate(newReturnDate);
+
+			// Save the change to the map
+			updatedReturnDates.put(bookTitle, newReturnDate);
+
+		});
+
 		// tesxt field design
 		tfInsertCardNumber.getStylesheets().add("text-field");
 		tfInsertCardNumber.getStylesheets().add("text-field:focused");
@@ -358,60 +364,6 @@ public class SubscriberCardDetailsController {
 		});
 	}
 
-
-
-	@FXML
-	private void btnUpdateDateClicked(ActionEvent event) {
-		
-		
-		
-//	    // Get selected rows (from the table view)
-//	    ObservableList<TableViewData> selectedRows = tableView.getSelectionModel().getSelectedItems();
-//	    
-//	    // Get the new return date from the GUI (for example, a text field)
-//	    String newReturnDate = newReturnDateTextField.getText(); // assuming you have a TextField for input
-//	    
-//	    // Check if a new return date is entered
-//	    if (newReturnDate.isEmpty()) {
-//	        // Optionally, show an alert if no return date is entered
-//	        showAlert("Error", "Please enter a new return date.");
-//	        return;
-//	    }
-//	    
-//	    // Iterate through each selected row and update the return dates
-//	    for (TableViewData row : selectedRows) {
-//	        String cardNumber = row.getCardNumber();  // Get the card number from the row
-//	        String borrowDate = row.getBorrowDate();  // Get the borrow date from the row
-//	        
-//	        // Call the method to update the return date for this row
-//	        updateReturnDate(cardNumber, borrowDate, newReturnDate);
-//	    }
-//	    
-//	    // Optionally, show a success message
-//	    System.out.println("Updated return dates for selected rows.");
-//	}
-//
-//	// Method to update a single return date
-//	private void updateReturnDate(String cardNumber, String borrowDate, String newReturnDate) {
-//	    // Construct the update command or query
-//	    String command = String.format("updateReturnDate %s %s %s", cardNumber, borrowDate, newReturnDate);
-//	    
-//	    // Output the final command (you can send it to the server or process it here)
-//	    System.out.println(command);
-//	    
-//	    // For example, send the command to the server or process it
-//	    // sendCommandToServer(command);
-//	}
-//
-//	// Method to show an alert (optional)
-//	private void showAlert(String title, String message) {
-//	    Alert alert = new Alert(Alert.AlertType.ERROR);
-//	    alert.setTitle(title);
-//	    alert.setHeaderText(null);
-//	    alert.setContentText(message);
-//	    alert.showAndWait();
-	}
-
 	private boolean isValidDate(String date) {
 		// Validate the date format (yyyy-MM-dd)
 		if (date == null || date.isEmpty()) {
@@ -426,112 +378,57 @@ public class SubscriberCardDetailsController {
 			return false;
 		}
 	}
-//
-//	public void btnUpdateReturnDateCheck(boolean isUpdated) {
-//		Platform.runLater(() -> {
-//			if (isUpdated) {
-//				// Show success message in green
-//				lblUpdateDateMessage.setVisible(true);
-//				lblUpdateDateMessage.setText("Details updated successfully!");
-//				lblUpdateDateMessage.setStyle("-fx-text-fill: green;");
-//
-//			} else {
-//				// Show failure message in red
-//				lblUpdateDateMessage.setText("Failed to update details. Please try again.");
-//				lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
-//			}
-//		});
-//
-//	}
 
-//	@FXML
-//	private void btnUpdateDateClicked(ActionEvent event) {
-//	    // Get the selected loan history item
-//	    LoanHistory selectedLoan = tableLoanHistory.getSelectionModel().getSelectedItem();
-//
-//	    if (selectedLoan == null) {
-//	        lblUpdateDateMessage.setVisible(true);
-//	        lblUpdateDateMessage.setText("Please select a loan record to update the return date.");
-//	        lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
-//	        return;
-//	    }
-//
-//	    // Get the new return date entered by the user
-//	    String newDate = selectedLoan.getReturnDate();
-//
-//	    // Validate the new return date format
-//	    if (!isValidDate(newDate)) {
-//	        lblUpdateDateMessage.setVisible(true);
-//	        lblUpdateDateMessage.setText("Invalid date format. Use yyyy-MM-dd.");
-//	        lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
-//	        return;
-//	    } else {
-//	        lblUpdateDateMessage.setText(""); // Clear any previous error message
-//	    }
-//
-//	    // Extract other required details
-//	    String cardNum = tfCardNumber.getText();
-//	    String borrowDate = selectedLoan.getBorrowDate();
-//
-//	    // Create the command to send to the server
-//	    String command = String.format("updateReturnDate %s %s %s %s", cardNum, borrowDate, newDate, selectedLoan.getBookTitle());
-//
-//	    // Send the command via ClientUI.chat
-//	    try {
-//	        ClientUI.chat.accept(command);
-//	    } catch (Exception e) {
-//	        lblUpdateDateMessage.setText("Error connecting to the server.");
-//	        lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
-//	        e.printStackTrace();
-//	    }
-//	}
+	@FXML
+	private void btnUpdateDateClicked(ActionEvent event) {
+		// Get the current date
+		LocalDate currentDate = LocalDate.now();
 
-//	@FXML
-//	private void btnUpdateDateClicked(ActionEvent event) {
-//	    // Step 1: Get the card number from the TextField (tfCardNum)
-//	    String cardNumber = tfCardNum.getText(); // Replace with the actual TextField name
-//	    
-//	    // Step 2: Get selected rows from the TableView (representing borrow and return dates)
-//	    ObservableList<TableViewData> selectedRows = tableView.getSelectionModel().getSelectedItems();
-//	    
-//	    // Step 3: Get the new return date from the GUI (assuming you have a TextField for this input)
-//	    String newReturnDate = newReturnDateTextField.getText(); // Change this to your TextField name
-//	    
-//	    // Step 4: Validate the new return date input (check if it's not empty)
-//	    if (newReturnDate.isEmpty()) {
-//	        // If the new return date is empty, show an alert and exit
-//	        Alert alert = new Alert(Alert.AlertType.ERROR);
-//	        alert.setTitle("Error");
-//	        alert.setHeaderText(null);
-//	        alert.setContentText("Please enter a new return date.");
-//	        alert.showAndWait();
-//	        return;
-//	    }
-//	    
-//	    // Step 5: Loop through the selected rows and update the return date
-//	    for (TableViewData row : selectedRows) {
-//	        // Get borrow date from each selected row (we're not using card number from here)
-//	        String borrowDate = row.getBorrowDate(); // Assuming getBorrowDate() returns a String
-//
-//	        // Step 6: Update the return date for this row (update logic can vary, here we simply print the result)
-//	        updateReturnDate(cardNumber, borrowDate, newReturnDate);
-//	    }
-//
-//	    // Step 7: Optionally, show a success message or feedback to the user
-//	    System.out.println("Return dates updated for the selected rows.");
-//	}
-//
-//	// Method to update the return date (this can involve database interaction)
-//	private void updateReturnDate(String cardNumber, String borrowDate, String newReturnDate) {
-//	    // Construct the update command or query to update the return date for the card number and borrow date
-//	    String command = String.format("updateReturnDate %s %s %s", cardNumber, borrowDate, newReturnDate);
-//	    
-//	    // Output the command (this could be sent to a server or database)
-//	    System.out.println("Updating return date with command: " + command);
-//
-//	    // Add database interaction here if needed, for example:
-//	    // sendCommandToDatabase(command); // Implement this function as needed
-//	}
+		// Iterate through the map to validate dates
+		for (Map.Entry<String, String> entry : updatedReturnDates.entrySet()) {
+			String bookTitle = entry.getKey();
+			String returnDateStr = entry.getValue();
+
+			// Parse the return date from the map
+			try {
+				LocalDate returnDate = LocalDate.parse(returnDateStr);
+
+				// Check if the return date is before the current date
+				if (returnDate.isBefore(currentDate)) {
+					lblUpdateDateMessage.setVisible(true);
+					lblUpdateDateMessage.setText("Invalid return date for " + bookTitle + ": cannot be before today.");
+					lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
+					return; // Stop the process if validation fails
+				}
+			} catch (DateTimeParseException e) {
+				// Handle invalid date format
+				lblUpdateDateMessage.setVisible(true);
+				lblUpdateDateMessage.setText("Invalid date format for " + bookTitle + ". Please use YYYY-MM-DD.");
+				lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
+				return; // Stop the process if validation fails
+			}
+		}
+
+		Message sendToServer = new Message(MessageType.updateReturnDate, updatedReturnDates);
+		ClientUI.chat.accept(sendToServer);
+	}
+
+	public void btnUpdateReturnDateCheck(boolean isUpdated) {
+		Platform.runLater(() -> {
+			if (isUpdated) {
+				// Show success message in green
+				lblUpdateDateMessage.setVisible(true);
+				lblUpdateDateMessage.setText("Details updated successfully!");
+				lblUpdateDateMessage.setStyle("-fx-text-fill: green;");
+
+			} else {
+				// Show failure message in red
+				lblUpdateDateMessage.setText("Failed to update details. Please try again.");
+				lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
+			}
+		});
+
+	}
 
 	@FXML
 	private void btnBackClicked(ActionEvent event) {
