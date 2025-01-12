@@ -13,6 +13,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import enteties.Loan;
 import enteties.Subscriber;
 
 import gui.bounderies.*;
@@ -30,6 +32,7 @@ public class ChatClient extends AbstractClient {
 	// Instance variables **********************************************
 	private ClientFrameController clientFrameController;
 	private SubscriberCardDetailsController subscriberCardDetailsController;
+	private ExtendPopupController extendPopupController;
 
 	/**
 	 * The interface type variable. It allows the implementation of the display
@@ -61,8 +64,11 @@ public class ChatClient extends AbstractClient {
 
 	// added
 	public void setSubscriberCardDetailsController(SubscriberCardDetailsController subscriberCardDetailsController) {
-		System.out.println("im in setSubscriberCardDetailsController");
 		this.subscriberCardDetailsController = subscriberCardDetailsController;
+	}
+
+	public void ExtendPopupController(ExtendPopupController extendPopupController) {
+		this.extendPopupController = extendPopupController;
 	}
 
 	/**
@@ -116,65 +122,30 @@ public class ChatClient extends AbstractClient {
 			}
 			break;
 
-		}
-	}
+		case bookExtentionTable:
+			ArrayList<Loan> booksCanExtend = (ArrayList<Loan>) message.getMessageData();
+			if (extendPopupController != null) {
+				extendPopupController.showExtentionBooks(booksCanExtend);
+			} else {
+				System.out.println("extendPopupController is null.");
+			}
+			break;
+		case bookExtensionSucceeded:
+			boolean extentionSuccess = (boolean) message.getMessageData();
 
-//	/**
-//	 * This method handles all data that comes in from the server.
-//	 *
-//	 * @param msg The message from the server.
-//	 */
-//	@SuppressWarnings("unchecked")
-//	public void handleMessageFromServer(Object msg) {
-//		awaitResponse = false;
-//		HashMap<String, Object> response = (HashMap<String, Object>) msg;
-//
-//		String operation = (String) response.get("operation");
-//
-//
-//		if (operation.equals("cardExists")) {
-//
-//			System.out.println("chatClient recieved : " + response.get("cardDetails"));
-//			// Handle the cardExists operation
-//			boolean cardExists = (boolean) response.get("exists"); // Get the boolean value indicating if the card
-//																	// exists
-//			Map<String, Object> cardDetails = (Map<String, Object>) response.get("cardDetails"); // Get the card details
-//																									// if they exist
-//
-//			// Pass the data to the controller
-//			if (subscriberCardDetailsController != null) {
-//				subscriberCardDetailsController.cardExist(cardExists, cardDetails);
-//			} else {
-//				System.out.println("subscriberCardDetailsController is null.");
-//			}
-//		}
-//
-//		else if (operation.equals("updateEmailAndPhone")) {
-//			// Get the boolean value indicating if the update was successful
-//			boolean updateSuccessful = (boolean) response.get("success");
-//
-//			// Call the method btnUpdateDetailsClickedCheck with the result
-//			if (subscriberCardDetailsController != null) {
-//				subscriberCardDetailsController.btnUpdateDetailsClickedCheck(updateSuccessful);
-//			} else {
-//				System.out.println("subscriberCardDetailsController is null.");
-//			}
-//		}
-//
-////		else if (operation.equals("updateReturnDates")) {
-////			System.out.println("in chatClient updateReturnDate");
-////			// Get the boolean value indicating if the update was successful
-////			boolean updateSuccessful = (boolean) response.get("success");
-////
-////			// Call the method btnUpdateDetailsClickedCheck with the result
-////			if (subscriberCardDetailsController != null) {
-////				subscriberCardDetailsController.btnUpdateReturnDateCheck(updateSuccessful);
-////			} else {
-////				System.out.println("subscriberCardDetailsController is null.");
-////			}
-////		}
-//
-//	}
+			if (extentionSuccess) {
+				// Pass the data to the controller
+				if (extendPopupController != null) {
+					extendPopupController.tableFillRequest();
+				}
+			} else {
+				System.out.println("Extention failed is null.");
+			}
+			break;
+
+		}
+
+	}
 
 	/**
 	 * This method handles all data coming from the UI

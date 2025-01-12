@@ -15,6 +15,11 @@ public class Loan implements Serializable {
 		this.returnDate = returnDate;
 	}
 
+	public Loan(String bookTitle, String returnDate) {
+		this.bookTitle = bookTitle;
+		this.returnDate = returnDate;
+	}
+
 	public String getBookTitle() {
 		return bookTitle;
 	}

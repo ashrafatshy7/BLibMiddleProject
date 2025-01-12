@@ -15,6 +15,7 @@ import java.util.Scanner;
 
 import com.mysql.cj.protocol.Message;
 
+import enteties.Loan;
 import message.MessageType;
 
 public class mysqlConnection {
@@ -368,6 +369,79 @@ public class mysqlConnection {
 			}
 
 			return true; // All updates completed successfully
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	// Method to retrieve loans for books with return dates after two days
+	public static ArrayList<Loan> getExtendedBooks(Object number) {
+		String cardNum = (String) number;
+		ArrayList<Loan> loanList = new ArrayList<>();
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		String query = "SELECT bookTitle, returnDate FROM loan WHERE id = ? AND returnDate > CURDATE() + INTERVAL 2 DAY";
+
+		try {
+			preparedStatement = conn.prepareStatement(query);
+			preparedStatement.setString(1, cardNum); // Set the cardNum parameter
+
+			// Execute the query
+			resultSet = preparedStatement.executeQuery();
+
+			// Process the result set
+			while (resultSet.next()) {
+				String bookTitle = resultSet.getString("bookTitle");
+				String returnDate = resultSet.getDate("returnDate").toString();
+				Loan loan = new Loan(bookTitle, returnDate);
+				loanList.add(loan);
+			}
+
+			System.out.println("Loan list = " + loanList.toString());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// Close the ResultSet and PreparedStatement to prevent resource leaks
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (preparedStatement != null)
+					preparedStatement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return loanList;
+	}
+
+	public static boolean updateExtensionReturnDate(Object messageData) {
+		// Cast messageData to Map<String, String>
+		Map<String, String> data = (Map<String, String>) messageData;
+
+		// Get the values from the map
+		String cardNum = data.get("cardNum");
+		String bookTitle = data.get("bookTitle");
+		String returnDate = data.get("returnDate");
+
+		// SQL query to update the returnDate in the loan table
+		String query = "UPDATE loan SET returnDate = ? WHERE cardNum = ? AND bookTitle = ?";
+
+		try {
+			// Prepare the statement
+			PreparedStatement preparedStatement = conn.prepareStatement(query);
+
+			// Set the parameters for the query
+			preparedStatement.setString(1, returnDate); // Set returnDate
+			preparedStatement.setString(2, cardNum); // Set cardNum
+			preparedStatement.setString(3, bookTitle); // Set bookTitle
+
+			// Execute the update query
+			int rowsUpdated = preparedStatement.executeUpdate();
+
+			// If rowsUpdated > 0, the update was successful
+			return rowsUpdated > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;

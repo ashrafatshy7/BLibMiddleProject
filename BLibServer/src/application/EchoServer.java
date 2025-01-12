@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import enteties.Book;
+import enteties.Loan;
 import ocsf.server.*;
 
 /**
@@ -149,6 +150,18 @@ public class EchoServer extends AbstractServer {
 				client.sendToClient(messageFromServer);
 				break;
 
+			case bookExtentionTable:
+				ArrayList<Loan> booksCanExtend = mysqlConnection.getExtendedBooks(message.getMessageData());
+				messageFromServer = new Message(MessageType.bookExtentionTable, booksCanExtend);
+				client.sendToClient(messageFromServer);
+				break;
+
+			case bookExtensionSucceeded:
+				boolean isExtentionUpdated = mysqlConnection.updateExtensionReturnDate(message.getMessageData());
+				messageFromServer = new Message(MessageType.bookExtensionSucceeded, isExtentionUpdated);
+				client.sendToClient(messageFromServer);
+				break;
+
 			default:
 				break;
 
@@ -160,152 +173,6 @@ public class EchoServer extends AbstractServer {
 			System.err.println("Unexpected exception while handling message: " + e.getMessage());
 			e.printStackTrace();
 		}
-
-//		String message = (String) msg;
-//
-//		if ("QUIT".equalsIgnoreCase(message.trim())) {
-//			clientDisconnected(client);
-//			try {
-//				client.sendToClient("");
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//			return;
-//		}
-//
-//		ArrayList<String> allData = new ArrayList<>(Arrays.asList(message.split(" ")));
-//
-//
-//		else if (allData.get(0).equals("cardDetails")) {
-//			String cardNum = allData.get(1);
-//
-//			// Check if the card exists in the database and retrieve the details if it does
-//			Map<String, Object> cardDetailsIfExists = mysqlConnection.getCardDetailsIfExists(cardNum);
-//
-//			// Prepare a response to send back to the client
-//			HashMap<String, Object> response = new HashMap<>();
-//
-//			// Check if the card exists based on the "exists" key in the map
-//			boolean exists = (boolean) cardDetailsIfExists.get("exists");
-//
-//			// Add the "exists" value at the beginning of the response
-//			response.put("operation", "cardExists");
-//			response.put("exists", exists);
-//
-//			if (exists) {
-//				response.put("cardDetails", cardDetailsIfExists);
-//			} else {
-//				response.put("cardDetails", null); // No details to return if the card doesn't exist
-//			}
-//
-//			System.out.println("EchoServer: Response = " + response.toString());
-//
-//			// Send the response back to the client
-//			try {
-//				client.sendToClient(response);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//
-//		else if ("emailAndPhone".equals(allData.get(0))) {
-//			// Extract the required data
-//			String email = allData.get(1);
-//			String phoneNumber = allData.get(2);
-//			String cardNum = allData.get(3); // Card number from the client data
-//
-//			// Prepare a response to send back to the client
-//			Map<String, Object> response = new HashMap<>();
-//
-//			// Update the subscriber's email and phone number in the database
-//			boolean isUpdated = mysqlConnection.updateSubscriberEmailAndPhoneNumber(email, phoneNumber, cardNum);
-//
-//			// Populate the response with operation result
-//			response.put("operation", "updateEmailAndPhone");
-//			response.put("success", isUpdated);
-//
-//			// Send the response back to the client
-//			try {
-//				client.sendToClient(response);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-
-//		else if ("updateReturnDate".equals(allData.get(0))) {
-//			System.out.println("echo server updateReturnDate in");
-//			String newDate = allData.get(1);
-//			String cardNum = allData.get(2);
-//
-//			// Prepare a response to send back to the client
-//			Map<String, Object> response = new HashMap<>();
-//
-//			// Update the subscriber's email and phone number in the database
-//			boolean isUpdated = mysqlConnection.updateReturnDate(newDate, cardNum);
-//
-//			// Populate the response with operation result
-//			response.put("operation", "updateReturnDate");
-//			response.put("success", isUpdated);
-//
-//			// Send the response back to the client
-//			try {
-//				client.sendToClient(response);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//
-//		}
-
-//		else if ("updateReturnDates".equals(allData.get(0))) {
-//			System.out.println("echo server updateReturnDates in");
-//
-//			// Retrieve and cast the updates map
-//			Object updatesObject = allData.get(1);
-//
-//			// Validate and cast the object
-//			if (updatesObject instanceof Map) {
-//				@SuppressWarnings("unchecked")
-//				Map<String, Map<String, String>> updates = (Map<String, Map<String, String>>) updatesObject;
-//
-//				// Prepare a response to send back to the client
-//				Map<String, Object> response = new HashMap<>();
-//
-//				boolean allUpdatesSuccessful = true;
-//
-//				// Iterate through the map to update return dates in the database
-//				for (Map.Entry<String, Map<String, String>> entry : updates.entrySet()) {
-//					String cardNum = entry.getKey();
-//					Map<String, String> borrowAndReturnDates = entry.getValue();
-//
-//					for (Map.Entry<String, String> dateEntry : borrowAndReturnDates.entrySet()) {
-//						String borrowDate = dateEntry.getKey();
-//						String newReturnDate = dateEntry.getValue();
-//
-//						// Update each record in the database
-//						boolean isUpdated = mysqlConnection.updateReturnDate(newReturnDate, cardNum, borrowDate);
-//
-//						if (!isUpdated) {
-//							allUpdatesSuccessful = false; // If any update fails, set this to false
-//							System.out.println("Failed to update return date for cardNum: " + cardNum + ", borrowDate: "
-//									+ borrowDate);
-//						}
-//					}
-//				}
-//
-//				// Populate the response with operation result
-//				response.put("operation", "updateReturnDates");
-//				response.put("success", allUpdatesSuccessful);
-//
-//				// Send the response back to the client
-//				try {
-//					client.sendToClient(response);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			} else {
-//				System.out.println("Invalid data received for updateReturnDates.");
-//			}
-//		}
 
 	}
 

@@ -1,31 +1,26 @@
 package gui.bounderies;
 
 import java.io.IOException;
-import javafx.util.converter.LocalDateStringConverter;
 import message.Message;
 import message.MessageType;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import application.ChatClient;
 import application.ClientUI;
-import enteties.CardDetails;
 import enteties.IssueHistory;
 import enteties.Loan;
-import enteties.Subscriber;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -33,6 +28,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class SubscriberCardDetailsController {
@@ -47,6 +43,9 @@ public class SubscriberCardDetailsController {
 
 	@FXML
 	private Button btnUpdateDates;
+
+	@FXML
+	private Button btnExtend;
 
 	@FXML
 	private TextField tfInsertCardNumber;
@@ -120,12 +119,9 @@ public class SubscriberCardDetailsController {
 	@FXML
 	private Label lblUpdateDateMessage;
 
-	private List<Loan> loanHistoryList = new ArrayList<>();
-	private List<IssueHistory> issueHistoryList = new ArrayList<>();
-
 	private Map<String, String> updatedReturnDates = new HashMap<>();
 
-	public static String type = "Librarian";
+	public static String type = "subscriber";
 
 	@FXML
 	private void initialize() {
@@ -435,6 +431,30 @@ public class SubscriberCardDetailsController {
 
 	}
 
+	@FXML
+	private void btnExtendClicked(ActionEvent event) {
+
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/Extend.fxml"));
+			Parent root = loader.load();
+
+			// Get the controller of the popup
+			ExtendPopupController extendController = loader.getController();
+
+			// Pass the card number to the popup controller
+			extendController.setCardNumber(tfCardNumber.getText());
+
+			Stage popupStage = new Stage();
+			popupStage.setTitle("Request Extension");
+			popupStage.initModality(Modality.APPLICATION_MODAL);
+			popupStage.setScene(new Scene(root));
+			popupStage.showAndWait();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void hideComponents() {
 
 		lblCardNumber.setVisible(false);
@@ -464,6 +484,7 @@ public class SubscriberCardDetailsController {
 		lblPhoneNumberMessage.setVisible(false);
 
 		lblUpdateDateMessage.setVisible(false);
+		btnExtend.setVisible(false);
 	}
 
 	private void showComponents() {
@@ -491,6 +512,7 @@ public class SubscriberCardDetailsController {
 	private void suscriberComponents() {
 		btnUpdateDates.setVisible(false);
 		btnUpdateDetails.setVisible(true);
+		btnExtend.setVisible(true);
 	}
 
 	private void librarianComponents() {
