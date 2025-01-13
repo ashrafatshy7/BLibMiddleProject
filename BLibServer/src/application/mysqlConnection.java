@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -234,8 +236,6 @@ public class mysqlConnection {
 						Object value = resultSet.getObject(i);
 						result.put(columnName, value);
 					}
-
-					System.out.println("shown details : " + result.toString());
 				}
 
 				resultSet.close();
@@ -281,8 +281,6 @@ public class mysqlConnection {
 				}
 
 				result.put("issuesHistory", issuesHistory);
-
-				System.out.println("after issue history : " + result.toString());
 			}
 
 		} catch (SQLException e) {
@@ -352,7 +350,6 @@ public class mysqlConnection {
 		try (PreparedStatement stmt = conn.prepareStatement(query)) {
 			// Iterate through the map entries
 			for (Map.Entry<String, String> entry : temp.entrySet()) {
-				System.out.println("book title and return date : " + entry.toString());
 				String bookTitle = entry.getKey(); // Get the book title (key)
 				String returnDate = entry.getValue(); // Get the return date (value)
 
@@ -376,55 +373,13 @@ public class mysqlConnection {
 		}
 	}
 
-//	// Method to retrieve loans for books with return dates after 1 week
-//	public static ArrayList<Loan> getExtendedBooks(Object number) {
-//		String cardNum = (String) number;
-//		System.out.println("cardNumber check = " + cardNum);
-//		ArrayList<Loan> loanList = new ArrayList<>();
-//		PreparedStatement preparedStatement = null;
-//		ResultSet resultSet = null;
-//		String query = "SELECT bookTitle, returnDate FROM loan WHERE id = ? AND returnDate BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE()";
-//
-//		try {
-//			preparedStatement = conn.prepareStatement(query);
-//			preparedStatement.setString(1, cardNum); // Set the cardNum parameter
-//
-//			// Execute the query
-//			resultSet = preparedStatement.executeQuery();
-//
-//			// Process the result set
-//			while (resultSet.next()) {
-//				String bookTitle = resultSet.getString("bookTitle");
-//				String returnDate = resultSet.getDate("returnDate").toString();
-//				Loan loan = new Loan(bookTitle, returnDate);
-//				loanList.add(loan);
-//			}
-//
-//			System.out.println("Loan list ====== " + loanList.toString());
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		} finally {
-//			// Close the ResultSet and PreparedStatement to prevent resource leaks
-//			try {
-//				if (resultSet != null)
-//					resultSet.close();
-//				if (preparedStatement != null)
-//					preparedStatement.close();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//
-//		return loanList;
-//	}
-
 	// Method to retrieve loans for books with return dates after 1 week
 	public static Map<String, String> getExtendedBooks(Object number) {
 		String cardNum = (String) number;
 		Map<String, String> loanMap = new LinkedHashMap<>(); // Using LinkedHashMap to maintain insertion order
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		String query = "SELECT bookTitle, returnDate FROM loan WHERE id = ? AND returnDate BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE()";
+		String query = "SELECT bookTitle, returnDate FROM loan WHERE id = ? AND returnDate BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY ";
 
 		try {
 			preparedStatement = conn.prepareStatement(query);
@@ -441,8 +396,6 @@ public class mysqlConnection {
 				// Store in the map
 				loanMap.put(bookTitle, returnDate);
 			}
-
-			System.out.println("Loan map ====== " + loanMap.toString());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -469,27 +422,91 @@ public class mysqlConnection {
 		String bookTitle = data.get("bookTitle");
 		String returnDate = data.get("returnDate");
 
-		// SQL query to update the returnDate in the loan table
-		String query = "UPDATE loan SET returnDate = ? WHERE cardNum = ? AND bookTitle = ?";
-
 		try {
-			// Prepare the statement
-			PreparedStatement preparedStatement = conn.prepareStatement(query);
+			// SQL query to check if there is an order for the same book
+			String checkOrderQuery = "SELECT COUNT(*) FROM `order` WHERE bookTitle = ?";
+			PreparedStatement checkOrderStatement = conn.prepareStatement(checkOrderQuery);
+			checkOrderStatement.setString(1, bookTitle);
+
+			// Execute the query
+			ResultSet orderResult = checkOrderStatement.executeQuery();
+			if (orderResult.next() && orderResult.getInt(1) > 0) {
+				// If there are orders for the book, return false
+				return false;
+			}
+
+			// Parse the returnDate string to LocalDate
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Adjust format as needed
+			LocalDate currentReturnDate = LocalDate.parse(returnDate, formatter);
+
+			// Add one week to the current return date
+			LocalDate newReturnDate = currentReturnDate.plusWeeks(1);
+			String updatedReturnDate = newReturnDate.format(formatter); // Convert back to string
+
+			// SQL query to update the returnDate in the loan table
+			String updateQuery = "UPDATE loan SET returnDate = ? WHERE id = ? AND bookTitle = ?";
+			PreparedStatement updateStatement = conn.prepareStatement(updateQuery);
 
 			// Set the parameters for the query
-			preparedStatement.setString(1, returnDate); // Set returnDate
-			preparedStatement.setString(2, cardNum); // Set cardNum
-			preparedStatement.setString(3, bookTitle); // Set bookTitle
+			updateStatement.setString(1, updatedReturnDate); // Set the new returnDate
+			updateStatement.setString(2, cardNum); // Set cardNum
+			updateStatement.setString(3, bookTitle); // Set bookTitle
 
 			// Execute the update query
-			int rowsUpdated = preparedStatement.executeUpdate();
+			int rowsUpdated = updateStatement.executeUpdate();
 
 			// If rowsUpdated > 0, the update was successful
 			return rowsUpdated > 0;
+
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
+		} catch (Exception e) {
+			System.err.println("Error parsing or updating date: " + e.getMessage());
 			return false;
 		}
 	}
 
+//	public static boolean updateExtensionReturnDate(Object messageData) {
+//		// Cast messageData to Map<String, String>
+//		Map<String, String> data = (Map<String, String>) messageData;
+//
+//		// Get the values from the map
+//		String cardNum = data.get("cardNum");
+//		String bookTitle = data.get("bookTitle");
+//		String returnDate = data.get("returnDate");
+//
+//		try {
+//			// Parse the returnDate string to LocalDate
+//			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Adjust format as needed
+//			LocalDate currentReturnDate = LocalDate.parse(returnDate, formatter);
+//
+//			// Add one week to the current return date
+//			LocalDate newReturnDate = currentReturnDate.plusWeeks(1);
+//			String updatedReturnDate = newReturnDate.format(formatter); // Convert back to string
+//
+//			// SQL query to update the returnDate in the loan table
+//			String query = "UPDATE loan SET returnDate = ? WHERE id = ? AND bookTitle = ?";
+//
+//			// Prepare the statement
+//			PreparedStatement preparedStatement = conn.prepareStatement(query);
+//
+//			// Set the parameters for the query
+//			preparedStatement.setString(1, updatedReturnDate); // Set the new returnDate
+//			preparedStatement.setString(2, cardNum); // Set cardNum
+//			preparedStatement.setString(3, bookTitle); // Set bookTitle
+//
+//			// Execute the update query
+//			int rowsUpdated = preparedStatement.executeUpdate();
+//
+//			// If rowsUpdated > 0, the update was successful
+//			return rowsUpdated > 0;
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			return false;
+//		} catch (Exception e) {
+//			System.err.println("Error parsing or updating date: " + e.getMessage());
+//			return false;
+//		}
+//	}
 }

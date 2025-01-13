@@ -104,7 +104,6 @@ public class ChatClient extends AbstractClient {
 		case updateEmailAndPhone:
 			// Get the boolean value indicating if the update was successful
 			boolean isUpdateSuccessful = (boolean) message.getMessageData();
-			System.out.println("is update sussessss??? " + isUpdateSuccessful);
 			// Call the method btnUpdateDetailsClickedCheck with the result
 			if (subscriberCardDetailsController != null) {
 				subscriberCardDetailsController.btnUpdateDetailsClickedCheck(isUpdateSuccessful);
@@ -134,14 +133,10 @@ public class ChatClient extends AbstractClient {
 			break;
 		case bookExtensionSucceeded:
 			boolean extentionSuccess = (boolean) message.getMessageData();
-
-			if (extentionSuccess) {
-				// Pass the data to the controller
-				if (extendPopupController != null) {
-					extendPopupController.tableFillRequest();
-				}
+			if (extendPopupController != null) {
+				extendPopupController.bookExtensionSucceess(extentionSuccess);
 			} else {
-				System.out.println("Extention failed is null.");
+				System.out.println("extendPopupController is null.");
 			}
 			break;
 

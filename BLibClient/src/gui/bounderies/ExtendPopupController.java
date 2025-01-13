@@ -7,6 +7,7 @@ import java.util.Map;
 import application.ChatClient;
 import application.ClientUI;
 import enteties.Loan;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -42,19 +43,17 @@ public class ExtendPopupController {
 	private String cardNumber;
 
 	public ExtendPopupController() {
-		System.out.println("INNNN11111");
 		chatClient = ClientUI.chat.getClient();
 	}
 
 	public void setChatClient(ChatClient chatClient) {
-		System.out.println("INNNN2");
 		this.chatClient = chatClient;
 		this.chatClient.ExtendPopupController(this);
 	}
 
 	@FXML
 	private void initialize() {
-		lblRequest.setText("");
+		lblRequest.setVisible(false);
 		// Initially disable the button
 		btnRequestExtention.setDisable(true); // Disable the button
 
@@ -71,7 +70,7 @@ public class ExtendPopupController {
 		});
 
 		// Bind columns to Book properties
-		bookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+		bookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
 		returnDateColumn.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
 
 	}
@@ -82,42 +81,34 @@ public class ExtendPopupController {
 	}
 
 	public void tableFillRequest() {
-		System.out.println("cardNumber in extendControler = " + cardNumber);
+		// Disable UI interactions and show loading message
+		Platform.runLater(() -> {
+			lblRequest.setText("Loading table data...");
+			lblRequest.setStyle("-fx-text-fill: blue;");
+			btnRequestExtention.setDisable(true); // Disable the button until data is updated
+		});
+
+		// Send request to the server asynchronously
 		Message sendToServer = new Message(MessageType.bookExtentionTable, cardNumber);
 		ClientUI.chat.accept(sendToServer);
 	}
 
-//	public void showExtentionBooks(Map<String, String> booksCanExtend) {
-//
-//		// ObservableList<Loan> observableBooks =
-//		// FXCollections.observableArrayList(booksCanExtend);
-//
-//		// Set the ObservableList to the TableView (this will automatically fill the
-//		// rows)
-//		// extendTable.setItems(observableBooks);
-//
-//		// Set the cell value factories for each column to match the Loan properties
-//		bookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
-//		returnDateColumn.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
-//	}
-
 	public void showExtentionBooks(Map<String, String> booksCanExtend) {
-		// Clear the table before adding new data
-		extendTable.getItems().clear();
+		Platform.runLater(() -> {
+			// Clear existing items in the table
+			extendTable.getItems().clear();
 
-		// Map keys and values to table data
-		ObservableList<Loan> loans = FXCollections.observableArrayList();
+			// Populate the table with new data
+			ObservableList<Loan> loans = FXCollections.observableArrayList();
+			for (Map.Entry<String, String> entry : booksCanExtend.entrySet()) {
+				System.out.println("FOR : " + entry.getKey() + " " + entry.getValue());
+				loans.add(new Loan(entry.getKey(), entry.getValue()));
+			}
+			extendTable.setItems(loans);
 
-		for (Map.Entry<String, String> entry : booksCanExtend.entrySet()) {
-			loans.add(new Loan(entry.getKey(), entry.getValue()));
-		}
-
-		// Set the table data
-		extendTable.setItems(loans);
-
-		// Bind columns to Loan properties
-		bookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
-		returnDateColumn.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
+			// Enable the extension request button if a row is selected
+			btnRequestExtention.setDisable(extendTable.getSelectionModel().getSelectedItem() == null);
+		});
 	}
 
 	@FXML
@@ -137,26 +128,33 @@ public class ExtendPopupController {
 			String bookTitle = selectedLoan.getBookTitle();
 			String returnDate = selectedLoan.getReturnDate();
 
-			// You can now use these values as needed, for example, display them or pass
-			// them to another method.
-			System.out.println("Selected Book: " + bookTitle + ", Return Date: " + returnDate);
-			lblRequest.setText("Extension Succeeded");
-			lblRequest.setStyle("-fx-text-fill: green;");
-
-			String bookTitle2 = selectedLoan.getBookTitle();
-			String returnDate2 = selectedLoan.getReturnDate();
-
 			updateExtensionRequestsMap.put("cardNum", cardNumber);
-			updateExtensionRequestsMap.put("bookTitle", bookTitle2);
-			updateExtensionRequestsMap.put("returnDate", returnDate2);
-
+			updateExtensionRequestsMap.put("bookTitle", bookTitle);
+			updateExtensionRequestsMap.put("returnDate", returnDate);
 			Message sendToServer = new Message(MessageType.bookExtensionSucceeded, updateExtensionRequestsMap);
 			ClientUI.chat.accept(sendToServer);
 
 		} else {
+			lblRequest.setVisible(true);
 			lblRequest.setText("No book selected.");
 			lblRequest.setStyle("-fx-text-fill: red;");
 		}
+	}
+
+	public void bookExtensionSucceess(boolean extensionSuccess) {
+		Platform.runLater(() -> {
+			if (extensionSuccess) {
+				lblRequest.setVisible(true);
+				lblRequest.setText("Extension succeeded!");
+				lblRequest.setStyle("-fx-text-fill: green;");
+				System.out.println("A message sent to the Librarian");
+				tableFillRequest(); // Refresh the table with updated data
+			} else {
+				lblRequest.setVisible(true);
+				lblRequest.setText("Extension failed.");
+				lblRequest.setStyle("-fx-text-fill: red;");
+			}
+		});
 	}
 
 }

@@ -162,16 +162,6 @@ public class SubscriberCardDetailsController {
 
 		});
 
-		// tesxt field design
-		tfInsertCardNumber.getStylesheets().add("text-field");
-		tfInsertCardNumber.getStylesheets().add("text-field:focused");
-		tfCardNumber.getStylesheets().add("text-field");
-		tfCardNumber.getStylesheets().add("text-field:focused");
-		tfUserName.getStylesheets().add("text-field");
-		tfUserName.getStylesheets().add("text-field:focused");
-		tfPhoneNumber.getStylesheets().add("text-field");
-		tfPhoneNumber.getStylesheets().add("text-field:focused");
-
 	}
 
 	@FXML
@@ -359,21 +349,6 @@ public class SubscriberCardDetailsController {
 		});
 	}
 
-	private boolean isValidDate(String date) {
-		// Validate the date format (yyyy-MM-dd)
-		if (date == null || date.isEmpty()) {
-			return false;
-		}
-
-		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		try {
-			LocalDate.parse(date, dateFormatter);
-			return true;
-		} catch (DateTimeParseException e) {
-			return false;
-		}
-	}
-
 	@FXML
 	private void btnUpdateDateClicked(ActionEvent event) {
 		// Get the current date
@@ -434,6 +409,13 @@ public class SubscriberCardDetailsController {
 	private void btnExtendClicked(ActionEvent event) {
 
 		try {
+			lblPhoneNumberMessage.setText("");
+			lblEmailmessage.setText("");
+			lblEmailPhonemessage.setText("");
+
+			tfPhoneNumber.getStyleClass().remove("text-field-invalid");
+			tfEmail.getStyleClass().remove("text-field-invalid");
+
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/Extend.fxml"));
 			Parent root = loader.load();
 
@@ -532,8 +514,6 @@ public class SubscriberCardDetailsController {
 			if (this.chatClient != null) {
 				controller.setChatClient(this.chatClient);
 			}
-
-			System.out.println("im in SubscriberCardDetailsController start  ");
 
 			Scene scene = new Scene(root);
 			primaryStage.setTitle("subscriber details");

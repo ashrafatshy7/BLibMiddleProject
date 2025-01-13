@@ -43,7 +43,7 @@ public class IpFrameController {
 	}
 
 	public void connect(ActionEvent event) throws Exception {
-		String ipAddress = "10.10.5.179";
+		String ipAddress = "10.0.0.17";
 		int port = 5555;
 //		String ipAddress = ipText.getText();
 //
