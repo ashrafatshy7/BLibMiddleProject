@@ -83,8 +83,6 @@ public class ExtendPopupController {
 	public void tableFillRequest() {
 		// Disable UI interactions and show loading message
 		Platform.runLater(() -> {
-			lblRequest.setText("Loading table data...");
-			lblRequest.setStyle("-fx-text-fill: blue;");
 			btnRequestExtention.setDisable(true); // Disable the button until data is updated
 		});
 
@@ -114,6 +112,7 @@ public class ExtendPopupController {
 	@FXML
 	private void onCloseClicked() {
 		// Close the popup
+		
 		Stage stage = (Stage) extendTable.getScene().getWindow();
 		stage.close();
 	}

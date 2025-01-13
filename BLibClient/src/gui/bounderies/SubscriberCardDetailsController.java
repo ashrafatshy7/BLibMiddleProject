@@ -5,7 +5,6 @@ import message.Message;
 import message.MessageType;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
@@ -289,6 +288,7 @@ public class SubscriberCardDetailsController {
 				tfEmail.getStyleClass().add("text-field-invalid");
 				lblEmailmessage.setStyle("-fx-text-fill: red;");
 			} else {
+				lblEmailmessage.setVisible(false);
 				lblEmailmessage.setText(""); // Clear any previous error message
 				tfEmail.getStyleClass().remove("text-field-invalid");
 			}
@@ -301,6 +301,7 @@ public class SubscriberCardDetailsController {
 				tfPhoneNumber.getStyleClass().add("text-field-invalid");
 				lblPhoneNumberMessage.setStyle("-fx-text-fill: red;");
 			} else {
+				lblPhoneNumberMessage.setVisible(false);
 				lblPhoneNumberMessage.setText(""); // Clear any previous error message
 				tfPhoneNumber.getStyleClass().remove("text-field-invalid");
 			}
@@ -309,6 +310,8 @@ public class SubscriberCardDetailsController {
 
 		tfPhoneNumber.getStyleClass().remove("text-field-invalid");
 		tfEmail.getStyleClass().remove("text-field-invalid");
+		lblPhoneNumberMessage.setVisible(false);
+		lblEmailmessage.setVisible(false);
 
 		// Create the command to send to the server
 		String command = String.format("%s %s %s", email, phoneNumber, cardNumber);
@@ -338,9 +341,8 @@ public class SubscriberCardDetailsController {
 				lblEmailPhonemessage.setStyle("-fx-text-fill: green;");
 				tfPhoneNumber.getStyleClass().remove("text-field-invalid");
 				tfEmail.getStyleClass().remove("text-field-invalid");
-
-				lblPhoneNumberMessage.setText("");
-				lblEmailmessage.setText("");
+				lblPhoneNumberMessage.setVisible(false);
+				lblEmailmessage.setVisible(false);
 			} else {
 				// Show failure message in red
 				lblEmailPhonemessage.setText("Failed to update details. Please try again.");
@@ -438,6 +440,10 @@ public class SubscriberCardDetailsController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void refreshTheTable() {
+		
 	}
 
 	private void hideComponents() {
