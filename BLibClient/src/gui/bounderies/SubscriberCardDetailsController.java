@@ -123,6 +123,15 @@ public class SubscriberCardDetailsController {
 
 	public static String type = "subscriber";
 
+	public SubscriberCardDetailsController() {
+		chatClient = ClientUI.chat.getClient();
+	}
+
+	public void setChatClient(ChatClient chatClient) {
+		this.chatClient = chatClient;
+		this.chatClient.setSubscriberCardDetailsController(this);
+	}
+
 	@FXML
 	private void initialize() {
 		// Hide all components
@@ -163,16 +172,6 @@ public class SubscriberCardDetailsController {
 		tfPhoneNumber.getStylesheets().add("text-field");
 		tfPhoneNumber.getStylesheets().add("text-field:focused");
 
-	}
-
-	public SubscriberCardDetailsController() {
-		chatClient = ClientUI.chat.getClient();
-	}
-
-	public void setChatClient(ChatClient chatClient) {
-		System.out.println("setChatClient check ");
-		this.chatClient = chatClient;
-		this.chatClient.setSubscriberCardDetailsController(this);
 	}
 
 	@FXML
@@ -440,9 +439,13 @@ public class SubscriberCardDetailsController {
 
 			// Get the controller of the popup
 			ExtendPopupController extendController = loader.getController();
-
+			extendController.setChatClient(chatClient);
 			// Pass the card number to the popup controller
 			extendController.setCardNumber(tfCardNumber.getText());
+
+			// Explicitly call the method to populate the table after setting the card
+			// number
+			extendController.tableFillRequest();
 
 			Stage popupStage = new Stage();
 			popupStage.setTitle("Request Extension");

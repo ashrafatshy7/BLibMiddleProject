@@ -41,13 +41,24 @@ public class ExtendPopupController {
 
 	private String cardNumber;
 
+	public ExtendPopupController() {
+		System.out.println("INNNN11111");
+		chatClient = ClientUI.chat.getClient();
+	}
+
+	public void setChatClient(ChatClient chatClient) {
+		System.out.println("INNNN2");
+		this.chatClient = chatClient;
+		this.chatClient.ExtendPopupController(this);
+	}
+
 	@FXML
 	private void initialize() {
 		lblRequest.setText("");
 		// Initially disable the button
 		btnRequestExtention.setDisable(true); // Disable the button
 
-		tableFillRequest();
+		// tableFillRequest();
 
 		// Add a listener to the selection model of the TableView
 		extendTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -65,34 +76,46 @@ public class ExtendPopupController {
 
 	}
 
-	public ExtendPopupController() {
-		chatClient = ClientUI.chat.getClient();
-	}
-
-	public void setChatClient(ChatClient chatClient) {
-		this.chatClient = chatClient;
-		this.chatClient.ExtendPopupController(this);
-	}
-
 	// Setter method to set the card number
-	public void setCardNumber(String cardNumber) {
-		this.cardNumber = cardNumber;
+	public void setCardNumber(String cardNum) {
+		cardNumber = cardNum;
 	}
 
 	public void tableFillRequest() {
+		System.out.println("cardNumber in extendControler = " + cardNumber);
 		Message sendToServer = new Message(MessageType.bookExtentionTable, cardNumber);
 		ClientUI.chat.accept(sendToServer);
 	}
 
-	public void showExtentionBooks(ArrayList<Loan> booksCanExtend) {
-		// Convert ArrayList<Loan> to ObservableList
-		ObservableList<Loan> observableBooks = FXCollections.observableArrayList(booksCanExtend);
+//	public void showExtentionBooks(Map<String, String> booksCanExtend) {
+//
+//		// ObservableList<Loan> observableBooks =
+//		// FXCollections.observableArrayList(booksCanExtend);
+//
+//		// Set the ObservableList to the TableView (this will automatically fill the
+//		// rows)
+//		// extendTable.setItems(observableBooks);
+//
+//		// Set the cell value factories for each column to match the Loan properties
+//		bookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
+//		returnDateColumn.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
+//	}
 
-		// Set the ObservableList to the TableView (this will automatically fill the
-		// rows)
-		extendTable.setItems(observableBooks);
+	public void showExtentionBooks(Map<String, String> booksCanExtend) {
+		// Clear the table before adding new data
+		extendTable.getItems().clear();
 
-		// Set the cell value factories for each column to match the Loan properties
+		// Map keys and values to table data
+		ObservableList<Loan> loans = FXCollections.observableArrayList();
+
+		for (Map.Entry<String, String> entry : booksCanExtend.entrySet()) {
+			loans.add(new Loan(entry.getKey(), entry.getValue()));
+		}
+
+		// Set the table data
+		extendTable.setItems(loans);
+
+		// Bind columns to Loan properties
 		bookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
 		returnDateColumn.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
 	}

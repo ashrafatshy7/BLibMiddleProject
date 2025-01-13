@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -375,13 +376,55 @@ public class mysqlConnection {
 		}
 	}
 
-	// Method to retrieve loans for books with return dates after two days
-	public static ArrayList<Loan> getExtendedBooks(Object number) {
+//	// Method to retrieve loans for books with return dates after 1 week
+//	public static ArrayList<Loan> getExtendedBooks(Object number) {
+//		String cardNum = (String) number;
+//		System.out.println("cardNumber check = " + cardNum);
+//		ArrayList<Loan> loanList = new ArrayList<>();
+//		PreparedStatement preparedStatement = null;
+//		ResultSet resultSet = null;
+//		String query = "SELECT bookTitle, returnDate FROM loan WHERE id = ? AND returnDate BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE()";
+//
+//		try {
+//			preparedStatement = conn.prepareStatement(query);
+//			preparedStatement.setString(1, cardNum); // Set the cardNum parameter
+//
+//			// Execute the query
+//			resultSet = preparedStatement.executeQuery();
+//
+//			// Process the result set
+//			while (resultSet.next()) {
+//				String bookTitle = resultSet.getString("bookTitle");
+//				String returnDate = resultSet.getDate("returnDate").toString();
+//				Loan loan = new Loan(bookTitle, returnDate);
+//				loanList.add(loan);
+//			}
+//
+//			System.out.println("Loan list ====== " + loanList.toString());
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} finally {
+//			// Close the ResultSet and PreparedStatement to prevent resource leaks
+//			try {
+//				if (resultSet != null)
+//					resultSet.close();
+//				if (preparedStatement != null)
+//					preparedStatement.close();
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//
+//		return loanList;
+//	}
+
+	// Method to retrieve loans for books with return dates after 1 week
+	public static Map<String, String> getExtendedBooks(Object number) {
 		String cardNum = (String) number;
-		ArrayList<Loan> loanList = new ArrayList<>();
+		Map<String, String> loanMap = new LinkedHashMap<>(); // Using LinkedHashMap to maintain insertion order
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		String query = "SELECT bookTitle, returnDate FROM loan WHERE id = ? AND returnDate > CURDATE() + INTERVAL 2 DAY";
+		String query = "SELECT bookTitle, returnDate FROM loan WHERE id = ? AND returnDate BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE()";
 
 		try {
 			preparedStatement = conn.prepareStatement(query);
@@ -394,11 +437,12 @@ public class mysqlConnection {
 			while (resultSet.next()) {
 				String bookTitle = resultSet.getString("bookTitle");
 				String returnDate = resultSet.getDate("returnDate").toString();
-				Loan loan = new Loan(bookTitle, returnDate);
-				loanList.add(loan);
+
+				// Store in the map
+				loanMap.put(bookTitle, returnDate);
 			}
 
-			System.out.println("Loan list = " + loanList.toString());
+			System.out.println("Loan map ====== " + loanMap.toString());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -413,7 +457,7 @@ public class mysqlConnection {
 			}
 		}
 
-		return loanList;
+		return loanMap;
 	}
 
 	public static boolean updateExtensionReturnDate(Object messageData) {

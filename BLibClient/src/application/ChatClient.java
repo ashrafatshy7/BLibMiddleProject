@@ -12,6 +12,7 @@ import message.MessageType;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import enteties.Loan;
@@ -123,7 +124,8 @@ public class ChatClient extends AbstractClient {
 			break;
 
 		case bookExtentionTable:
-			ArrayList<Loan> booksCanExtend = (ArrayList<Loan>) message.getMessageData();
+			// ArrayList<Loan> booksCanExtend = (ArrayList<Loan>) message.getMessageData();
+			Map<String, String> booksCanExtend = (Map<String, String>) message.getMessageData();
 			if (extendPopupController != null) {
 				extendPopupController.showExtentionBooks(booksCanExtend);
 			} else {

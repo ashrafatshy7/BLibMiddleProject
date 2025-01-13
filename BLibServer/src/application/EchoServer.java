@@ -151,7 +151,7 @@ public class EchoServer extends AbstractServer {
 				break;
 
 			case bookExtentionTable:
-				ArrayList<Loan> booksCanExtend = mysqlConnection.getExtendedBooks(message.getMessageData());
+				Map<String, String> booksCanExtend = mysqlConnection.getExtendedBooks(message.getMessageData());
 				messageFromServer = new Message(MessageType.bookExtentionTable, booksCanExtend);
 				client.sendToClient(messageFromServer);
 				break;
