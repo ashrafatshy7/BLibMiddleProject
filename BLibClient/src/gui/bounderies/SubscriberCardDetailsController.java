@@ -13,7 +13,9 @@ import java.util.Map;
 import application.ChatClient;
 import application.ClientUI;
 import enteties.IssueHistory;
+import enteties.Librarian;
 import enteties.Loan;
+import enteties.Subscriber;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -119,7 +121,7 @@ public class SubscriberCardDetailsController {
 	private Label lblUpdateDateMessage;
 
 	private Map<String, String> updatedReturnDates = new HashMap<>();
-	public static String type = "subscriber";
+	// public static String type = "subscriber";
 
 	public SubscriberCardDetailsController() {
 		chatClient = ClientUI.chat.getClient();
@@ -205,9 +207,10 @@ public class SubscriberCardDetailsController {
 
 			tfInsertCardNumber.getStyleClass().remove("text-field-invalid");
 
-			if (type.equals("subscriber")) {
+			// Show buttons based on user type
+			if (ClientUI.user instanceof Subscriber) {
 				suscriberComponents();
-			} else {
+			} else if (ClientUI.user instanceof Librarian) {
 				librarianComponents();
 			}
 
@@ -389,7 +392,15 @@ public class SubscriberCardDetailsController {
 
 	@FXML
 	private void btnBackClicked(ActionEvent event) {
-
+//		Stage primaryStage = new Stage();
+//		((Node) event.getSource()).getScene().getWindow().hide();
+//		if (source.equals("SeeAllFrameController")) {
+//			SeeAllFrameController seeAllFrame = new SeeAllFrameController();
+//			seeAllFrame.start(primaryStage);
+//		} else if (source.equals("HomeFrameController")) {
+//			HomeFrameController homeFrame = new HomeFrameController();
+//			homeFrame.start(primaryStage);
+//		}
 	}
 
 	@FXML
@@ -488,12 +499,14 @@ public class SubscriberCardDetailsController {
 	}
 
 	private void suscriberComponents() {
+		colReturnDate.setEditable(false);
 		btnUpdateDates.setVisible(false);
 		btnUpdateDetails.setVisible(true);
 		btnExtend.setVisible(true);
 	}
 
 	private void librarianComponents() {
+		colReturnDate.setEditable(true);
 		btnUpdateDetails.setVisible(false);
 		btnUpdateDates.setVisible(true);
 
