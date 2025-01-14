@@ -7,6 +7,8 @@ import common.ChatIF;
 import gui.bounderies.ClientFrameController;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import message.Message;
+import message.MessageType;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -69,52 +71,31 @@ public class ChatClient extends AbstractClient
    */
   @SuppressWarnings("unchecked")
   public void handleMessageFromServer(Object msg) {
-	  awaitResponse = false;
-      HashMap<String, Object> response = (HashMap<String, Object>) msg;
-      
-      String operation = (String) response.get("operation");
-      
-      Object data = response.get("data");
-      
-      
-      if(operation.equals("getAllSubscribers")) {
-    	 
-    	  ArrayList<Map<String, Object>> rawRows = (ArrayList<Map<String, Object>>) data;
-          // Convert each row (Map<String,Object>) to a Subscriber object
-          ArrayList<Subscriber> subscribers = new ArrayList<>();
-          for (Map<String, Object> row : rawRows) {
-  
-        	  Subscriber sub = new Subscriber(
-                      row.get("subscriber_id").toString(),
-                      row.get("subscriber_name").toString(),
-                      row.get("subscriber_phone_number").toString(),
-                      row.get("subscriber_email").toString(),
-                      Integer.parseInt(row.get("detailed_subscription_history").toString())
-                  );
-        	  subscribers.add(sub);
-          }     
-          
-          clientFrameController.getSubscribers(subscribers);
+      awaitResponse = false;
 
-		
+      
+      Message message = (Message) msg; 
+      MessageType messageType = message.getMessageType();
 
+      switch (messageType) {
+          case registerSubscriber:
+              boolean success = (boolean) message.getData();
+
+              Platform.runLater(() -> {
+                  if (success) {
+                      showSuccessAlert("Subscriber registered successfully!");
+                  } else {
+                      showErrorAlert("Failed to register subscriber. Please try again.");
+                  }
+              });
+              break;
+
+          default:
+              System.out.println("Unknown message type from server: " + messageType);
+              break;
       }
-      else if (operation.equals("register subscriber")) {
-    	    boolean success = (boolean) response.get("success");
-    	    Platform.runLater(() -> {
-    	        if (success) {
-    	            showSuccessAlert("Subscriber registered successfully!");
-    	        } else {
-    	            String error = (String) response.get("error");
-    	            showErrorAlert(error != null ? error : "Failed to register subscriber. Please try again.");
-    	        }
-    	    });
-    	}
-
-
-  
-   
   }
+
 
   
   
@@ -149,7 +130,7 @@ public class ChatClient extends AbstractClient
    * @param message The message from the UI.    
    */
   
-  public void handleMessageFromClientUI(String message)  
+  public void handleMessageFromClientUI(Object message)  
   {
     try
     {

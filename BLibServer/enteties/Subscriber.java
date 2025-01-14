@@ -1,17 +1,18 @@
 package enteties;
 
-import java.io.Serializable;
 
-public class Subscriber implements Serializable {
-    private static final long serialVersionUID = 1L;  
-    private String ID, name, phoneNumber, email, password;
-    
-    public Subscriber(String ID, String email, String password, String name, String phoneNumber) {
+
+
+public class Subscriber {
+	private String ID, name, phoneNumber, email ,password;
+	
+	public Subscriber(String ID, String email,String password ,String name,String phoneNumber ) {
         this.ID = ID;
         this.name = name;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.email = email;
+      
     }
 
     // Getters and Setters

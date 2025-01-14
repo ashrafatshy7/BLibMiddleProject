@@ -1,5 +1,6 @@
 package gui.bounderies;
 
+
 import application.ClientUI;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,7 +11,9 @@ import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-
+import message.Message;
+import message.MessageType;
+import enteties.Subscriber;
 public class RegisterSubscriberController {
 
     @FXML
@@ -81,8 +84,9 @@ public class RegisterSubscriberController {
         }
 
         // Send data to server
-        String command = String.format("register subscriber %s %s %s %s %s active 0", readCard, email, password, username, phone);
-        ClientUI.chat.accept(command);
+        Subscriber sub = new Subscriber(readCard, email, password, username, phone);
+        Message sendToserver = new Message(MessageType.registerSubscriber, sub);
+        ClientUI.chat.accept(sendToserver);
     }
 
     private boolean validateInput(String readCard, String email, String password, String confirmPassword, String username, String phone) {
