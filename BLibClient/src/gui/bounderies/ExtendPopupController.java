@@ -41,6 +41,7 @@ public class ExtendPopupController {
 	private TableColumn<Loan, String> returnDateColumn;
 
 	private String cardNumber;
+	private SubscriberCardDetailsController subscriberCardDetailsController;
 
 	public ExtendPopupController() {
 		chatClient = ClientUI.chat.getClient();
@@ -73,6 +74,10 @@ public class ExtendPopupController {
 		bookTitleColumn.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
 		returnDateColumn.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
 
+	}
+
+	public void setSubscriberCardDetailsController(SubscriberCardDetailsController subscriberCardDetailsController) {
+		this.subscriberCardDetailsController = subscriberCardDetailsController;
 	}
 
 	// Setter method to set the card number
@@ -112,7 +117,7 @@ public class ExtendPopupController {
 	@FXML
 	private void onCloseClicked() {
 		// Close the popup
-		
+		subscriberCardDetailsController.btnSearchClicked(null);
 		Stage stage = (Stage) extendTable.getScene().getWindow();
 		stage.close();
 	}
@@ -150,7 +155,7 @@ public class ExtendPopupController {
 				tableFillRequest(); // Refresh the table with updated data
 			} else {
 				lblRequest.setVisible(true);
-				lblRequest.setText("Extension failed.");
+				lblRequest.setText("This book is currently on order\nand cannot be extended.");
 				lblRequest.setStyle("-fx-text-fill: red;");
 			}
 		});

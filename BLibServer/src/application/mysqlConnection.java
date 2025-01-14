@@ -440,7 +440,7 @@ public class mysqlConnection {
 			LocalDate currentReturnDate = LocalDate.parse(returnDate, formatter);
 
 			// Add one week to the current return date
-			LocalDate newReturnDate = currentReturnDate.plusWeeks(1);
+			LocalDate newReturnDate = currentReturnDate.plusWeeks(2);
 			String updatedReturnDate = newReturnDate.format(formatter); // Convert back to string
 
 			// SQL query to update the returnDate in the loan table
@@ -467,46 +467,4 @@ public class mysqlConnection {
 		}
 	}
 
-//	public static boolean updateExtensionReturnDate(Object messageData) {
-//		// Cast messageData to Map<String, String>
-//		Map<String, String> data = (Map<String, String>) messageData;
-//
-//		// Get the values from the map
-//		String cardNum = data.get("cardNum");
-//		String bookTitle = data.get("bookTitle");
-//		String returnDate = data.get("returnDate");
-//
-//		try {
-//			// Parse the returnDate string to LocalDate
-//			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Adjust format as needed
-//			LocalDate currentReturnDate = LocalDate.parse(returnDate, formatter);
-//
-//			// Add one week to the current return date
-//			LocalDate newReturnDate = currentReturnDate.plusWeeks(1);
-//			String updatedReturnDate = newReturnDate.format(formatter); // Convert back to string
-//
-//			// SQL query to update the returnDate in the loan table
-//			String query = "UPDATE loan SET returnDate = ? WHERE id = ? AND bookTitle = ?";
-//
-//			// Prepare the statement
-//			PreparedStatement preparedStatement = conn.prepareStatement(query);
-//
-//			// Set the parameters for the query
-//			preparedStatement.setString(1, updatedReturnDate); // Set the new returnDate
-//			preparedStatement.setString(2, cardNum); // Set cardNum
-//			preparedStatement.setString(3, bookTitle); // Set bookTitle
-//
-//			// Execute the update query
-//			int rowsUpdated = preparedStatement.executeUpdate();
-//
-//			// If rowsUpdated > 0, the update was successful
-//			return rowsUpdated > 0;
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			return false;
-//		} catch (Exception e) {
-//			System.err.println("Error parsing or updating date: " + e.getMessage());
-//			return false;
-//		}
-//	}
 }

@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="295.0" prefWidth="320.0"  xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ExtendPopupController">
+<AnchorPane prefHeight="309.0" prefWidth="320.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ExtendPopupController">
 	<Label layoutX="20" layoutY="20" text="Books Available for Extension" />
 	<TableView fx:id="extendTable" layoutX="10.0" layoutY="22.0" prefHeight="197.0" prefWidth="300.0">
 		<columns>
@@ -16,5 +16,5 @@
 	</TableView>
 	<Button fx:id="btnRequestExtention" layoutX="55.0" layoutY="228.0" onAction="#onRequestExtensionClicked" text="Request Extension" />
 	<Button fx:id="btnClose" layoutX="196.0" layoutY="228.0" onAction="#onCloseClicked" text="Close" />
-	<Label fx:id="lblRequest" layoutX="55.0" layoutY="264.0" text="Label" />
+	<Label fx:id="lblRequest" layoutX="55.0" layoutY="259.0" text="Label" />
 </AnchorPane>

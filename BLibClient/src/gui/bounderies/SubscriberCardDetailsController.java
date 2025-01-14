@@ -119,7 +119,6 @@ public class SubscriberCardDetailsController {
 	private Label lblUpdateDateMessage;
 
 	private Map<String, String> updatedReturnDates = new HashMap<>();
-
 	public static String type = "subscriber";
 
 	public SubscriberCardDetailsController() {
@@ -164,7 +163,7 @@ public class SubscriberCardDetailsController {
 	}
 
 	@FXML
-	private void btnSearchClicked(ActionEvent event) {
+	void btnSearchClicked(ActionEvent event) {
 		// Get the inserted card number from the TextField
 		String cardNumber = tfInsertCardNumber.getText();
 
@@ -182,9 +181,7 @@ public class SubscriberCardDetailsController {
 	}
 
 	public void cardExist(Map<String, Object> cardDetails) {
-
-		HashMap<String, Object> response = (HashMap<String, Object>) cardDetails;
-		boolean cardExists = (boolean) response.get("exists");
+		boolean cardExists = (boolean) cardDetails.get("exists");
 
 		// Use Platform.runLater to update the UI on the JavaFX Application Thread
 		Platform.runLater(() -> {
@@ -217,48 +214,36 @@ public class SubscriberCardDetailsController {
 			// Make the labels and buttons visible
 			showComponents();
 
-			// Set the card details in the respective TextFields
-			if (cardDetails != null) {
-				tfCardNumber.setText((String) cardDetails.get("cardNum"));
-				tfUserName.setText((String) cardDetails.get("username"));
-				tfPhoneNumber.setText((String) cardDetails.get("phoneNumber"));
-				tfEmail.setText((String) cardDetails.get("email"));
+			tfCardNumber.setText((String) cardDetails.get("cardNum"));
+			tfUserName.setText((String) cardDetails.get("username"));
+			tfPhoneNumber.setText((String) cardDetails.get("phoneNumber"));
+			tfEmail.setText((String) cardDetails.get("email"));
 
-				// Populate the loan history table
-				List<Map<String, Object>> loanHistory = (List<Map<String, Object>>) cardDetails.get("loanHistory");
-				if (loanHistory != null) {
-					tableLoanHistory.getItems().clear();
-					for (Map<String, Object> loan : loanHistory) {
-						// Convert borrowDate and returnDate to String if they are java.sql.Date
-						String borrowDateStr = formatDate(loan.get("borrowDate"));
-						String returnDateStr = formatDate(loan.get("returnDate"));
-
-						tableLoanHistory.getItems()
-								.add(new Loan((String) loan.get("bookTitle"), borrowDateStr, returnDateStr));
-					}
-				}
-
-				// Populate the issues history table
-				List<Map<String, Object>> issuesHistory = (List<Map<String, Object>>) cardDetails.get("issuesHistory");
-				if (issuesHistory != null) {
-					tableIssuesHistory.getItems().clear();
-					for (Map<String, Object> issue : issuesHistory) {
-						// Convert issueDate to String if it is java.sql.Date
-						String issueDateStr = formatDate(issue.get("issueDate"));
-
-						tableIssuesHistory.getItems().add(new IssueHistory((String) issue.get("issueType"),
-								issueDateStr, (String) issue.get("issueDescription")));
-					}
-				}
-			} else {
-				// If card details are missing, clear all fields and tables to avoid showing
-				// invalid data
-				tfCardNumber.clear();
-				tfUserName.clear();
-				tfPhoneNumber.clear();
-				tfEmail.clear();
+			// Populate the loan history table
+			List<Map<String, Object>> loanHistory = (List<Map<String, Object>>) cardDetails.get("loanHistory");
+			if (loanHistory != null) {
 				tableLoanHistory.getItems().clear();
+				for (Map<String, Object> loan : loanHistory) {
+					// Convert borrowDate and returnDate to String if they are java.sql.Date
+					String borrowDateStr = formatDate(loan.get("borrowDate"));
+					String returnDateStr = formatDate(loan.get("returnDate"));
+
+					tableLoanHistory.getItems()
+							.add(new Loan((String) loan.get("bookTitle"), borrowDateStr, returnDateStr));
+				}
+			}
+
+			// Populate the issues history table
+			List<Map<String, Object>> issuesHistory = (List<Map<String, Object>>) cardDetails.get("issuesHistory");
+			if (issuesHistory != null) {
 				tableIssuesHistory.getItems().clear();
+				for (Map<String, Object> issue : issuesHistory) {
+					// Convert issueDate to String if it is java.sql.Date
+					String issueDateStr = formatDate(issue.get("issueDate"));
+
+					tableIssuesHistory.getItems().add(new IssueHistory((String) issue.get("issueType"), issueDateStr,
+							(String) issue.get("issueDescription")));
+				}
 			}
 		});
 	}
@@ -411,6 +396,7 @@ public class SubscriberCardDetailsController {
 	private void btnExtendClicked(ActionEvent event) {
 
 		try {
+
 			lblPhoneNumberMessage.setText("");
 			lblEmailmessage.setText("");
 			lblEmailPhonemessage.setText("");
@@ -424,6 +410,7 @@ public class SubscriberCardDetailsController {
 			// Get the controller of the popup
 			ExtendPopupController extendController = loader.getController();
 			extendController.setChatClient(chatClient);
+			extendController.setSubscriberCardDetailsController(this);
 			// Pass the card number to the popup controller
 			extendController.setCardNumber(tfCardNumber.getText());
 
@@ -441,9 +428,9 @@ public class SubscriberCardDetailsController {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void refreshTheTable() {
-		
+
 	}
 
 	private void hideComponents() {
