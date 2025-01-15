@@ -8,4 +8,5 @@ public enum MessageType {
 	orderBook,
 	checkOderBook,
 	login,
+	Return,
 }

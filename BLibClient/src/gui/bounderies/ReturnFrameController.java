@@ -1,6 +1,8 @@
 package gui.bounderies;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import application.ClientUI;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +15,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
+import message.Message;
+import message.MessageType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
@@ -48,6 +52,12 @@ public class ReturnFrameController {
     
     @FXML
     private Label SuccessMessageLabel;
+    
+    @FXML 
+    private Label returnSuccess;
+    
+    @FXML
+    private Label returnUnsuccess;
     
     @FXML
     private void initialize() {
@@ -121,8 +131,15 @@ public class ReturnFrameController {
             InvalidErrorLabel.setVisible(false);
             SuccessMessageLabel.setVisible(true); 
         }
+         
+         ArrayList<String> returnBook = new ArrayList<>();
+         returnBook.add(bookBarcode);
+         returnBook.add(readerCard);
+         Message sendToServer = new Message(MessageType.Return, returnBook);
+         ClientUI.chat.accept(sendToServer); 
     }
     
+     
     
     private boolean isValidBookBarcode(String bookBarcode)
     { 
@@ -192,4 +209,16 @@ public class ReturnFrameController {
             e.printStackTrace();
         }
     }
+
+
+	public void showMessage(boolean isReturnSuccessful) {
+		// TODO Auto-generated method stub
+		if (isReturnSuccessful) {
+			returnSuccess.setVisible(true);
+			returnUnsuccess.setVisible(false);
+		} else {
+			returnSuccess.setVisible(false);
+			returnUnsuccess.setVisible(true);
+		}
+	}
 }

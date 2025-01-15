@@ -12,47 +12,47 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="src" path="/OCSF"/>
-	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.base.jar">
+	<classpathentry kind="lib" path="lib/javafx.base.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.controls.jar">
+	<classpathentry kind="lib" path="lib/javafx.controls.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.fxml.jar">
+	<classpathentry kind="lib" path="lib/javafx.fxml.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.graphics.jar">
+	<classpathentry kind="lib" path="lib/javafx.graphics.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.media.jar">
+	<classpathentry kind="lib" path="lib/javafx.media.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.swing.jar">
+	<classpathentry kind="lib" path="lib/javafx.swing.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx.web.jar">
+	<classpathentry kind="lib" path="lib/javafx.web.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/javafx-swt.jar">
+	<classpathentry kind="lib" path="lib/javafx-swt.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="//CTXE-UPM.brdeng.ac/CTXFR$/Ashraf.Atshy.BRDENG/Desktop/graFX/mysql-connector-java-8.0.13.jar">
+	<classpathentry kind="lib" path="lib/mysql-connector-java-8.0.13.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

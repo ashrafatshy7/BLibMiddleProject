@@ -21,6 +21,7 @@ import enteties.User;
 public class mysqlConnection {
 	
 	
+	private static final User New = null;
 	private static Connection conn;
 
 	public static void connectToDB() 
@@ -107,6 +108,76 @@ public class mysqlConnection {
 	}
 
 	
+	public static boolean Return(Object message) {
+		
+		PreparedStatement pstmt = null;
+		PreparedStatement updateStatusStmt = null;
+		ResultSet rs = null;
+		boolean isSuccess = false;
+		
+		ArrayList<String> returnDetails = (ArrayList<String>) message;
+
+	    String bookBarcode = returnDetails.get(0);
+	    String readerCard = returnDetails.get(1);
+	    
+	    try {
+	    	String queryCheckReturnDate = " SELECT returnDate FROM loan WHERE barcode = ? AND id = ?";
+	    	pstmt=conn.prepareStatement(queryCheckReturnDate);
+	    	pstmt.setString(1, bookBarcode);
+	    	pstmt.setString(2, readerCard);
+	    	rs = pstmt.executeQuery();
+	    	
+	    	if (rs.next()) {
+	    		java.sql.Date returnDate = rs.getDate("returnDate");
+	    		
+	    		java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
+	    		long diffInMillis = currentDate.getTime()-returnDate.getTime();
+	    		long diffInDays = diffInMillis/(1000*60*60*24);
+	    		
+	    		if (diffInDays>=7) {
+	    			String freezeQuery = "UPDATE users SET status = 'frozen', frozenUntil = DATE_ADD(NOW(), INTERVAL 1 MONTH) WHERE id = ?";
+	    			updateStatusStmt=conn.prepareStatement(freezeQuery);
+	    			updateStatusStmt.setString(1, readerCard);
+	    			updateStatusStmt.executeUpdate();
+	    		}
+	    	}
+	    	
+	    	String query = "UPDATE books SET availableCopies = availableCopies + 1 WHERE barcode = ?";
+	    	
+	    	pstmt=conn.prepareStatement(query);
+	    	pstmt.setString(1, bookBarcode);
+	    	pstmt.setString(2, readerCard);
+	    	
+	    	 int rowsAffected = pstmt.executeUpdate(); // Execute the update query
+
+	         if (rowsAffected > 0) {
+	             isSuccess = true; // The return was processed successfully
+	         }
+
+	     } catch (SQLException e) {
+	         e.printStackTrace();
+	     } finally {
+	    	// Close all resources
+	         try {
+	             if (rs != null) rs.close();
+	         } catch (SQLException se) {
+	             se.printStackTrace();
+	         }
+	         try {
+	             if (pstmt != null) pstmt.close();
+	         } catch (SQLException se) {
+	             se.printStackTrace();
+	         }
+	         try {
+	             if (updateStatusStmt != null) updateStatusStmt.close();
+	         } catch (SQLException se) {
+	             se.printStackTrace();
+	         }
+	     }
+
+	     return isSuccess;
+		
+	}
 	
 	
 	
@@ -116,7 +187,16 @@ public class mysqlConnection {
 	
 	
 	
-	
+	private static void User() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+
+
+
 	// subscribers
 	public static ArrayList<Map<String, Object>> getAllValues(Object msg) {
 	    Statement stmt;

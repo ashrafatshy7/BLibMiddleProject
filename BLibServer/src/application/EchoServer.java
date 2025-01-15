@@ -122,6 +122,12 @@ public class EchoServer extends AbstractServer
                 client.sendToClient(messageFromServer);
 	        	break;
 	        	
+	        case Return:
+	        	boolean isSuccess= mysqlConnection.Return(message.getMessageData());
+	        	messageFromServer = new Message(MessageType.Return, isSuccess);
+                client.sendToClient(messageFromServer);
+	        	break;
+	        	
 	        }
 	    
 	    

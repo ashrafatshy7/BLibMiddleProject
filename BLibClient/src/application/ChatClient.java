@@ -7,6 +7,7 @@ import enteties.User;
 import gui.bounderies.ClientFrameController;
 import gui.bounderies.HomeFrameController;
 import gui.bounderies.LoginFrameController;
+import gui.bounderies.ReturnFrameController;
 import message.Message;
 import message.MessageType;
 
@@ -33,6 +34,7 @@ public class ChatClient extends AbstractClient {
 	private ClientFrameController clientFrameController;
 	private HomeFrameController homeFrameController;
 	private LoginFrameController loginFrameController;
+	private ReturnFrameController returnFrameController;
 
 	/**
 	 * The interface type variable. It allows the implementation of the display
@@ -70,6 +72,10 @@ public class ChatClient extends AbstractClient {
         this.loginFrameController = loginFrameController;
     }
 	
+	public void setReturnFrameController(ReturnFrameController returnFrameController) {
+		
+		this.returnFrameController = returnFrameController;
+	}
 
 	/**
 	 * This method handles all data that comes in from the server.
@@ -101,6 +107,22 @@ public class ChatClient extends AbstractClient {
 				System.out.println(e.getMessage());
 			}
 			break;
+			
+		case Return:
+			try {
+				boolean isReturnSuccessful = (boolean) message.getMessageData();
+				System.out.println("Book return status: " + (isReturnSuccessful ? "Successful" : "Failed"));
+				
+				 if (returnFrameController != null) {
+					 returnFrameController.showMessage(isReturnSuccessful);
+		            } else {
+		                System.err.println("ReturnFrameController is not set in ChatClient.");
+		            }
+		        } catch (Exception e) {
+		            System.err.println("Error processing return case: " + e.getMessage());
+		        }
+		        break;
+			}
 		}
 		
 		
@@ -152,7 +174,7 @@ public class ChatClient extends AbstractClient {
 //			
 //		}
 
-	}
+	
 
 	/**
 	 * This method handles all data coming from the UI
