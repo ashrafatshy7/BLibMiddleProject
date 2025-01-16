@@ -1,6 +1,10 @@
 package enteties;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String ID;
     private String name;
     private String phoneNumber;
@@ -46,4 +50,5 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+   
 }

@@ -1,0 +1,7 @@
+@charset "UTF-8";
+
+/* Invalid input (Red border) */
+.text-field-invalid {
+	-fx-border-color: red;
+	-fx-border-width: 1px;
+}
