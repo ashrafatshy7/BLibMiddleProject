@@ -264,7 +264,7 @@ public class mysqlConnection {
 				preparedStatement.close();
 
 				// Step 4: Fetch issues history for the cardNum
-				String issuesHistoryQuery = "SELECT issueType, issueDate, issueDescription FROM issuehistory WHERE cardNum = ?";
+				String issuesHistoryQuery = "SELECT issueType, issueDate, issueDescription FROM issuehistory WHERE id = ?";
 				preparedStatement = conn.prepareStatement(issuesHistoryQuery);
 				preparedStatement.setString(1, cardNum);
 

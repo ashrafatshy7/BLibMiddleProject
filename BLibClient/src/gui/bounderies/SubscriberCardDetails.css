@@ -1,5 +1,15 @@
 /* Invalid input (Red border) */
 .text-field-invalid {
 	-fx-border-color: red;
-	-fx-border-width: 1px;
+	-fx-border-width: 1.0px;
+}
+
+
+.text-field {
+    -fx-background-color: transparent; /* Make the background transparent */
+    -fx-border-width: 0.0 0.0 2.0 0.0; /* Add a border only at the bottom */
+    -fx-border-color: #0078d7; /* Set the color of the line */
+    -fx-prompt-text-fill: #888888; /* Set the placeholder text color */
+    -fx-font-size: 14.0px; /* Adjust the font size */
+    -fx-padding: 0.0 5.0 0.0 5.0; /* Add some padding for spacing */
 }
