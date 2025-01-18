@@ -10,6 +10,7 @@ import gui.bounderies.LoginFrameController;
 import gui.bounderies.ReturnFrameController;
 import gui.bounderies.SeeAllFrameController;
 import gui.bounderies.SubscriberCardDetailsController;
+import gui.bounderies.TwoChartsController;
 import gui.bounderies.ExtendPopupController;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -48,6 +49,7 @@ public class ChatClient extends AbstractClient {
 	private ExtendPopupController extendPopupController;
 	private LoginFrameController loginFrameController;
 	private ReturnFrameController returnFrameController;
+	private TwoChartsController twoChartsController;
 	/**
 	 * The interface type variable. It allows the implementation of the display
 	 * method in the client.
@@ -87,7 +89,7 @@ public class ChatClient extends AbstractClient {
 	public void setBookDetailsFrameController(BookDetailsFrameController bookDetailsFrameController) {
 		this.bookDetailsFrameController = bookDetailsFrameController;
 	}
-	
+
 	public void setSubscriberCardDetailsController(SubscriberCardDetailsController subscriberCardDetailsController) {
 		this.subscriberCardDetailsController = subscriberCardDetailsController;
 	}
@@ -95,16 +97,20 @@ public class ChatClient extends AbstractClient {
 	public void setExtendPopupController(ExtendPopupController extendPopupController) {
 		this.extendPopupController = extendPopupController;
 	}
-	
+
 	public void setLoginFrameController(LoginFrameController loginFrameController) {
-        this.loginFrameController = loginFrameController;
-    }
-	
+		this.loginFrameController = loginFrameController;
+	}
+
 	public void setReturnFrameController(ReturnFrameController returnFrameController) {
-		
+
 		this.returnFrameController = returnFrameController;
 	}
-	
+
+	public void setTwoChartsController(TwoChartsController twoChartsController) {
+		this.twoChartsController = twoChartsController;
+	}
+
 	/**
 	 * This method handles all data that comes in from the server.
 	 *
@@ -241,32 +247,84 @@ public class ChatClient extends AbstractClient {
 		case login:
 			try {
 				User user = (User) message.getMessageData();
-				System.out.println("user is: "+user);
+				System.out.println("user is: " + user);
 				if (loginFrameController != null) {
 					loginFrameController.setUser(user);
-                } else {
-                    System.err.println("HomeFrameController is not set in ChatClient.");
-                }
+				} else {
+					System.err.println("HomeFrameController is not set in ChatClient.");
+				}
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
 			break;
-			
+
 		case returnBook:
 			try {
 				boolean isReturnSuccessful = (boolean) message.getMessageData();
 				System.out.println("Book return status: " + (isReturnSuccessful ? "Successful" : "Failed"));
-				
-				 if (returnFrameController != null) {
-					 returnFrameController.showMessage(isReturnSuccessful);
-		            } else {
-		                System.err.println("ReturnFrameController is not set in ChatClient.");
-		            }
-		        } catch (Exception e) {
-		            System.err.println("Error processing return case: " + e.getMessage());
-		        }
-		        break;
+
+				if (returnFrameController != null) {
+					returnFrameController.showMessage(isReturnSuccessful);
+				} else {
+					System.err.println("ReturnFrameController is not set in ChatClient.");
+				}
+			} catch (Exception e) {
+				System.err.println("Error processing return case: " + e.getMessage());
+			}
+			break;
+
+		case loanReport:
+			Platform.runLater(() -> {
+				try {
+					Map<String, String> loanReportMap = (Map<String, String>) message.getMessageData();
+
+					if (loanReportMap == null) {
+						showAlert("No Data Found", "No loan report data is available for the selected month and year.");
+						return;
+					}
+
+					if (twoChartsController != null) {
+						twoChartsController.showLoanReportData(loanReportMap);
+					} else {
+						System.err.println("twoChartsController is not set in ChatClient.");
+					}
+				} catch (Exception e) {
+					System.err.println("Error processing return case: " + e.getMessage());
+				}
+			});
+			break;
+
+		case StatusReport:
+			Platform.runLater(() -> {
+				try {
+					Map<String, String> statusReportMap = (Map<String, String>) message.getMessageData();
+
+					if (statusReportMap == null) {
+						showAlert("No Data Found",
+								"No status report data is available for the selected month and year.");
+						return;
+					}
+
+					if (twoChartsController != null) {
+						twoChartsController.showStatusReportData(statusReportMap);
+					} else {
+						System.err.println("twoChartsController is not set in ChatClient.");
+					}
+				} catch (Exception e) {
+					System.err.println("Error processing return case: " + e.getMessage());
+				}
+			});
+			break;
+
 		}
+	}
+
+	private void showAlert(String title, String content) {
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle(title);
+		alert.setHeaderText(null);
+		alert.setContentText(content);
+		alert.showAndWait();
 	}
 
 	/**
@@ -329,7 +387,6 @@ public class ChatClient extends AbstractClient {
 			alert.showAndWait();
 		});
 	}
-
 
 }
 //End of ChatClient class

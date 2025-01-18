@@ -77,7 +77,7 @@ public class HomeFrameController {
 		this.chatClient = chatClient;
 		this.chatClient.setHomeFrameController(this);
 	}
-	
+
 	@FXML
 	public void start(Stage primaryStage) throws Exception {
 		try {
@@ -134,8 +134,8 @@ public class HomeFrameController {
 			librarianOrderBook.setVisible(true);
 			librarianReport.setVisible(true);
 		}
-		
-		if(ClientUI.user != null) {
+
+		if (ClientUI.user != null) {
 			login.setText("Logout");
 		}
 	}
@@ -168,8 +168,10 @@ public class HomeFrameController {
 	}
 
 	public void report(ActionEvent event) throws Exception {
-		System.out.println("Subscriber Information clicked.");
-		// Implement navigation to Subscriber Information view
+		((Node) event.getSource()).getScene().getWindow().hide();
+		Stage primaryStage = new Stage();
+		TwoChartsController twoChartsController = new TwoChartsController();
+		twoChartsController.start(primaryStage);
 	}
 
 	//
@@ -189,14 +191,14 @@ public class HomeFrameController {
 		SeeAllFrameController seeAllFrame = new SeeAllFrameController();
 		seeAllFrame.start(primaryStage);
 	}
-	
+
 	public void loginBtn(ActionEvent event) throws Exception {
-		if(login.getText().equals("Login")) {
-		((Node) event.getSource()).getScene().getWindow().hide();
-		Stage primaryStage = new Stage();
-		LoginFrameController loginFrameController = new LoginFrameController();
-		loginFrameController.start(primaryStage);
-		}else if(login.getText().equals("Logout")) {
+		if (login.getText().equals("Login")) {
+			((Node) event.getSource()).getScene().getWindow().hide();
+			Stage primaryStage = new Stage();
+			LoginFrameController loginFrameController = new LoginFrameController();
+			loginFrameController.start(primaryStage);
+		} else if (login.getText().equals("Logout")) {
 			ClientUI.user = null;
 			configureUserInterface();
 			login.setText("Login");

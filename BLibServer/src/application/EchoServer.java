@@ -190,17 +190,29 @@ public class EchoServer extends AbstractServer {
 				messageFromServer = new Message(MessageType.bookExtensionSucceeded, isExtentionUpdated);
 				client.sendToClient(messageFromServer);
 				break;
-			 case login:
-		        	User user = mysqlConnection.login(message.getMessageData());
-		        	messageFromServer = new Message(MessageType.login, user);
-	                client.sendToClient(messageFromServer);
-		        	break;
-		        	
-		        case returnBook:
-		        	boolean isSuccess= mysqlConnection.returnBook(message.getMessageData());
-		        	messageFromServer = new Message(MessageType.returnBook, isSuccess);
-	                client.sendToClient(messageFromServer);
-		        	break;
+			case login:
+				User user = mysqlConnection.login(message.getMessageData());
+				messageFromServer = new Message(MessageType.login, user);
+				client.sendToClient(messageFromServer);
+				break;
+
+			case returnBook:
+				boolean isSuccess = mysqlConnection.returnBook(message.getMessageData());
+				messageFromServer = new Message(MessageType.returnBook, isSuccess);
+				client.sendToClient(messageFromServer);
+				break;
+
+			case loanReport:
+				Map<String, String> loanChartData = mysqlConnection.fetchLoanDataForReport(message.getMessageData());
+				messageFromServer = new Message(MessageType.loanReport, loanChartData);
+				client.sendToClient(messageFromServer);
+				break;
+
+			case StatusReport:
+				Map<String, String> statusChartData = mysqlConnection.fetchStatusDataForReport(message.getMessageData());
+				messageFromServer = new Message(MessageType.StatusReport, statusChartData);
+				client.sendToClient(messageFromServer);
+				break;
 
 			default:
 				break;
