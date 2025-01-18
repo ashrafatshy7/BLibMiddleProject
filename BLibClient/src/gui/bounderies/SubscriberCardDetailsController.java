@@ -39,7 +39,6 @@ public class SubscriberCardDetailsController {
 
 	@FXML
 	private Button btnBack;
-
 	@FXML
 	private Button btnUpdateDetails;
 

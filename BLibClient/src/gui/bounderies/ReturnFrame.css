@@ -1,4 +1,84 @@
-.invalid-border {
-    -fx-border-color: red;
-    -fx-border-width: 2px;
+/* Background */
+.root {
+    -fx-background-color: #f9f9f9;
+}
+
+/* Title Label */
+.title-label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+    -fx-alignment: center;
+}
+
+/* Form Labels */
+.form-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #555;
+}
+
+/* Form Fields */
+.form-field {
+    -fx-pref-width: 300px;
+    -fx-pref-height: 30px;
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-color: #ccc;
+    -fx-padding: 5px 10px;
+    -fx-font-size: 14px;
+}
+
+/* Form Field Focus */
+.form-field:focused {
+    -fx-border-color: #007BFF;
+}
+
+/* Error Labels */
+.error-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: red;
+}
+
+/* Success Labels */
+.success-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #28a745;
+}
+
+/* Buttons */
+.form-button {
+    -fx-pref-width: 120px;
+    -fx-pref-height: 40px;
+    -fx-background-color: linear-gradient(to bottom, #007BFF, #0056b3);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.form-button:hover {
+    -fx-background-color: #0069d9;
+}
+
+.form-button:pressed {
+    -fx-background-color: #004A91;
+}
+
+/* Top Button (Back) */
+.top-button {
+    -fx-pref-width: 120px;
+    -fx-pref-height: 40px;
+    -fx-background-color: linear-gradient(to bottom, #6c757d, #5a6268);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.top-button:hover {
+    -fx-background-color: #5a6268;
 }

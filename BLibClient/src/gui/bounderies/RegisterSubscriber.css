@@ -1,11 +1,97 @@
-.invalid-border {
-    -fx-border-color: red;
-    -fx-border-width: 2;
-    -fx-border-radius: 5;
+/* General Background */
+.root {
+    -fx-background-color: #f5f5f5;
 }
 
-.label-error {
-    -fx-font-size: 10px;
-    -fx-text-fill: red;
-    -fx-padding: 2px 0 0 0;
+/* Title Label */
+.title-label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2e3a59;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.0, 0, 2);
 }
+
+/* Form Labels */
+.form-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666;
+    -fx-font-weight: bold;
+}
+
+/* Underlined Text Fields */
+.underlined-field {
+    -fx-pref-width: 300px;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: #aaa;
+    -fx-font-size: 14px;
+    -fx-padding: 2 0 2 0;
+    -fx-background-color: transparent;
+}
+.underlined-field:focused {
+    -fx-border-color: #4CAF50;
+    -fx-border-width: 0 0 3 0;
+}
+
+/* Error Labels */
+.error-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #ff5252;
+}
+
+/* Buttons */
+.form-button {
+    -fx-pref-width: 150px;
+    -fx-pref-height: 40px;
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+.form-button:hover {
+    -fx-background-color: #45a049;
+}
+
+.top-button {
+    -fx-pref-width: 100px;
+    -fx-pref-height: 30px;
+    -fx-background-color: #f44336;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+.top-button:hover {
+    -fx-background-color: #e53935;
+}
+
+
+/* Blue Gradient Button */
+.modern-button {
+    -fx-background-color: linear-gradient(to bottom, #007BFF, #0056b3); /* Default blue gradient */
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 6, 0, 0, 3);
+    -fx-cursor: hand;
+}
+
+/* Hover Effect: Lighter blue gradient */
+.modern-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #3399FF, #007BFF); /* Lighter gradient */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 8, 0, 0, 3);
+}
+
+/* Pressed Effect: Dark blue */
+.modern-button:pressed {
+    -fx-background-color: #004A91; /* Solid dark blue */
+    -fx-effect: innershadow(gaussian, black, 8, 0, 0, 2);
+}
+
+
