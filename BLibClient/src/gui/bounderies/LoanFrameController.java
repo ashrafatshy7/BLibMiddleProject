@@ -65,7 +65,7 @@ public class LoanFrameController {
 	    });
 
 	}
-
+	@FXML
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/LoanFrame.fxml"));

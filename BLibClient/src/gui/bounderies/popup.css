@@ -1,0 +1,78 @@
+/* General Pane Background */
+.popup-pane {
+    -fx-background-color: #F4F4F8; /* Soft light gray-blue for a modern and clean look */
+    -fx-border-color: #D0D0D5; /* Neutral gray border */
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px;
+}
+
+/* Title Style */
+.popup-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3E4A61; /* Darker text color */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0, 0, 1);
+}
+
+/* Table Style */
+.popup-table {
+    -fx-background-color: #FFFFFF; /* White background */
+    -fx-border-color: #E0E0E0; /* Light gray border */
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-table-cell-border-color: transparent;
+    -fx-table-header-border-color: #E0E0E0;
+}
+
+.popup-table .column-header {
+    -fx-background-color: #F0F0F0; /* Light gray for header */
+    -fx-text-fill: #3E4A61;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+}
+
+.popup-table .table-row-cell {
+    -fx-background-color: #FFFFFF; /* White row */
+    -fx-font-size: 12px;
+    -fx-text-fill: #555555;
+}
+
+.popup-table .table-row-cell:odd {
+    -fx-background-color: #FAFAFA; /* Subtle striping */
+}
+
+.popup-table .table-row-cell:selected {
+    -fx-background-color: #FFE4B2; /* Light pastel orange */
+    -fx-text-fill: #3E4A61;
+}
+
+/* Button Style */
+.popup-button {
+    -fx-pref-width: 120px;
+    -fx-pref-height: 30px;
+    -fx-background-color: linear-gradient(to bottom, #90CAF9, #64B5F6);
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 4, 0, 0, 1);
+}
+
+.popup-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #64B5F6, #42A5F5);
+}
+
+.popup-button:pressed {
+    -fx-background-color: #2196F3;
+}
+
+/* Label Style */
+.popup-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #FF7043; /* Orange for warning messages */
+    -fx-font-style: italic;
+}

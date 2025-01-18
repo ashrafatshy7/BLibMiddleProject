@@ -1,0 +1,93 @@
+/* General Background */
+.root {
+    -fx-background-color: #f5f5f5; /* Neutral base */
+}
+
+/* Title Label */
+.title-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2e3a59;
+}
+
+/* Form Labels */
+.form-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #444; /* Slightly darker for accessibility */
+    -fx-font-weight: bold;
+}
+
+/* Underlined Text Fields */
+.underlined-field {
+    -fx-pref-width: 200px;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: #aaa;
+    -fx-font-size: 14px;
+    -fx-background-color: transparent;
+}
+
+.underlined-field:focused {
+    -fx-border-color: #4CAF50;
+    -fx-border-width: 0 0 3 0;
+}
+
+/* Buttons */
+.modern-button {
+    -fx-pref-width: 80px;
+    -fx-pref-height: 30px;
+    -fx-background-color: linear-gradient(to bottom, #64B5F6, #1E88E5); /* Calm blue gradient */
+    -fx-text-fill: #ffffff; /* White text for contrast */
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 5 15 5 15; /* Padding for a balanced shape */
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 5, 0, 0, 2); /* Elegant shadow for depth */
+}
+
+.modern-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #90CAF9, #42A5F5); /* Brighter blue on hover */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 8, 0, 0, 3); /* Stronger shadow for hover */
+}
+
+.modern-button:pressed {
+    -fx-background-color: #1565C0; /* Deep blue when pressed */
+    -fx-effect: none; /* Flat appearance when pressed */
+}
+
+
+/* TableView General Style */
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d4d4d4;
+    -fx-border-radius: 5px;
+}
+
+/* Table Header Style */
+.table-view .column-header {
+    -fx-background-color: #f7f7f7;
+    -fx-text-fill: #333;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* Table Row Style */
+.table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-font-size: 13px;
+    -fx-text-fill: #444;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f9f9f9;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #e6e6e6;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #90CAF9; /* Light blue */
+    -fx-text-fill: #1a237e; /* Dark navy text */
+}

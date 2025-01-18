@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" stylesheets="@ReturnFrame.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ReturnFrameController">
+   <children>
+      <!-- Title -->
+      <Label fx:id="ReturnLabel" layoutX="310.0" layoutY="50.0" text="Return a Book" styleClass="title-label" />
+
+      <!-- Book Barcode -->
+      <Label text="Book Barcode:" layoutX="150.0" layoutY="150.0" styleClass="form-label" />
+      <TextField fx:id="bookBarcodeField" layoutX="310.0" layoutY="145.0" styleClass="form-field" />
+
+      <!-- Reader Card -->
+      <Label text="Reader Card:" layoutX="150.0" layoutY="220.0" styleClass="form-label" />
+      <TextField fx:id="ReadercardField" layoutX="310.0" layoutY="215.0" styleClass="form-field" />
+
+      <!-- Error Labels -->
+      <Label fx:id="EmptyErrorLabel" layoutX="310.0" layoutY="270.0" text="Please fill in all required fields" visible="false" styleClass="error-label" />
+      <Label fx:id="InvalidErrorLabel" layoutX="310.0" layoutY="300.0" text="Incorrect details" visible="false" styleClass="error-label" />
+      <Label fx:id="returnSuccess" layoutX="310.0" layoutY="270.0" text="Book returned successfully!" visible="false" styleClass="success-label" />
+      <Label fx:id="returnUnsuccess" layoutX="310.0" layoutY="300.0" text="Failed to return the book. Try again!" visible="false" styleClass="error-label" />
+
+      <!-- Buttons -->
+      <Button fx:id="Returnbutton" layoutX="310.0" layoutY="360.0" onAction="#handleReturnButtonAction" text="Return" styleClass="form-button" />
+      <Button fx:id="backButton" layoutX="150.0" layoutY="360.0" text="Back" onAction="#goBack" styleClass="top-button" />
+   </children>
+</AnchorPane>

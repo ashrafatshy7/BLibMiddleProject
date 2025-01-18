@@ -7,4 +7,12 @@ public enum MessageType {
 	getEarliestReturnDate,
 	orderBook,
 	checkOderBook,
+	registerSubscriber,
+	cardNumber,
+	updateEmailAndPhone,
+	updateReturnDate,
+	bookExtentionTable,
+	bookExtensionSucceeded,
+	login,
+	returnBook,
 }
