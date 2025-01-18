@@ -18,38 +18,38 @@
 			</font>
 		</Label>
 		<Label fx:id="lblInvalidCardNumber" layoutX="220.0" layoutY="62.0" prefHeight="17.0" prefWidth="139.0" styleClass="error-label" textFill="RED" />
-		<Label fx:id="lblUserName" layoutX="26.0" layoutY="112.0" styleClass="form-label" text="UserName :" />
-		<Label fx:id="lblPhoneNumber" layoutX="26.0" layoutY="144.0" styleClass="form-label" text="Phone Number :" />
-		<Label fx:id="lblEmail" layoutX="26.0" layoutY="176.0" styleClass="form-label" text="Email :" />
+		<Label fx:id="lblUserName" layoutX="26.0" layoutY="110.0" styleClass="form-label" text="UserName :" />
+		<Label fx:id="lblPhoneNumber" layoutX="26.0" layoutY="140.0" styleClass="form-label" text="Phone Number :" />
+		<Label fx:id="lblEmail" layoutX="26.0" layoutY="170.0" styleClass="form-label" text="Email :" />
 		<Label fx:id="lblCardNumber" layoutX="24.0" layoutY="80.0" styleClass="form-label" text="Card Number :" />
-		<TextField fx:id="tfCardNumber" layoutX="121.0" layoutY="77.0" prefHeight="25.0" prefWidth="190.0" styleClass="underlined-field" />
-		<TextField fx:id="tfUserName" layoutX="107.0" layoutY="109.0" prefHeight="25.0" prefWidth="214.0" styleClass="underlined-field" />
-		<TextField fx:id="tfPhoneNumber" layoutX="134.0" layoutY="141.0" prefHeight="25.0" prefWidth="179.0" styleClass="underlined-field" />
-		<TextField fx:id="tfEmail" layoutX="72.0" layoutY="173.0" prefHeight="25.0" prefWidth="247.0" styleClass="underlined-field" />
+		<TextField fx:id="tfCardNumber" layoutX="122.0" layoutY="70.0" prefHeight="25.0" prefWidth="190.0" styleClass="underlined-field" />
+		<TextField fx:id="tfUserName" layoutX="107.0" layoutY="100.0" prefHeight="25.0" prefWidth="214.0" styleClass="underlined-field" />
+		<TextField fx:id="tfPhoneNumber" layoutX="134.0" layoutY="130.0" prefHeight="25.0" prefWidth="179.0" styleClass="underlined-field" />
+		<TextField fx:id="tfEmail" layoutX="72.0" layoutY="160.0" prefHeight="25.0" prefWidth="247.0" styleClass="underlined-field" />
 		<TextField fx:id="tfInsertCardNumber" layoutX="189.0" layoutY="36.0" prefHeight="25.0" prefWidth="200.0" styleClass="underlined-field" />
-		<TableView fx:id="tableLoanHistory" editable="true" layoutX="24.0" layoutY="296.0" prefHeight="195.0" prefWidth="393.0" styleClass="table-view">
+		<TableView fx:id="tableLoanHistory" editable="true" layoutX="24.0" layoutY="289.0" prefHeight="195.0" prefWidth="393.0" styleClass="table-view">
 			<columns>
 				<TableColumn fx:id="colBookTitle" editable="false" prefWidth="150.0" text="Book Title" />
 				<TableColumn fx:id="colReturnDate" editable="true" prefWidth="120.0" text="Return Date" />
 				<TableColumn fx:id="colBorrowDate" editable="false" prefWidth="120.0" text="Borrow Date" />  
 			</columns>
 		</TableView>
-		<Label fx:id="lblLoanHistory" layoutX="26.0" layoutY="269.0" styleClass="title-label" text="Loan History" />
-		<Label fx:id="lblIssueHistory" layoutX="465.0" layoutY="269.0" styleClass="title-label" text="Issues History" />
-		<TableView fx:id="tableIssuesHistory" layoutX="450.0" layoutY="296.0" prefHeight="195.0" prefWidth="393.0" styleClass="table-view">
+		<Label fx:id="lblLoanHistory" layoutX="42.0" layoutY="262.0" styleClass="title-label" text="Loan History" />
+		<Label fx:id="lblIssueHistory" layoutX="464.0" layoutY="262.0" styleClass="title-label" text="Issues History" />
+		<TableView fx:id="tableIssuesHistory" layoutX="449.0" layoutY="289.0" prefHeight="195.0" prefWidth="393.0" styleClass="table-view">
 			<columns>
 				<TableColumn fx:id="colIssueType" editable="false" prefWidth="131.0" text="Issue Type" />
 				<TableColumn fx:id="colIssueDate" editable="false" prefWidth="131.0" text="Issue Date" />
 				<TableColumn fx:id="colIssueDescription" editable="false" prefWidth="131.0" text="Description" />
 			</columns>
 		</TableView>
-		<Button fx:id="btnUpdateDetails" layoutX="308.0" layoutY="224.0" mnemonicParsing="false" onAction="#btnUpdateDetailsClicked" styleClass="modern-button" text="Update" />
-		<Button fx:id="btnUpdateDates" layoutX="333.0" layoutY="504.0" mnemonicParsing="false" onAction="#btnUpdateDateClicked" styleClass="modern-button" text="Update" />
+		<Button fx:id="btnUpdateDetails" layoutX="305.0" layoutY="224.0" mnemonicParsing="false" onAction="#btnUpdateDetailsClicked" styleClass="modern-button" text="Update" />
+		<Button fx:id="btnUpdateDates" layoutX="334.0" layoutY="489.0" mnemonicParsing="false" onAction="#btnUpdateDateClicked" styleClass="modern-button" text="Update" />
 		<Button fx:id="btnBack" layoutX="753.0" layoutY="31.0" mnemonicParsing="false" onAction="#btnBackClicked" styleClass="modern-button" text="Back" />
-		<Label fx:id="lblEmailPhonemessage" layoutX="132.0" layoutY="216.0" styleClass="error-label" text="Label" />
-		<Label fx:id="lblEmailmessage" layoutX="281.0" layoutY="188.0" styleClass="error-label" text="Label" />
-		<Label fx:id="lblPhoneNumberMessage" layoutX="345.0" layoutY="156.0" styleClass="error-label" text="Label" />
-		<Label fx:id="lblUpdateDateMessage" layoutX="331.0" layoutY="547.0" styleClass="error-label" text="Label" />
-		<Button fx:id="btnExtend" layoutX="26.0" layoutY="519.0" mnemonicParsing="false" onAction="#btnExtendClicked" styleClass="modern-button" text="Extend" />
+		<Label fx:id="lblEmailPhonemessage" layoutX="158.0" layoutY="216.0" styleClass="error-label" text="Label" />
+		<Label fx:id="lblEmailmessage" layoutX="276.0" layoutY="172.0" styleClass="error-label" text="Label" />
+		<Label fx:id="lblPhoneNumberMessage" layoutX="345.0" layoutY="142.0" styleClass="error-label" text="Label" />
+		<Label fx:id="lblUpdateDateMessage" layoutX="320.0" layoutY="526.0" styleClass="error-label" text="Label" />
+		<Button fx:id="btnExtend" layoutX="25.0" layoutY="520.0" mnemonicParsing="false" onAction="#btnExtendClicked" styleClass="modern-button" text="Extend" />
 	</children>
 </AnchorPane>
