@@ -221,4 +221,12 @@ public class ReturnFrameController {
 			returnUnsuccess.setVisible(true);
 		}
 	}
+	
+	
+	
+	@FXML
+	private void goBack(ActionEvent event) {
+	    // Logic to navigate back or perform the desired action
+	    System.out.println("Back button clicked!");
+	}
 }

@@ -6,15 +6,15 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="309.0" prefWidth="320.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ExtendPopupController">
-	<Label layoutX="20" layoutY="20" text="Books Available for Extension" />
-	<TableView fx:id="extendTable" layoutX="10.0" layoutY="22.0" prefHeight="197.0" prefWidth="300.0">
-		<columns>
-			<TableColumn fx:id="bookTitleColumn" prefWidth="150.0" text="Book Title" />
-			<TableColumn fx:id="returnDateColumn" prefWidth="150.0" text="Return Date" />
-		</columns>
-	</TableView>
-	<Button fx:id="btnRequestExtention" layoutX="55.0" layoutY="228.0" onAction="#onRequestExtensionClicked" text="Request Extension" />
-	<Button fx:id="btnClose" layoutX="196.0" layoutY="228.0" onAction="#onCloseClicked" text="Close" />
-	<Label fx:id="lblRequest" layoutX="55.0" layoutY="259.0" text="Label" />
+<AnchorPane prefHeight="320.0" prefWidth="360.0" stylesheets="@popup.css" styleClass="popup-pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ExtendPopupController">
+    <Label layoutX="20" layoutY="10" text="Books Available for Extension" styleClass="popup-title" />
+    <TableView fx:id="extendTable" layoutX="20.0" layoutY="40.0" prefHeight="200.0" prefWidth="320.0" styleClass="popup-table">
+        <columns>
+            <TableColumn fx:id="bookTitleColumn" prefWidth="160.0" text="Book Title" />
+            <TableColumn fx:id="returnDateColumn" prefWidth="160.0" text="Return Date" />
+        </columns>
+    </TableView>
+    <Button fx:id="btnRequestExtention" layoutX="50.0" layoutY="260.0" onAction="#onRequestExtensionClicked" text="Request Extension" styleClass="popup-button" />
+    <Button fx:id="btnClose" layoutX="200.0" layoutY="260.0" onAction="#onCloseClicked" text="Close" styleClass="popup-button" />
+    <Label fx:id="lblRequest" layoutX="20.0" layoutY="290.0" text=" " styleClass="popup-label" />
 </AnchorPane>

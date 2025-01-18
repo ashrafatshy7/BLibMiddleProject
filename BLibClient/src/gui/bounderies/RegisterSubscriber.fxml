@@ -6,33 +6,40 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="577.0" prefWidth="876.0" stylesheets="@RegisterSubscriber.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.RegisterSubscriberController">
+<AnchorPane prefHeight="650.0" prefWidth="876.0" stylesheets="@RegisterSubscriber.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.RegisterSubscriberController">
     <children>
-        <Label layoutX="30.0" layoutY="35.0" text="ReadCard:" />
-        <TextField fx:id="readCardField" layoutX="150.0" layoutY="35.0" prefHeight="26.0" prefWidth="243.0" />
-        <Label fx:id="readCardError" layoutX="150.0" layoutY="65.0" style="-fx-font-size: 10px;" textFill="red" visible="false" />
+        <!-- Back Button -->
+        <Button fx:id="backBtn" layoutX="750.0" layoutY="20.0" onAction="#goBack" text="Back" styleClass="modern-button" />
 
-        <Label layoutX="30.0" layoutY="100.0" text="Email:" />
-        <TextField fx:id="emailField" layoutX="150.0" layoutY="100.0" prefHeight="26.0" prefWidth="243.0" />
-        <Label fx:id="emailError" layoutX="150.0" layoutY="130.0" style="-fx-font-size: 10px;" textFill="red" visible="false" />
+        <!-- Title -->
+        <Label layoutX="277.0" layoutY="30.0" styleClass="title-label" text="Register New Subscriber" />
 
-        <Label layoutX="30.0" layoutY="165.0" text="Password:" />
-        <PasswordField fx:id="passwordField" layoutX="150.0" layoutY="165.0" prefHeight="26.0" prefWidth="243.0" />
-        <Label fx:id="passwordError" layoutX="150.0" layoutY="195.0" style="-fx-font-size: 10px;" textFill="red" visible="false" />
+        <!-- Form Elements -->
+        <Label layoutX="290.0" layoutY="100.0" styleClass="form-label" text="Read Card:" />
+        <TextField fx:id="readCardField" layoutX="290.0" layoutY="120.0" styleClass="underlined-field" />
+        <Label fx:id="readCardError" layoutX="290.0" layoutY="150.0" styleClass="error-label" visible="false" />
 
-        <Label layoutX="30.0" layoutY="230.0" text="Confirm Password:" />
-        <PasswordField fx:id="confirmPasswordField" layoutX="150.0" layoutY="230.0" prefHeight="26.0" prefWidth="243.0" />
-        <Label fx:id="confirmPasswordError" layoutX="150.0" layoutY="260.0" style="-fx-font-size: 10px;" textFill="red" visible="false" />
+        <Label layoutX="290.0" layoutY="180.0" styleClass="form-label" text="Email:" />
+        <TextField fx:id="emailField" layoutX="290.0" layoutY="200.0" styleClass="underlined-field" />
+        <Label fx:id="emailError" layoutX="290.0" layoutY="230.0" styleClass="error-label" visible="false" />
 
-        <Label layoutX="30.0" layoutY="295.0" text="Username:" />
-        <TextField fx:id="usernameField" layoutX="150.0" layoutY="295.0" prefHeight="26.0" prefWidth="243.0" />
-        <Label fx:id="usernameError" layoutX="150.0" layoutY="325.0" style="-fx-font-size: 10px;" textFill="red" visible="false" />
+        <Label layoutX="290.0" layoutY="260.0" styleClass="form-label" text="Password:" />
+        <PasswordField fx:id="passwordField" layoutX="290.0" layoutY="280.0" styleClass="underlined-field" />
+        <Label fx:id="passwordError" layoutX="290.0" layoutY="310.0" styleClass="error-label" visible="false" />
 
-        <Label layoutX="30.0" layoutY="360.0" text="Phone Number:" />
-        <TextField fx:id="phoneField" layoutX="150.0" layoutY="360.0" prefHeight="26.0" prefWidth="243.0" />
-        <Label fx:id="phoneError" layoutX="150.0" layoutY="390.0" style="-fx-font-size: 10px;" textFill="red" visible="false" />
+        <Label layoutX="290.0" layoutY="340.0" styleClass="form-label" text="Confirm Password:" />
+        <PasswordField fx:id="confirmPasswordField" layoutX="290.0" layoutY="360.0" styleClass="underlined-field" />
+        <Label fx:id="confirmPasswordError" layoutX="290.0" layoutY="390.0" styleClass="error-label" visible="false" />
 
-        <Button fx:id="registerBtn" layoutX="150.0" layoutY="450.0" onAction="#registerSubscriber" prefHeight="26.0" prefWidth="120.0" text="Register" />
-        <Button fx:id="backBtn" layoutX="290.0" layoutY="450.0" onAction="#goBack" prefHeight="26.0" prefWidth="120.0" text="Back" />
+        <Label layoutX="290.0" layoutY="420.0" styleClass="form-label" text="Username:" />
+        <TextField fx:id="usernameField" layoutX="290.0" layoutY="440.0" styleClass="underlined-field" />
+        <Label fx:id="usernameError" layoutX="290.0" layoutY="470.0" styleClass="error-label" visible="false" />
+
+        <Label layoutX="290.0" layoutY="500.0" styleClass="form-label" text="Phone Number:" />
+        <TextField fx:id="phoneField" layoutX="290.0" layoutY="520.0" styleClass="underlined-field" />
+        <Label fx:id="phoneError" layoutX="290.0" layoutY="550.0" styleClass="error-label" visible="false" />
+
+        <!-- Register Button -->
+        <Button fx:id="registerBtn" layoutX="365.0" layoutY="590.0" onAction="#registerSubscriber" text="Register" styleClass="modern-button" />
     </children>
 </AnchorPane>
