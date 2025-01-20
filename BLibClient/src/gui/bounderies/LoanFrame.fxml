@@ -10,8 +10,8 @@
    <children>
       
       <!-- Reader Card Field -->
-      <Label layoutX="293.0" layoutY="244.0" text="Reader Card:" />
-      <TextField fx:id="readerCardTextField" layoutX="372.0" layoutY="240.0" prefHeight="25.0" prefWidth="167.0" />
+      <Label layoutX="296.0" layoutY="189.0" text="Reader Card:" />
+      <TextField fx:id="readerCardTextField" layoutX="375.0" layoutY="185.0" prefHeight="25.0" prefWidth="167.0" />
 
       <!-- Loan Date Field -->
       <Label layoutX="304.0" layoutY="308.0" text="Loan Date:" />
@@ -23,10 +23,11 @@
 
       <!-- Set Loan Button -->
       <Button fx:id="setLoanBtn" layoutX="412.0" layoutY="418.0" mnemonicParsing="false" onAction="#submitLoan" text="Set Loan" />
-         <TextField fx:id="barcodeTextField" layoutX="372.0" layoutY="178.0" prefHeight="32.0" prefWidth="167.0" promptText=" " styleClass="floating-textfield" />
-         <Label layoutX="285.0" layoutY="186.0" text="Book Barcode:" />
-      <Label fx:id="barcodeError" layoutX="379.0" layoutY="213.0" text="Enter 6 digits" textFill="#b3271f" />
-      <Label fx:id="readerCardError" layoutX="379.0" layoutY="277.0" text="Enter 9 digits" textFill="#b3271f" />
+         <TextField fx:id="barcodeTextField" layoutX="372.0" layoutY="246.0" prefHeight="32.0" prefWidth="167.0" promptText=" " styleClass="floating-textfield" />
+         <Label layoutX="285.0" layoutY="254.0" text="Book Barcode:" />
+      <Label fx:id="barcodeError" layoutX="379.0" layoutY="281.0" text="Enter 6 digits" textFill="#b3271f" />
+      <Label fx:id="readerCardError" layoutX="382.0" layoutY="222.0" text="Enter 9 digits" textFill="#b3271f" />
       <Label fx:id="returnDateError" layoutX="377.0" layoutY="390.0" text="Enter valid date" textFill="#b3271f" />
+      <Button layoutX="554.0" layoutY="189.0" mnemonicParsing="false" onAction="#checkStatus" prefHeight="25.0" prefWidth="81.0" text="check status" />
    </children>
 </AnchorPane>

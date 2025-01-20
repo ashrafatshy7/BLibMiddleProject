@@ -158,8 +158,10 @@ public class HomeFrameController {
 	}
 
 	public void loanBook(ActionEvent event) throws Exception {
-		System.out.println("Subscriber Information clicked.");
-		// Implement navigation to Subscriber Information view
+		((Node) event.getSource()).getScene().getWindow().hide();
+		Stage primaryStage = new Stage();
+		LoanFrameController loanBook = new LoanFrameController();
+		loanBook.start(primaryStage);
 	}
 
 	public void orderBook(ActionEvent event) throws Exception {
@@ -168,8 +170,10 @@ public class HomeFrameController {
 	}
 
 	public void report(ActionEvent event) throws Exception {
-		System.out.println("Subscriber Information clicked.");
-		// Implement navigation to Subscriber Information view
+		((Node) event.getSource()).getScene().getWindow().hide();
+		Stage primaryStage = new Stage();
+		TwoChartsController twoChartsController = new TwoChartsController();
+		twoChartsController.start(primaryStage);
 	}
 
 	//

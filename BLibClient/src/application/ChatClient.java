@@ -6,10 +6,12 @@ import common.ChatIF;
 import gui.bounderies.BookDetailsFrameController;
 import gui.bounderies.ClientFrameController;
 import gui.bounderies.HomeFrameController;
+import gui.bounderies.LoanFrameController;
 import gui.bounderies.LoginFrameController;
 import gui.bounderies.ReturnFrameController;
 import gui.bounderies.SeeAllFrameController;
 import gui.bounderies.SubscriberCardDetailsController;
+import gui.bounderies.TwoChartsController;
 import gui.bounderies.ExtendPopupController;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -47,7 +49,9 @@ public class ChatClient extends AbstractClient {
 	private SubscriberCardDetailsController subscriberCardDetailsController;
 	private ExtendPopupController extendPopupController;
 	private LoginFrameController loginFrameController;
-	private ReturnFrameController returnFrameController;
+	private LoanFrameController loanFrameController;
+	private TwoChartsController twoChartsController;
+	
 	/**
 	 * The interface type variable. It allows the implementation of the display
 	 * method in the client.
@@ -87,7 +91,7 @@ public class ChatClient extends AbstractClient {
 	public void setBookDetailsFrameController(BookDetailsFrameController bookDetailsFrameController) {
 		this.bookDetailsFrameController = bookDetailsFrameController;
 	}
-	
+
 	public void setSubscriberCardDetailsController(SubscriberCardDetailsController subscriberCardDetailsController) {
 		this.subscriberCardDetailsController = subscriberCardDetailsController;
 	}
@@ -95,16 +99,19 @@ public class ChatClient extends AbstractClient {
 	public void setExtendPopupController(ExtendPopupController extendPopupController) {
 		this.extendPopupController = extendPopupController;
 	}
-	
+
 	public void setLoginFrameController(LoginFrameController loginFrameController) {
-        this.loginFrameController = loginFrameController;
-    }
-	
-	public void setReturnFrameController(ReturnFrameController returnFrameController) {
-		
-		this.returnFrameController = returnFrameController;
+		this.loginFrameController = loginFrameController;
 	}
 	
+	public void setLoanFrameController(LoanFrameController loanFrameController) {
+		this.loanFrameController = loanFrameController;
+	}
+	
+	public void setTwoChartsController(TwoChartsController twoChartsController) {
+		this.twoChartsController = twoChartsController;
+	}
+
 	/**
 	 * This method handles all data that comes in from the server.
 	 *
@@ -241,31 +248,46 @@ public class ChatClient extends AbstractClient {
 		case login:
 			try {
 				User user = (User) message.getMessageData();
-				System.out.println("user is: "+user);
+				System.out.println("user is: " + user);
 				if (loginFrameController != null) {
 					loginFrameController.setUser(user);
-                } else {
-                    System.err.println("HomeFrameController is not set in ChatClient.");
-                }
+				} else {
+					System.err.println("HomeFrameController is not set in ChatClient.");
+				}
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
 			break;
-			
+
 		case returnBook:
-			try {
-				boolean isReturnSuccessful = (boolean) message.getMessageData();
-				System.out.println("Book return status: " + (isReturnSuccessful ? "Successful" : "Failed"));
-				
-				 if (returnFrameController != null) {
-					 returnFrameController.showMessage(isReturnSuccessful);
-		            } else {
-		                System.err.println("ReturnFrameController is not set in ChatClient.");
-		            }
-		        } catch (Exception e) {
-		            System.err.println("Error processing return case: " + e.getMessage());
-		        }
-		        break;
+			Map<String, String> isReturnSuccessful = (Map<String, String>) message.getMessageData();
+			String type = isReturnSuccessful.get("type");
+			String log = isReturnSuccessful.get("message");
+			if(type.equals("success")) showSuccessAlert(log);
+			else if(type.equals("noLoan") || type.equals("frozen") || type.equals("error")) showErrorAlert(log);
+			break;
+		case checkStatus:
+			Map<String, String> checkStatus = (Map<String, String>) message.getMessageData();
+			String statusType = checkStatus.get("type");
+			String status = checkStatus.get("status");
+			String statusLog = checkStatus.get("message");
+			if(statusType.equals("notFound") || (statusType.equals("found") && status.equals("Frozen"))) showErrorAlert(statusLog);
+			if(statusType.equals("found") && status.equals("Active")) {
+				try {
+					
+					if (loanFrameController != null) {
+						loanFrameController.setActive();
+					} else {
+						System.err.println("LoanFrameController is not set in ChatClient.");
+					}
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+			}
+			
+			
+			break;
+
 		}
 	}
 
@@ -329,7 +351,6 @@ public class ChatClient extends AbstractClient {
 			alert.showAndWait();
 		});
 	}
-
 
 }
 //End of ChatClient class

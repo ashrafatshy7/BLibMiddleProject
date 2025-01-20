@@ -1,0 +1,117 @@
+/* General background for the main pane */
+.root {
+    -fx-background-color: linear-gradient(to bottom, #eef2f3, #ffffff);
+}
+
+/* Title styling */
+.label-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #37474f;
+    -fx-padding: 10 0 20 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0, 0, 1);
+}
+
+/* Chart container styling */
+.chart-container {
+    -fx-padding: 20;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cfd8dc;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 8, 0, 0, 4);
+}
+
+/* Section titles */
+.section-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #263238;
+    -fx-padding: 10 0 20 10;
+    -fx-border-color: #b0bec5;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Input field styling */
+.text-field {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #90caf9;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-padding: 6;
+    -fx-font-size: 14px;
+    -fx-text-fill: #455a64;
+}
+
+.text-field:hover {
+    -fx-border-color: #42a5f5;
+}
+
+.text-field:focused {
+    -fx-border-color: #1e88e5;
+    -fx-background-color: #e3f2fd;
+}
+
+/* Error message styling */
+.text-field-error {
+    -fx-text-fill: #d32f2f;
+    -fx-font-size: 12px;
+    -fx-padding: 5 0 0 5;
+}
+
+/* Button styling */
+.button-generate {
+    -fx-background-color: #4caf50;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 3);
+}
+
+.button-generate:hover {
+    -fx-background-color: #43a047;
+}
+
+.button-generate:pressed {
+    -fx-background-color: #388e3c;
+}
+
+/* Back button styling */
+.button-back {
+    -fx-background-color: #f44336;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 25;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 3);
+}
+
+.button-back:hover {
+    -fx-background-color: #e53935;
+}
+
+.button-back:pressed {
+    -fx-background-color: #d32f2f;
+}
+
+/* Chart styling */
+.chart {
+    -fx-background-color: transparent;
+}
+
+.axis-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #546e7a;
+}
+
+.axis {
+    -fx-tick-label-fill: #546e7a;
+}

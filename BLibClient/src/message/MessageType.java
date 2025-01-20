@@ -15,4 +15,8 @@ public enum MessageType {
 	bookExtensionSucceeded,
 	login,
 	returnBook,
+	checkStatus,
+	loan,
+	StatusReport,
+	loanReport,
 }
