@@ -51,7 +51,7 @@ public class ChatClient extends AbstractClient {
 	private LoginFrameController loginFrameController;
 	private LoanFrameController loanFrameController;
 	private TwoChartsController twoChartsController;
-	
+
 	/**
 	 * The interface type variable. It allows the implementation of the display
 	 * method in the client.
@@ -103,11 +103,11 @@ public class ChatClient extends AbstractClient {
 	public void setLoginFrameController(LoginFrameController loginFrameController) {
 		this.loginFrameController = loginFrameController;
 	}
-	
+
 	public void setLoanFrameController(LoanFrameController loanFrameController) {
 		this.loanFrameController = loanFrameController;
 	}
-	
+
 	public void setTwoChartsController(TwoChartsController twoChartsController) {
 		this.twoChartsController = twoChartsController;
 	}
@@ -123,6 +123,8 @@ public class ChatClient extends AbstractClient {
 
 		Message message = (Message) msg;
 		MessageType messageType = message.getMessageType();
+
+		System.out.println("messageType = " + messageType.toString());
 
 		switch (messageType) {
 		case getTop5LoanedBooks:
@@ -263,18 +265,21 @@ public class ChatClient extends AbstractClient {
 			Map<String, String> isReturnSuccessful = (Map<String, String>) message.getMessageData();
 			String type = isReturnSuccessful.get("type");
 			String log = isReturnSuccessful.get("message");
-			if(type.equals("success")) showSuccessAlert(log);
-			else if(type.equals("noLoan") || type.equals("frozen") || type.equals("error")) showErrorAlert(log);
+			if (type.equals("success"))
+				showSuccessAlert(log);
+			else if (type.equals("noLoan") || type.equals("frozen") || type.equals("error"))
+				showErrorAlert(log);
 			break;
 		case checkStatus:
 			Map<String, String> checkStatus = (Map<String, String>) message.getMessageData();
 			String statusType = checkStatus.get("type");
 			String status = checkStatus.get("status");
 			String statusLog = checkStatus.get("message");
-			if(statusType.equals("notFound") || (statusType.equals("found") && status.equals("Frozen"))) showErrorAlert(statusLog);
-			if(statusType.equals("found") && status.equals("Active")) {
+			if (statusType.equals("notFound") || (statusType.equals("found") && status.equals("Frozen")))
+				showErrorAlert(statusLog);
+			if (statusType.equals("found") && status.equals("Active")) {
 				try {
-					
+
 					if (loanFrameController != null) {
 						loanFrameController.setActive();
 					} else {
@@ -284,11 +289,62 @@ public class ChatClient extends AbstractClient {
 					System.out.println(e.getMessage());
 				}
 			}
-			
-			
+
+			break;
+
+		case loanReport:
+			Platform.runLater(() -> {
+				try {
+					Map<String, Map<String, String>> loanReportMap = (Map<String, Map<String, String>>) message
+							.getMessageData();
+
+					if (loanReportMap == null) {
+						showAlert("No Data Found", "No loan report data is available for the selected month and year.");
+						return;
+					}
+
+					if (twoChartsController != null) {
+						twoChartsController.showLoanReportData(loanReportMap);
+					} else {
+						System.err.println("twoChartsController is not set in ChatClient.");
+					}
+				} catch (Exception e) {
+					System.err.println("Error processing return case: " + e.getMessage());
+				}
+			});
+			break;
+
+		case StatusReport:
+			Platform.runLater(() -> {
+				try {
+					Map<String, String> statusReportMap = (Map<String, String>) message.getMessageData();
+
+					if (statusReportMap == null) {
+						showAlert("No Data Found",
+								"No status report data is available for the selected month and year.");
+						return;
+					}
+
+					if (twoChartsController != null) {
+						twoChartsController.showStatusReportData(statusReportMap);
+					} else {
+						System.err.println("twoChartsController is not set in ChatClient.");
+					}
+				} catch (Exception e) {
+					System.err.println("Error processing return case: " + e.getMessage());
+				}
+			});
 			break;
 
 		}
+	}
+
+	private void showAlert(String title, String content) {
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle(title);
+		alert.setHeaderText(null);
+		alert.setContentText(content);
+		alert.showAndWait();
 	}
 
 	/**

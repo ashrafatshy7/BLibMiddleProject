@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="679.0" prefWidth="1171.0" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.TwoChartsController">
+    <children>
+        <!-- Title -->
+        <Label layoutX="30.0" layoutY="20.0" style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #1e88e5;" text="Data Visualization Dashboard" />
+          <Label layoutX="30.0" layoutY="96.0" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #444;" text="Loan Report" />
+          <BarChart fx:id="chartOne" layoutX="14.0" layoutY="146.0" prefHeight="388.0" prefWidth="550.0" style="-fx-background-color: transparent; -fx-bar-gap: 5px; -fx-category-spacing: 10px;">
+              <xAxis>
+                  <CategoryAxis fx:id="xOneAxis" />
+              </xAxis>
+              <yAxis>
+                  <NumberAxis fx:id="yOneAxis" />
+              </yAxis>
+          </BarChart>
+
+        <!-- Second Chart Section -->
+        <VBox layoutX="600.0" layoutY="80.0" prefHeight="557.0" prefWidth="550.0" style="-fx-padding: 20; -fx-background-color: #ffffff; -fx-border-color: #bdbdbd; -fx-border-radius: 10; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5);">
+            <children>
+                <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #444;" text="Subscribers Status Report" />
+                <BarChart fx:id="chartTwo" prefHeight="400.0" prefWidth="500.0" style="-fx-background-color: transparent; -fx-bar-gap: 5px; -fx-category-spacing: 10px;">
+                    <xAxis>
+                        <CategoryAxis fx:id="xTwoAxis" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis fx:id="YTwoAxis" />
+                    </yAxis>
+                </BarChart>
+                <!-- Input Fields for Second Chart -->
+                <GridPane alignment="CENTER" hgap="10" vgap="10">
+                    <children>
+                        <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #444;" text="Month:" GridPane.columnIndex="0" />
+                        <TextField fx:id="tfMonthTwo" prefWidth="113.0" promptText="Enter Month (1-12)" style="-fx-background-color: #f0f8ff; -fx-border-color: #90caf9; -fx-border-radius: 5; -fx-padding: 5;" GridPane.columnIndex="1" />
+                        <Label fx:id="errorMonthTwo" style="-fx-text-fill: red; -fx-font-size: 12px;" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                        <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #444;" text="Year:" GridPane.columnIndex="2" />
+                        <TextField fx:id="tfYearTwo" prefWidth="113.0" promptText="Enter Year" style="-fx-background-color: #f0f8ff; -fx-border-color: #90caf9; -fx-border-radius: 5; -fx-padding: 5;" GridPane.columnIndex="3" />
+                        <Label fx:id="errorYearTwo" style="-fx-text-fill: red; -fx-font-size: 12px;" text="" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+
+                        <Button fx:id="btnGenerateTwo" onAction="#btnGenerateTwoClicked" style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 5 15; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;" text="Generate" GridPane.columnIndex="4" />
+                    </children>
+               <columnConstraints>
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
+                </GridPane>
+            </children>
+        </VBox>
+
+        <!-- Back Button -->
+        <Button fx:id="btnBack" layoutX="1050.0" layoutY="20.0" onAction="#btnBackClicked" style="-fx-background-color: linear-gradient(to bottom, #1e90ff, #1565c0); -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10 20; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;" text="Back" />
+      <Label layoutX="30.0" layoutY="543.0" text="Month" />
+      <Button fx:id="btnGenerateOne" layoutX="447.0" layoutY="539.0" mnemonicParsing="false" onAction="#btnGenerateOneClicked" text="Generate" />
+      <TextField fx:id="tfMonthOne" layoutX="79.0" layoutY="539.0" prefHeight="25.0" prefWidth="105.0" promptText="Month (MM)" />
+      <Label layoutX="227.0" layoutY="543.0" text="Year" />
+      <TextField fx:id="tfYearOne" layoutX="275.0" layoutY="539.0" prefHeight="25.0" prefWidth="105.0" promptText="Year (YYYY)" />
+      <Label fx:id="errorMonthOne" layoutX="104.0" layoutY="571.0" text="Label" />
+      <Label fx:id="errorYearOne" layoutX="314.0" layoutY="571.0" text="Label" />
+    </children>
+</AnchorPane>

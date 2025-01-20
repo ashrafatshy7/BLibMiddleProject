@@ -15,6 +15,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -58,14 +59,15 @@ public class TwoChartsController {
 	private Label errorYearOne;
 
 	// Second chart and its input fields
+//	@FXML
+//	private BarChart<String, Number> chartTwo;
 	@FXML
-	private BarChart<String, Number> chartTwo;
-
-	@FXML
-	private CategoryAxis xTwoAxis;
-
-	@FXML
-	private NumberAxis yTwoAxis;
+	private PieChart pieChart;
+//	@FXML
+//	private CategoryAxis xTwoAxis;
+//
+//	@FXML
+//	private NumberAxis yTwoAxis;
 
 	@FXML
 	private Label errorMonthTwo;
@@ -96,20 +98,17 @@ public class TwoChartsController {
 
 	@FXML
 	private void initialize() {
-		xOneAxis.setTickLabelRotation(45); // For the first chart
-		xTwoAxis.setTickLabelRotation(45); // For the second chart
-
-		xOneAxis.setTickLabelFont(Font.font("Arial", FontWeight.NORMAL, 10));
-		xTwoAxis.setTickLabelFont(Font.font("Arial", FontWeight.NORMAL, 10));
-
 		errorMonthOne.setText("");
 		errorYearOne.setText("");
 		errorMonthTwo.setText("");
 		errorYearTwo.setText("");
 
+		// Adjust spacing between categories and bars for chartOne
+		chartOne.setCategoryGap(10); // Spacing between categories (e.g., months)
+		chartOne.setBarGap(5); // Spacing between bars within a category
+
 	}
 
-	// Handlers for buttons
 	@FXML
 	private void btnGenerateOneClicked() {
 		Map<String, String> chartOneData = new HashMap<>();
@@ -127,14 +126,12 @@ public class TwoChartsController {
 		// Check if the month is in two-digit format
 		if (!monthOne.matches("^0[1-9]|1[0-2]$")) {
 			errorMonthOne.setText("Invalid month! Enter a value between 01 and 12.");
-			System.out.println("Error: Invalid month format.");
 			return;
 		}
 
 		// Check if the year is in four-digit format
 		if (!yearOne.matches("^[0-9]{4}$")) {
 			errorYearOne.setText("Invalid year! Enter a four-digit year (e.g., 2021).");
-			System.out.println("Error: Invalid year format.");
 			return;
 		}
 
@@ -146,37 +143,90 @@ public class TwoChartsController {
 		chartOneData.put("month", monthOne);
 		chartOneData.put("year", yearOne);
 
+		// Send the data request to the server
 		Message sendToServer = new Message(MessageType.loanReport, chartOneData);
 		ClientUI.chat.accept(sendToServer);
-
 	}
 
-	public void showLoanReportData(Map<String, String> loanReportMap) {
+	public void showLoanReportData(Map<String, Map<String, String>> loanReportMap) {
+//		Platform.runLater(() -> {
+//			// Clear existing data from the chart
+//			chartOne.getData().clear();
+//
+//			// Create two series for the chart: Borrowed and Late Returns
+//			XYChart.Series<String, Number> borrowedSeries = new XYChart.Series<>();
+//			borrowedSeries.setName("Borrowed Books");
+//
+//			XYChart.Series<String, Number> lateReturnsSeries = new XYChart.Series<>();
+//			lateReturnsSeries.setName("Late Returns");
+//
+//			// Populate the series with data for each week
+//			for (Map.Entry<String, Map<String, String>> weekEntry : loanReportMap.entrySet()) {
+//				String week = weekEntry.getKey(); // Week label (e.g., "Week 1", "Week 2")
+//				Map<String, String> data = weekEntry.getValue();
+//
+//				// Parse borrowed and lateReturn as numbers and add to the chart
+//				int borrowed = Integer.parseInt(data.getOrDefault("borrowed", "0"));
+//				int lateReturn = Integer.parseInt(data.getOrDefault("lateReturn", "0"));
+//
+//				borrowedSeries.getData().add(new XYChart.Data<>(week, borrowed));
+//				lateReturnsSeries.getData().add(new XYChart.Data<>(week, lateReturn));
+//			}
+//
+//			// Add the series to the chart
+//			chartOne.getData().addAll(borrowedSeries, lateReturnsSeries);
+//
+//			// Apply custom colors and adjust bar spacing
+//			chartOne.setCategoryGap(10); // Adjust spacing between categories
+//			chartOne.setBarGap(5); // Adjust spacing between bars within a category
+//
+//			// Assign custom CSS styles
+//			borrowedSeries.getNode().setStyle("-fx-bar-fill: orange;"); // Set borrowed series to orange
+//			lateReturnsSeries.getNode().setStyle("-fx-bar-fill: red;"); // Set late returns series to red
+//		});
 
 		Platform.runLater(() -> {
 			// Clear existing data from the chart
 			chartOne.getData().clear();
 
-			// Create a new series for the chart
-			XYChart.Series<String, Number> series = new XYChart.Series<>();
-			series.setName("Late Returns");
+			// Create two series for the chart: Borrowed and Late Returns
+			XYChart.Series<String, Number> borrowedSeries = new XYChart.Series<>();
+			borrowedSeries.setName("Borrowed Books");
 
-			// Populate the series with data from the map
-			for (Map.Entry<String, String> entry : loanReportMap.entrySet()) {
-				String bookTitle = entry.getKey();
-				String totalLateCountStr = entry.getValue();
+			XYChart.Series<String, Number> lateReturnsSeries = new XYChart.Series<>();
+			lateReturnsSeries.setName("Late Returns");
 
-				try {
-					int totalLateCount = Integer.parseInt(totalLateCountStr);
-					series.getData().add(new XYChart.Data<>(bookTitle, totalLateCount));
-				} catch (NumberFormatException e) {
-					System.err.println("Invalid totalLateCount for book: " + bookTitle);
-				}
+			// Populate the series with data for each week
+			for (Map.Entry<String, Map<String, String>> weekEntry : loanReportMap.entrySet()) {
+				String week = weekEntry.getKey(); // Week label (e.g., "Week 1", "Week 2")
+				Map<String, String> data = weekEntry.getValue();
+
+				// Add data for borrowed books
+				borrowedSeries.getData()
+						.add(new XYChart.Data<>(week, Integer.parseInt(data.getOrDefault("borrowed", "0"))));
+
+				// Add data for late returns
+				lateReturnsSeries.getData()
+						.add(new XYChart.Data<>(week, Integer.parseInt(data.getOrDefault("lateReturn", "0"))));
 			}
 
 			// Add the series to the chart
-			chartOne.getData().add(series);
+			chartOne.getData().addAll(borrowedSeries, lateReturnsSeries);
+
+			// Add styles after the series nodes are created
+			borrowedSeries.nodeProperty().addListener((observable, oldValue, newValue) -> {
+				if (newValue != null) {
+					newValue.setStyle("-fx-bar-fill: orange;"); // Orange color for borrowed
+				}
+			});
+
+			lateReturnsSeries.nodeProperty().addListener((observable, oldValue, newValue) -> {
+				if (newValue != null) {
+					newValue.setStyle("-fx-bar-fill: red;"); // Red color for late returns
+				}
+			});
 		});
+
 	}
 
 	@FXML
@@ -220,44 +270,100 @@ public class TwoChartsController {
 		ClientUI.chat.accept(sendToServer);
 	}
 
+//	public void showStatusReportData(Map<String, String> statusReportMap) {
+//
+//		Platform.runLater(() -> {
+//			// Clear existing data from the chart
+//			chartTwo.getData().clear();
+//
+//			// Create a new series for the chart
+//			XYChart.Series<String, Number> series = new XYChart.Series<>();
+//			series.setName("Status Report");
+//
+//			// Populate the series with data from the map
+//			for (Map.Entry<String, String> entry : statusReportMap.entrySet()) {
+//				String status = entry.getKey();
+//				String count = entry.getValue();
+//
+//				try {
+//					int totalCount = Integer.parseInt(count);
+//					XYChart.Data<String, Number> data = new XYChart.Data<>(status, totalCount);
+//					series.getData().add(data);
+//
+//					// Add a listener to style the node when it becomes available
+//					data.nodeProperty().addListener((observable, oldValue, newValue) -> {
+//						if (newValue != null) {
+//							// Apply a custom style based on the status
+//							if ("active".equalsIgnoreCase(status)) {
+//								newValue.setStyle("-fx-bar-fill: #4caf50;"); // Green for active
+//							} else if ("frozen".equalsIgnoreCase(status)) {
+//								newValue.setStyle("-fx-bar-fill: #f44336;"); // Red for frozen
+//							}
+//						}
+//					});
+//				} catch (NumberFormatException e) {
+//					System.err.println("Invalid totalCount for status: " + status);
+//				}
+//			}
+//
+//			// Add the series to the chart
+//			chartTwo.getData().add(series);
+//		});
+//	}
+
+//	public void showStatusReportData(Map<String, String> statusReportMap) {
+//		// Clear any existing data in the pie chart
+//		pieChart.getData().clear();
+//
+//		// Extract the data from the map
+//		String activeAccounts = statusReportMap.getOrDefault("active", "0");
+//		String frozenAccounts = statusReportMap.getOrDefault("frozen", "0");
+//
+//		// Convert the values to integers
+//		int activeCount = Integer.parseInt(activeAccounts);
+//		int frozenCount = Integer.parseInt(frozenAccounts);
+//
+//		// Add the data to the pie chart
+//		PieChart.Data activeData = new PieChart.Data("Active Accounts", activeCount);
+//		PieChart.Data frozenData = new PieChart.Data("Frozen Accounts", frozenCount);
+//
+//		pieChart.getData().addAll(activeData, frozenData);
+//
+//		// Set chart styling (optional)
+//		pieChart.setTitle("Account Status Overview");
+//		pieChart.setLegendVisible(true);
+//		pieChart.setLabelsVisible(true);
+//	}
+
 	public void showStatusReportData(Map<String, String> statusReportMap) {
-		Platform.runLater(() -> {
-			// Clear existing data from the chart
-			chartTwo.getData().clear();
+		// Clear existing data
+		pieChart.getData().clear();
 
-			// Create a new series for the chart
-			XYChart.Series<String, Number> series = new XYChart.Series<>();
-			series.setName("Status Report");
+		// Extract data from the map
+		String activeAccounts = statusReportMap.getOrDefault("active", "0");
+		String frozenAccounts = statusReportMap.getOrDefault("frozen", "0");
 
-			// Populate the series with data from the map
-			for (Map.Entry<String, String> entry : statusReportMap.entrySet()) {
-				String status = entry.getKey();
-				String count = entry.getValue();
+		// Convert to integers
+		int activeCount = Integer.parseInt(activeAccounts);
+		int frozenCount = Integer.parseInt(frozenAccounts);
+		int totalAccounts = activeCount + frozenCount;
 
-				try {
-					int totalCount = Integer.parseInt(count);
-					XYChart.Data<String, Number> data = new XYChart.Data<>(status, totalCount);
-					series.getData().add(data);
+		// Calculate percentages
+		double activePercentage = totalAccounts > 0 ? (activeCount * 100.0 / totalAccounts) : 0;
+		double frozenPercentage = totalAccounts > 0 ? (frozenCount * 100.0 / totalAccounts) : 0;
 
-					// Add a listener to style the node when it becomes available
-					data.nodeProperty().addListener((observable, oldValue, newValue) -> {
-						if (newValue != null) {
-							// Apply a custom style based on the status
-							if ("active".equalsIgnoreCase(status)) {
-								newValue.setStyle("-fx-bar-fill: #4caf50;"); // Green for active
-							} else if ("frozen".equalsIgnoreCase(status)) {
-								newValue.setStyle("-fx-bar-fill: #f44336;"); // Red for frozen
-							}
-						}
-					});
-				} catch (NumberFormatException e) {
-					System.err.println("Invalid totalCount for status: " + status);
-				}
-			}
+		// Add data to the chart
+		pieChart.getData()
+				.addAll(new PieChart.Data(
+						"Active Accounts (" + activeCount + " / " + String.format("%.1f", activePercentage) + "%)",
+						activeCount),
+						new PieChart.Data("Frozen Accounts (" + frozenCount + " / "
+								+ String.format("%.1f", frozenPercentage) + "%)", frozenCount));
 
-			// Add the series to the chart
-			chartTwo.getData().add(series);
-		});
+		// Update chart styling
+		pieChart.setTitle("Account Status Overview");
+		pieChart.setLegendVisible(true);
+		pieChart.setLabelsVisible(true);
 	}
 
 	@FXML

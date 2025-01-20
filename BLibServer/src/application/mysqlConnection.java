@@ -207,20 +207,12 @@ public class mysqlConnection {
 
 		try {
 			// Retrieve top 5 loaned books
-			String query = ""
-				    + "SELECT b.*\n"
-				    + "FROM (\n"
-				    + "    SELECT lb.barcode,\n"
-				    + "           lb.loanedCount,\n"
-				    + "           @rownum := @rownum + 1 AS rn\n"
-				    + "    FROM loanedbooks lb\n"
-				    + "    CROSS JOIN (SELECT @rownum := 0) init\n"
-				    + "    ORDER BY lb.loanedCount DESC, lb.barcode ASC\n"
-				    + ") AS lb_ranked\n"
-				    + "JOIN books b ON b.barcode = lb_ranked.barcode\n"
-				    + "WHERE lb_ranked.rn <= 5\n"
-				    + "ORDER BY lb_ranked.loanedCount DESC, lb_ranked.barcode ASC;";
-
+			String query = "" + "SELECT b.*\n" + "FROM (\n" + "    SELECT lb.barcode,\n"
+					+ "           lb.loanedCount,\n" + "           @rownum := @rownum + 1 AS rn\n"
+					+ "    FROM loanedbooks lb\n" + "    CROSS JOIN (SELECT @rownum := 0) init\n"
+					+ "    ORDER BY lb.loanedCount DESC, lb.barcode ASC\n" + ") AS lb_ranked\n"
+					+ "JOIN books b ON b.barcode = lb_ranked.barcode\n" + "WHERE lb_ranked.rn <= 5\n"
+					+ "ORDER BY lb_ranked.loanedCount DESC, lb_ranked.barcode ASC;";
 
 			stmt = conn.createStatement();
 			resultSet = stmt.executeQuery(query);
@@ -830,7 +822,7 @@ public class mysqlConnection {
 		ArrayList<Object> returnDetails = (ArrayList<Object>) message;
 		String bookBarcode = (String) returnDetails.get(0);
 		String readerCard = (String) returnDetails.get(1);
-		Issue issue = returnDetails.get(2) != null ? (Issue)returnDetails.get(2) : null;
+		Issue issue = returnDetails.get(2) != null ? (Issue) returnDetails.get(2) : null;
 		try {
 			String queryCheckLoan = "SELECT dueDate FROM loan WHERE barcode = ? AND id = ? AND returnDate IS NULL";
 			pstmt = conn.prepareStatement(queryCheckLoan);
@@ -843,11 +835,8 @@ public class mysqlConnection {
 				result.put("message", "No loan found for this user and book.");
 				return result;
 			}
-			
-			//lost book
-			
-			
-			
+
+			// lost book
 
 			// We have an open loan
 			java.sql.Date dueDate = rs.getDate("dueDate");
@@ -867,7 +856,6 @@ public class mysqlConnection {
 				isFrozen = true;
 			}
 
-		
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			LocalDate localReturnDate = LocalDate.now();
 			String formattedReturnDate = localReturnDate.format(formatter);
@@ -934,218 +922,328 @@ public class mysqlConnection {
 				/* log */ }
 		}
 	}
-	
+
 	public static Map<String, String> checkSubscriberStatus(Object message) {
-	    Map<String, String> result = new HashMap<>();
-	    PreparedStatement pstmt = null;
-	    ResultSet rs = null;
-	    String readerCard = (String) message;
+		Map<String, String> result = new HashMap<>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String readerCard = (String) message;
 
-	    try {
-	   
-	        String query = "SELECT status FROM users WHERE id = ?";
-	        pstmt = conn.prepareStatement(query);
-	        pstmt.setString(1, readerCard);
+		try {
 
-	        rs = pstmt.executeQuery();
+			String query = "SELECT status FROM users WHERE id = ?";
+			pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, readerCard);
 
-	        
-	        if (!rs.next()) {
-	            result.put("type", "notFound");
-	            result.put("message", "No user found for the given reader card.");
-	            return result;
-	        }
+			rs = pstmt.executeQuery();
 
-	        String status = rs.getString("status");
+			if (!rs.next()) {
+				result.put("type", "notFound");
+				result.put("message", "No user found for the given reader card.");
+				return result;
+			}
 
-	        result.put("type", "found");
-	        result.put("status", status);
-	        result.put("message", "User found with status: " + status);
+			String status = rs.getString("status");
 
-	        return result;
+			result.put("type", "found");
+			result.put("status", status);
+			result.put("message", "User found with status: " + status);
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        result.put("type", "error");
-	        result.put("message", "Error checking subscriber status: " + e.getMessage());
-	        return result;
-	    } finally {
-	        try {
-	            if (rs != null) rs.close();
-	        } catch (SQLException e) { /* log/ignore */ }
-	        try {
-	            if (pstmt != null) pstmt.close();
-	        } catch (SQLException e) { /* log/ignore */ }
-	    }
+			return result;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			result.put("type", "error");
+			result.put("message", "Error checking subscriber status: " + e.getMessage());
+			return result;
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+			} catch (SQLException e) {
+				/* log/ignore */ }
+			try {
+				if (pstmt != null)
+					pstmt.close();
+			} catch (SQLException e) {
+				/* log/ignore */ }
+		}
 	}
 
 	public static Map<String, String> createLoan(Object message) {
-	    Map<String, String> result = new HashMap<>();
-	    PreparedStatement pstmt = null;
-	    PreparedStatement pstmtOrders = null;
-	    PreparedStatement pstmtInsertLoan = null;
-	    ResultSet rs = null;
-	    ResultSet rsOrders = null;
+		Map<String, String> result = new HashMap<>();
+		PreparedStatement pstmt = null;
+		PreparedStatement pstmtOrders = null;
+		PreparedStatement pstmtInsertLoan = null;
+		ResultSet rs = null;
+		ResultSet rsOrders = null;
 
-	    try {
-	        // 1) Cast the incoming object to a Loan
-	        Loan loan = (Loan) message;
-	        
-	        // Make sure getSubscriberID() returns the subscriberID, not the barcode
-	        String subscriberID = loan.getSubscriberID();
-	        String bookBarcode = loan.getBarcode();
-	        String borrowDateStr = loan.getBorrowDate();  // Stored as DATE in DB
-	        String dueDateStr = loan.getReturnDate();      // Also stored as DATE in DB
+		try {
+			// 1) Cast the incoming object to a Loan
+			Loan loan = (Loan) message;
 
-	        // 2) Check if the book exists and get availableCopies
-	        String sqlCheckBook = "SELECT availableCopies FROM books WHERE barcode = ?";
-	        pstmt = conn.prepareStatement(sqlCheckBook);
-	        pstmt.setString(1, bookBarcode);
-	        rs = pstmt.executeQuery();
+			// Make sure getSubscriberID() returns the subscriberID, not the barcode
+			String subscriberID = loan.getSubscriberID();
+			String bookBarcode = loan.getBarcode();
+			String borrowDateStr = loan.getBorrowDate(); // Stored as DATE in DB
+			String dueDateStr = loan.getReturnDate(); // Also stored as DATE in DB
 
-	        if (!rs.next()) {
-	            // Book not found
-	            result.put("type", "notFound");
-	            result.put("message", "No book found with the given barcode.");
-	            return result;
-	        }
+			// 2) Check if the book exists and get availableCopies
+			String sqlCheckBook = "SELECT availableCopies FROM books WHERE barcode = ?";
+			pstmt = conn.prepareStatement(sqlCheckBook);
+			pstmt.setString(1, bookBarcode);
+			rs = pstmt.executeQuery();
 
-	        int availableCopies = rs.getInt("availableCopies");
+			if (!rs.next()) {
+				// Book not found
+				result.put("type", "notFound");
+				result.put("message", "No book found with the given barcode.");
+				return result;
+			}
 
-	        // 3) Check how many orders/loans currently exist for this book
-	        String sqlCountOrders = "SELECT COUNT(*) AS orderCount FROM orders WHERE barcode = ?";
-	        pstmtOrders = conn.prepareStatement(sqlCountOrders);
-	        pstmtOrders.setString(1, bookBarcode);
-	        rsOrders = pstmtOrders.executeQuery();
+			int availableCopies = rs.getInt("availableCopies");
 
-	        rsOrders.next();
-	        int orderCount = rsOrders.getInt("orderCount");
+			// 3) Check how many orders/loans currently exist for this book
+			String sqlCountOrders = "SELECT COUNT(*) AS orderCount FROM orders WHERE barcode = ?";
+			pstmtOrders = conn.prepareStatement(sqlCountOrders);
+			pstmtOrders.setString(1, bookBarcode);
+			rsOrders = pstmtOrders.executeQuery();
 
-	        // 4) Compare orderCount with availableCopies
-	        if (orderCount >= availableCopies) {
-	            // No more copies available
-	            result.put("type", "unsuccessful");
-	            result.put("message", "No available copies left for the requested book.");
-	            return result;
-	        }
+			rsOrders.next();
+			int orderCount = rsOrders.getInt("orderCount");
 
-	        // 5) Otherwise, insert a new row in the loan table
-	        //    Using the subscriberID in the 'id' column, and borrowDate/dueDate as DATE
-	        String sqlInsertLoan = "INSERT INTO loan (id, barcode, borrowDate, dueDate) VALUES (?, ?, ?, ?)";
-	        pstmtInsertLoan = conn.prepareStatement(sqlInsertLoan);
+			// 4) Compare orderCount with availableCopies
+			if (orderCount >= availableCopies) {
+				// No more copies available
+				result.put("type", "unsuccessful");
+				result.put("message", "No available copies left for the requested book.");
+				return result;
+			}
 
-	        pstmtInsertLoan.setString(1, subscriberID);
-	        pstmtInsertLoan.setString(2, bookBarcode);
+			// 5) Otherwise, insert a new row in the loan table
+			// Using the subscriberID in the 'id' column, and borrowDate/dueDate as DATE
+			String sqlInsertLoan = "INSERT INTO loan (id, barcode, borrowDate, dueDate) VALUES (?, ?, ?, ?)";
+			pstmtInsertLoan = conn.prepareStatement(sqlInsertLoan);
 
-	        // If borrowDateStr and dueDateStr are in "yyyy-MM-dd" format, you can convert them:
-	        pstmtInsertLoan.setDate(3, java.sql.Date.valueOf(borrowDateStr));
-	        pstmtInsertLoan.setDate(4, java.sql.Date.valueOf(dueDateStr));
+			pstmtInsertLoan.setString(1, subscriberID);
+			pstmtInsertLoan.setString(2, bookBarcode);
 
-	        pstmtInsertLoan.executeUpdate();
+			// If borrowDateStr and dueDateStr are in "yyyy-MM-dd" format, you can convert
+			// them:
+			pstmtInsertLoan.setDate(3, java.sql.Date.valueOf(borrowDateStr));
+			pstmtInsertLoan.setDate(4, java.sql.Date.valueOf(dueDateStr));
 
-	        // 6) Build the successful result
-	        result.put("type", "success");
-	        result.put("message", "Loan created successfully.");
+			pstmtInsertLoan.executeUpdate();
 
-	        return result;
+			// 6) Build the successful result
+			result.put("type", "success");
+			result.put("message", "Loan created successfully.");
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        result.put("type", "error");
-	        result.put("message", "Error creating loan: " + e.getMessage());
-	        return result;
-	    } finally {
-	        // 7) Close resources
-	        try { if (rs != null) rs.close(); } catch (SQLException e) { /* log/ignore */ }
-	        try { if (pstmt != null) pstmt.close(); } catch (SQLException e) { /* log/ignore */ }
-	        try { if (rsOrders != null) rsOrders.close(); } catch (SQLException e) { /* log/ignore */ }
-	        try { if (pstmtOrders != null) pstmtOrders.close(); } catch (SQLException e) { /* log/ignore */ }
-	        try { if (pstmtInsertLoan != null) pstmtInsertLoan.close(); } catch (SQLException e) { /* log/ignore */ }
-	    }
+			return result;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			result.put("type", "error");
+			result.put("message", "Error creating loan: " + e.getMessage());
+			return result;
+		} finally {
+			// 7) Close resources
+			try {
+				if (rs != null)
+					rs.close();
+			} catch (SQLException e) {
+				/* log/ignore */ }
+			try {
+				if (pstmt != null)
+					pstmt.close();
+			} catch (SQLException e) {
+				/* log/ignore */ }
+			try {
+				if (rsOrders != null)
+					rsOrders.close();
+			} catch (SQLException e) {
+				/* log/ignore */ }
+			try {
+				if (pstmtOrders != null)
+					pstmtOrders.close();
+			} catch (SQLException e) {
+				/* log/ignore */ }
+			try {
+				if (pstmtInsertLoan != null)
+					pstmtInsertLoan.close();
+			} catch (SQLException e) {
+				/* log/ignore */ }
+		}
 	}
-	
-	
-	
-	
-	// REPORTS
-		public static Map<String, String> fetchLoanDataForReport(Object message) {
-			// Cast the input object to a Map<String, String>
-			Map<String, String> loanMonthAndYear = (Map<String, String>) message;
 
-			// Extract the "month" and "year" values from the map
-			String month = loanMonthAndYear.get("month");
-			String year = loanMonthAndYear.get("year");
+//	// REPORTS
+//		public static Map<String, String> fetchLoanDataForReport(Object message) {
+//			// Cast the input object to a Map<String, String>
+//			Map<String, String> loanMonthAndYear = (Map<String, String>) message;
+//
+//			// Extract the "month" and "year" values from the map
+//			String month = loanMonthAndYear.get("month");
+//			String year = loanMonthAndYear.get("year");
+//
+//			// Query to filter the LoanReport table by month and year
+//			String query = "SELECT bookTitle, totalLateCount " + "FROM LoanReport "
+//					+ "WHERE MONTH(monthAndYear) = ? AND YEAR(monthAndYear) = ?";
+//
+//			// Create a Map to hold the results
+//			Map<String, String> loanData = new HashMap<>();
+//
+//			try (PreparedStatement stmt = conn.prepareStatement(query)) {
+//				// Set the parameters for the query
+//				stmt.setInt(1, Integer.parseInt(month));
+//				stmt.setInt(2, Integer.parseInt(year));
+//
+//				// Execute the query
+//				try (ResultSet rs = stmt.executeQuery()) {
+//					// Process the result set
+//					while (rs.next()) {
+//						String bookTitle = rs.getString("bookTitle");
+//						String totalLateCount = rs.getString("totalLateCount");
+//						loanData.put(bookTitle, totalLateCount);
+//					}
+//				}
+//
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//
+//			System.out.println("in my sql LoanData map : " + loanData.toString());
+//
+//			return loanData;
+//		}
 
-			// Query to filter the LoanReport table by month and year
-			String query = "SELECT bookTitle, totalLateCount " + "FROM LoanReport "
-					+ "WHERE MONTH(monthAndYear) = ? AND YEAR(monthAndYear) = ?";
+//	public static Map<String, String> fetchLoanDataForReport(Object message) {
+//		// Cast the input object to a Map<String, String>
+//		Map<String, String> loanMonthAndYear = (Map<String, String>) message;
+//
+//		// Extract the "month" and "year" values from the map
+//		String month = loanMonthAndYear.get("month");
+//		String year = loanMonthAndYear.get("year");
+//
+//		// Query to filter the LoanReports table by month and year
+//		String query = "SELECT week, borrowed, lateReturn FROM loanreport WHERE month = ? AND year = ?";
+//
+//		// Create a Map to hold the results
+//		Map<String, String> loanData = new HashMap<>();
+//
+//		try (PreparedStatement stmt = conn.prepareStatement(query)) {
+//			// Set the parameters for the query
+//			stmt.setString(1, month);
+//			stmt.setString(2, year);
+//
+//			// Execute the query
+//			try (ResultSet rs = stmt.executeQuery()) {
+//				// Process the result set
+//				while (rs.next()) {
+//					// Fetch the values
+//					String week = rs.getString("week");
+//					String borrowed = rs.getString("borrowed");
+//					String lateReturn = rs.getString("lateReturn");
+//
+//					// Save them in the map with their respective keys
+//					loanData.put("week", week);
+//					loanData.put("borrowed", borrowed);
+//					loanData.put("lateReturn", lateReturn);
+//				}
+//			}
+//
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//
+//		System.out.println("Loan Data Map: " + loanData);
+//
+//		return loanData;
+//	}
 
-			// Create a Map to hold the results
-			Map<String, String> loanData = new HashMap<>();
+	public static Map<String, Map<String, String>> fetchLoanDataForReport(Object message) {
+		// Cast the input object to a Map<String, String>
+		Map<String, String> loanMonthAndYear = (Map<String, String>) message;
 
-			try (PreparedStatement stmt = conn.prepareStatement(query)) {
-				// Set the parameters for the query
-				stmt.setInt(1, Integer.parseInt(month));
-				stmt.setInt(2, Integer.parseInt(year));
+		// Extract the "month" and "year" values from the map
+		String month = loanMonthAndYear.get("month");
+		String year = loanMonthAndYear.get("year");
 
-				// Execute the query
-				try (ResultSet rs = stmt.executeQuery()) {
-					// Process the result set
-					while (rs.next()) {
-						String bookTitle = rs.getString("bookTitle");
-						String totalLateCount = rs.getString("totalLateCount");
-						loanData.put(bookTitle, totalLateCount);
-					}
+		// Query to filter the LoanReports table by month and year
+		String query = "SELECT week, borrowed, lateReturn FROM loanreport WHERE month = ? AND year = ?";
+
+		// Create a Map to hold the results
+		Map<String, Map<String, String>> loanData = new HashMap<>();
+
+		try (PreparedStatement stmt = conn.prepareStatement(query)) {
+			// Set the parameters for the query
+			stmt.setString(1, month);
+			stmt.setString(2, year);
+
+			// Execute the query
+			try (ResultSet rs = stmt.executeQuery()) {
+				// Process the result set
+				while (rs.next()) {
+					// Fetch the values
+					String week = rs.getString("week");
+					String borrowed = rs.getString("borrowed");
+					String lateReturn = rs.getString("lateReturn");
+
+					// Create or update the week-specific map
+					Map<String, String> weekData = new HashMap<>();
+					weekData.put("borrowed", borrowed);
+					weekData.put("lateReturn", lateReturn);
+
+					// Add to the main map with week as the key
+					loanData.put("Week " + week, weekData);
 				}
-
-			} catch (SQLException e) {
-				e.printStackTrace();
 			}
 
-			System.out.println("in my sql LoanData map : " + loanData.toString());
-
-			return loanData;
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
-		public static Map<String, String> fetchStatusDataForReport(Object message) {
-			// Cast the input object to a Map<String, String>
-			Map<String, String> loanMonthAndYear = (Map<String, String>) message;
+		System.out.println("Loan Data Map: " + loanData);
 
-			// Extract the "month" and "year" values from the map
-			String month = loanMonthAndYear.get("month");
-			String year = loanMonthAndYear.get("year");
+		return loanData;
+	}
 
-			// SQL query to retrieve active and frozen counts for the given month and year
-			String query = "SELECT active, frozen " + "FROM statusreport " + "WHERE MONTH(monthAndYear) = ? AND YEAR(monthAndYear) = ?";
+	public static Map<String, String> fetchStatusDataForReport(Object message) {
+		// Cast the input object to a Map<String, String>
+		Map<String, String> loanMonthAndYear = (Map<String, String>) message;
 
-			// Create a Map to hold the results
-			Map<String, String> statusData = new HashMap<>();
+		// Extract the "month" and "year" values from the map
+		String month = loanMonthAndYear.get("month");
+		String year = loanMonthAndYear.get("year");
 
-			try (PreparedStatement stmt = conn.prepareStatement(query)) {
-				// Set the parameters for the query
-				stmt.setInt(1, Integer.parseInt(month));
-				stmt.setInt(2, Integer.parseInt(year));
+		// SQL query to retrieve active and frozen counts for the given month and year
+		String query = "SELECT active, frozen " + "FROM statusreport "
+				+ "WHERE MONTH(monthAndYear) = ? AND YEAR(monthAndYear) = ?";
 
-				// Execute the query
-				try (ResultSet rs = stmt.executeQuery()) {
-					// Process the result set
-					if (rs.next()) {
-						String activeCount = rs.getString("active"); // Get the active count
-						String frozenCount = rs.getString("frozen"); // Get the frozen count
-						statusData.put("active", activeCount); // Add active count to the map
-						statusData.put("frozen", frozenCount); // Add frozen count to the map
-					}
+		// Create a Map to hold the results
+		Map<String, String> statusData = new HashMap<>();
+
+		try (PreparedStatement stmt = conn.prepareStatement(query)) {
+			// Set the parameters for the query
+			stmt.setInt(1, Integer.parseInt(month));
+			stmt.setInt(2, Integer.parseInt(year));
+
+			// Execute the query
+			try (ResultSet rs = stmt.executeQuery()) {
+				// Process the result set
+				if (rs.next()) {
+					String activeCount = rs.getString("active"); // Get the active count
+					String frozenCount = rs.getString("frozen"); // Get the frozen count
+					statusData.put("active", activeCount); // Add active count to the map
+					statusData.put("frozen", frozenCount); // Add frozen count to the map
 				}
-			} catch (SQLException e) {
-				e.printStackTrace();
 			}
-
-			System.out.println("Status data fetched from database: " + statusData.toString());
-
-			return statusData;
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
+		System.out.println("Status data fetched from database: " + statusData.toString());
 
-	
+		return statusData;
+	}
 
 }

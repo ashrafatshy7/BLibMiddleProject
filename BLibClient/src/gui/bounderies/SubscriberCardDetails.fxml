@@ -22,10 +22,10 @@
 		<Label fx:id="lblPhoneNumber" layoutX="26.0" layoutY="140.0" styleClass="form-label" text="Phone Number :" />
 		<Label fx:id="lblEmail" layoutX="26.0" layoutY="170.0" styleClass="form-label" text="Email :" />
 		<Label fx:id="lblCardNumber" layoutX="24.0" layoutY="80.0" styleClass="form-label" text="Card Number :" />
-		<TextField fx:id="tfCardNumber" layoutX="122.0" layoutY="70.0" prefHeight="25.0" prefWidth="190.0" styleClass="underlined-field" />
-		<TextField fx:id="tfUserName" layoutX="107.0" layoutY="100.0" prefHeight="25.0" prefWidth="214.0" styleClass="underlined-field" />
-		<TextField fx:id="tfPhoneNumber" layoutX="134.0" layoutY="130.0" prefHeight="25.0" prefWidth="179.0" styleClass="underlined-field" />
-		<TextField fx:id="tfEmail" layoutX="72.0" layoutY="160.0" prefHeight="25.0" prefWidth="247.0" styleClass="underlined-field" />
+		<TextField fx:id="tfCardNumber" layoutX="122.0" layoutY="70.0" minWidth="212.0" prefHeight="32.0" prefWidth="212.0" styleClass="underlined-field" />
+		<TextField fx:id="tfUserName" layoutX="107.0" layoutY="100.0" minWidth="224.0" prefHeight="32.0" prefWidth="229.0" styleClass="underlined-field" />
+		<TextField fx:id="tfPhoneNumber" layoutX="134.0" layoutY="130.0" minWidth="175.0" prefHeight="25.0" prefWidth="178.0" styleClass="underlined-field" />
+		<TextField fx:id="tfEmail" layoutX="72.0" layoutY="160.0" minWidth="260.0" prefHeight="25.0" prefWidth="247.0" styleClass="underlined-field" />
 		<TextField fx:id="tfInsertCardNumber" layoutX="189.0" layoutY="36.0" prefHeight="25.0" prefWidth="200.0" styleClass="underlined-field" />
 		<TableView fx:id="tableLoanHistory" editable="true" layoutX="24.0" layoutY="289.0" prefHeight="195.0" prefWidth="393.0" styleClass="table-view">
 			<columns>
@@ -47,7 +47,7 @@
 		<Button fx:id="btnUpdateDates" layoutX="334.0" layoutY="489.0" mnemonicParsing="false" onAction="#btnUpdateDateClicked" styleClass="modern-button" text="Update" />
 		<Button fx:id="btnBack" layoutX="753.0" layoutY="31.0" mnemonicParsing="false" onAction="#btnBackClicked" styleClass="modern-button" text="Back" />
 		<Label fx:id="lblEmailPhonemessage" layoutX="158.0" layoutY="216.0" styleClass="error-label" text="Label" />
-		<Label fx:id="lblEmailmessage" layoutX="276.0" layoutY="172.0" styleClass="error-label" text="Label" />
+		<Label fx:id="lblEmailmessage" layoutX="345.0" layoutY="172.0" styleClass="error-label" text="Label" />
 		<Label fx:id="lblPhoneNumberMessage" layoutX="345.0" layoutY="142.0" styleClass="error-label" text="Label" />
 		<Label fx:id="lblUpdateDateMessage" layoutX="320.0" layoutY="526.0" styleClass="error-label" text="Label" />
 		<Button fx:id="btnExtend" layoutX="25.0" layoutY="520.0" mnemonicParsing="false" onAction="#btnExtendClicked" styleClass="modern-button" text="Extend" />

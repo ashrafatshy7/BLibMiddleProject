@@ -213,7 +213,8 @@ public class EchoServer extends AbstractServer {
 				break;
 
 			case loanReport:
-				Map<String, String> loanChartData = mysqlConnection.fetchLoanDataForReport(message.getMessageData());
+				Map<String, Map<String, String>> loanChartData = mysqlConnection
+						.fetchLoanDataForReport(message.getMessageData());
 				messageFromServer = new Message(MessageType.loanReport, loanChartData);
 				client.sendToClient(messageFromServer);
 				break;
