@@ -15,7 +15,7 @@
 
       <!-- Loan Date Field -->
       <Label layoutX="304.0" layoutY="308.0" text="Loan Date:" />
-      <DatePicker fx:id="currectDatePicker" editable="false" layoutX="372.0" layoutY="304.0" prefHeight="25.0" prefWidth="167.0" />
+      <DatePicker fx:id="currentDatePicker" editable="false" layoutX="372.0" layoutY="304.0" prefHeight="25.0" prefWidth="167.0" />
       
       <!-- Return Date Field -->
       <Label layoutX="294.0" layoutY="358.0" text="Return Date:" />
@@ -28,6 +28,6 @@
       <Label fx:id="barcodeError" layoutX="379.0" layoutY="281.0" text="Enter 6 digits" textFill="#b3271f" />
       <Label fx:id="readerCardError" layoutX="382.0" layoutY="222.0" text="Enter 9 digits" textFill="#b3271f" />
       <Label fx:id="returnDateError" layoutX="377.0" layoutY="390.0" text="Enter valid date" textFill="#b3271f" />
-      <Button layoutX="554.0" layoutY="189.0" mnemonicParsing="false" onAction="#checkStatus" prefHeight="25.0" prefWidth="81.0" text="check status" />
+      <Button fx:id="checkStatusBtn" layoutX="554.0" layoutY="189.0" mnemonicParsing="false" onAction="#checkStatus" prefHeight="25.0" prefWidth="116.0" text="check status" />
    </children>
 </AnchorPane>

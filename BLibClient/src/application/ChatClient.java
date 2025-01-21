@@ -123,6 +123,10 @@ public class ChatClient extends AbstractClient {
 
 		Message message = (Message) msg;
 		MessageType messageType = message.getMessageType();
+		
+		String type = null;
+		String status = null;
+		String messageLog = null;
 
 		switch (messageType) {
 		case getTop5LoanedBooks:
@@ -229,7 +233,6 @@ public class ChatClient extends AbstractClient {
 			break;
 
 		case bookExtentionTable:
-			// ArrayList<Loan> booksCanExtend = (ArrayList<Loan>) message.getMessageData();
 			Map<String, String> booksCanExtend = (Map<String, String>) message.getMessageData();
 			if (extendPopupController != null) {
 				extendPopupController.showExtentionBooks(booksCanExtend);
@@ -261,18 +264,18 @@ public class ChatClient extends AbstractClient {
 
 		case returnBook:
 			Map<String, String> isReturnSuccessful = (Map<String, String>) message.getMessageData();
-			String type = isReturnSuccessful.get("type");
-			String log = isReturnSuccessful.get("message");
-			if(type.equals("success")) showSuccessAlert(log);
-			else if(type.equals("noLoan") || type.equals("frozen") || type.equals("error")) showErrorAlert(log);
+			type = isReturnSuccessful.get("type");
+			messageLog = isReturnSuccessful.get("message");
+			if(type.equals("success")) showSuccessAlert(messageLog);
+			else if(type.equals("noLoan") || type.equals("frozen") || type.equals("error")|| type.equals("Lost") || type.equals("lateWithoutFreeze")) showErrorAlert(messageLog);
 			break;
 		case checkStatus:
 			Map<String, String> checkStatus = (Map<String, String>) message.getMessageData();
-			String statusType = checkStatus.get("type");
-			String status = checkStatus.get("status");
-			String statusLog = checkStatus.get("message");
-			if(statusType.equals("notFound") || (statusType.equals("found") && status.equals("Frozen"))) showErrorAlert(statusLog);
-			if(statusType.equals("found") && status.equals("Active")) {
+			type = checkStatus.get("type");
+			status = checkStatus.get("status");
+			messageLog = checkStatus.get("message");
+			if(type.equals("notFound") || (type.equals("found") && status.equals("Frozen"))) showErrorAlert(messageLog);
+			if(type.equals("found") && status.equals("Active")) { 
 				try {
 					
 					if (loanFrameController != null) {
@@ -284,8 +287,13 @@ public class ChatClient extends AbstractClient {
 					System.out.println(e.getMessage());
 				}
 			}
-			
-			
+			break;
+		case loan:
+			Map<String, String> loan = (Map<String, String>) message.getMessageData();
+			type = loan.get("type");
+			messageLog = loan.get("message"); 
+			if(type.equals("notFound") || type.equals("unsuccessful") || type.equals("alreadyLoaned")) showErrorAlert(messageLog);
+			if (type.equals("success")) showSuccessAlert(messageLog);
 			break;
 
 		}
@@ -353,4 +361,3 @@ public class ChatClient extends AbstractClient {
 	}
 
 }
-//End of ChatClient class

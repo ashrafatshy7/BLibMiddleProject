@@ -3,6 +3,7 @@ package gui.bounderies;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import application.ChatClient;
 import application.ClientUI;
@@ -19,11 +20,11 @@ import javafx.stage.Stage;
 import message.Message;
 import message.MessageType;
 import enteties.Loan;
+import enteties.Subscriber;
 
 public class LoanFrameController {
-	
-	private ChatClient chatClient;
 
+	private ChatClient chatClient;
 
 	@FXML
 	private TextField barcodeTextField;
@@ -32,13 +33,16 @@ public class LoanFrameController {
 	private TextField readerCardTextField;
 
 	@FXML
-	private DatePicker currectDatePicker;
+	private DatePicker currentDatePicker;
 
 	@FXML
 	private DatePicker returnDatePicker;
 
 	@FXML
 	private Button setLoanBtn;
+
+	@FXML
+	private Button checkStatusBtn;
 
 	@FXML
 	private Label barcodeError;
@@ -51,15 +55,15 @@ public class LoanFrameController {
 
 	@FXML
 	private void initialize() {
-		
+
 		barcodeTextField.setDisable(true);
-		currectDatePicker.setDisable(true);
+		currentDatePicker.setDisable(true);
 		returnDatePicker.setDisable(true);
+
 		setLoanBtn.setDisable(true);
-		
-		
-		
-		currectDatePicker.setValue(LocalDate.now());
+
+		currentDatePicker.setValue(LocalDate.now());
+		currentDatePicker.setEditable(false);
 		returnDatePicker.setValue(LocalDate.now().plusDays(14));
 
 		barcodeError.setVisible(false);
@@ -70,43 +74,42 @@ public class LoanFrameController {
 			barcodeTextField.getStyleClass().remove("invalid-border");
 			barcodeError.setVisible(false);
 		});
-		
+
 		readerCardTextField.textProperty().addListener((observable, oldValue, newValue) -> {
 			readerCardTextField.getStyleClass().remove("invalid-border");
 			readerCardError.setVisible(false);
 		});
-		
+
 		returnDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
 			returnDatePicker.getStyleClass().remove("invalid-border");
 			returnDateError.setVisible(false);
-	    });
+		});
 
 	}
-	
+
 	public LoanFrameController() {
 		chatClient = ClientUI.chat.getClient();
 	}
-	
+
 	public void setChatClient(ChatClient chatClient) {
 		this.chatClient = chatClient;
 		this.chatClient.setLoanFrameController(this);
 	}
-	
-	@FXML
+
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/LoanFrame.fxml"));
 			Parent root = loader.load();
 
 			LoanFrameController controller = loader.getController();
-			
+
 			if (this.chatClient != null) {
 				controller.setChatClient(this.chatClient);
 			} else {
 				// Handle the case where chatClient is null
 				System.err.println("ChatClient is not initialized.");
 			}
-			
+
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/gui/bounderies/LoanFrame.css").toExternalForm());
 			primaryStage.setTitle("Details");
@@ -122,49 +125,66 @@ public class LoanFrameController {
 	@FXML
 	public void submitLoan(ActionEvent event) throws Exception {
 		boolean valid = true;
-		if(!checkBarcode(barcodeTextField.getText())) valid = false;
-		if(!checkReaderCard(readerCardTextField.getText())) valid = false;
-		if(!checkReturnDate(returnDatePicker.getValue())) valid = false;
-		
-		
-		if(!valid) return;
-		
+		if (!checkBarcode(barcodeTextField.getText()))
+			valid = false;
+		if (!checkReaderCard(readerCardTextField.getText()))
+			valid = false;
+		if (!checkReturnDate(returnDatePicker.getValue()))
+			valid = false;
+
+		if (!valid)
+			return;
+
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDate currentSelectedDate = currectDatePicker.getValue();
+		LocalDate currentSelectedDate = currentDatePicker.getValue();
 		String currentformattedDate = currentSelectedDate.format(formatter);
 		LocalDate returnSelectedDate = returnDatePicker.getValue();
 		String returntformattedDate = returnSelectedDate.format(formatter);
-		new Message(MessageType.loan, new Loan(readerCardTextField.getText(), barcodeTextField.getText(), currentformattedDate, returntformattedDate));
-	
+
+		ArrayList<Object> loanDetails = new ArrayList<>();
+		loanDetails.add(new Loan(barcodeTextField.getText(), currentformattedDate,
+				returntformattedDate, true));
+		loanDetails.add(new Subscriber(readerCardTextField.getText()));
+		ClientUI.chat.accept(new Message(MessageType.loan, loanDetails));
+
 	}
-	
-	
+
 	@FXML
 	public void checkStatus(ActionEvent event) throws Exception {
-		String readerCard = readerCardTextField.getText();
-		
-		boolean valid = true;
-        if(!readerCard.matches("^\\d{9}$")) {
-        	readerCardTextField.getStyleClass().add("invalid-border");
-        	readerCardError.setVisible(true);
-        	valid = false;
-        }
-        
-        if(!valid) return;
-        
-        Message sendToServer = new Message(MessageType.checkStatus, readerCard);
-        ClientUI.chat.accept(sendToServer);
-	
+		if (checkStatusBtn.getText().equals("check status")) {
+			String readerCard = readerCardTextField.getText();
+			boolean valid = true;
+			if (!readerCard.matches("^\\d{9}$")) {
+				readerCardTextField.getStyleClass().add("invalid-border");
+				readerCardError.setVisible(true);
+				valid = false;
+			}
+
+			if (!valid)
+				return;
+
+			Message sendToServer = new Message(MessageType.checkStatus, new Subscriber(readerCard));
+			ClientUI.chat.accept(sendToServer);
+		} else if (checkStatusBtn.getText().equals("change subscriber")) {
+			barcodeTextField.setDisable(true);
+			returnDatePicker.setDisable(true);
+			currentDatePicker.setDisable(true);
+			setLoanBtn.setDisable(true);
+			checkStatusBtn.setText("check status");
+			readerCardTextField.setDisable(false);
+		}
+
 	}
-	
-	
+
 	public void setActive() {
-		barcodeTextField.setDisable(false);
-		currectDatePicker.setDisable(false);
-		returnDatePicker.setDisable(false);
-		setLoanBtn.setDisable(false);
+		javafx.application.Platform.runLater(() -> {
+			barcodeTextField.setDisable(false);
+			returnDatePicker.setDisable(false);
+			setLoanBtn.setDisable(false);
+			currentDatePicker.setDisable(false);
+			checkStatusBtn.setText("change subscriber");
+		});
 	}
-	
 
 	private boolean checkBarcode(String barcode) {
 		if (barcode != null && barcode.length() == 6) {
@@ -176,7 +196,7 @@ public class LoanFrameController {
 
 		return false;
 	}
-	
+
 	private boolean checkReaderCard(String readerCard) {
 		if (readerCard != null && readerCard.length() == 9) {
 
@@ -187,21 +207,21 @@ public class LoanFrameController {
 
 		return false;
 	}
-	
+
 	private boolean checkReturnDate(LocalDate returnDate) {
-        if (returnDate == null || returnDatePicker.getEditor().getText().trim().isEmpty()) {
-            returnDateError.setVisible(true);
-            returnDatePicker.getStyleClass().add("invalid-border");
-            return false;
-        }
+		if (returnDate == null || returnDatePicker.getEditor().getText().trim().isEmpty()) {
+			returnDateError.setVisible(true);
+			returnDatePicker.getStyleClass().add("invalid-border");
+			return false;
+		}
 
-        if (returnDate.isBefore(currectDatePicker.getValue())) {
-            returnDateError.setVisible(true);
-            returnDatePicker.getStyleClass().add("invalid-border");
-            return false;
-        }
+		if (returnDate.isBefore(currentDatePicker.getValue())) {
+			returnDateError.setVisible(true);
+			returnDatePicker.getStyleClass().add("invalid-border");
+			return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 
 }

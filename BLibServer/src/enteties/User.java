@@ -17,6 +17,10 @@ public class User implements Serializable {
         this.phoneNumber = phoneNumber;
         this.email = email;
     }
+    
+    public User(String ID) {
+		this.ID = ID;
+	}
 
     // Getters and Setters
     public String getID() {

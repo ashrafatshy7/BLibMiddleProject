@@ -84,8 +84,7 @@ public class ReturnFrameController {
          ArrayList<Object> returnBook = new ArrayList<>();
          returnBook.add(bookBarcode);
          returnBook.add(readerCard);
-         System.out.println(issueChoice.getValue().equals("Lost"));
-         if(issueChoice.getValue().equals("Lost")) {System.out.println(11111); returnBook.add(new Issue("Lost"));}
+         returnBook.add(new Issue(issueChoice.getValue()));
          Message sendToServer = new Message(MessageType.returnBook, returnBook);
          ClientUI.chat.accept(sendToServer); 
     }

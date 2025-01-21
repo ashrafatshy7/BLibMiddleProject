@@ -10,6 +10,10 @@ public class Subscriber extends User implements Serializable {
     public Subscriber(String ID, String name, String phoneNumber, String email) {
         super(ID, name, phoneNumber, email);
     }
+    
+    public Subscriber(String ID) {
+		super(ID);
+	}
 
    
 }

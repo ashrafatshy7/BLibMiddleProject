@@ -150,21 +150,13 @@ public class EchoServer extends AbstractServer {
 				break;
 
 			case updateEmailAndPhone:
-				// Extract the required data
 				ArrayList<String> allData = new ArrayList<>(
 						Arrays.asList(((String) message.getMessageData()).split(" ")));
 				String email = allData.get(0);
 				String phoneNumber = allData.get(1);
-				String cardNum = allData.get(2); // Card number from the client data
-
-				// Update the subscriber's email and phone number in the database
+				String cardNum = allData.get(2);
 				boolean isUpdated = mysqlConnection.updateSubscriberEmailAndPhoneNumber(email, phoneNumber, cardNum);
-
-				// Populate the response with operation result
-
 				Message isUpdatedMessage = new Message(MessageType.updateEmailAndPhone, isUpdated);
-
-				// Send the response back to the client
 				try {
 					client.sendToClient(isUpdatedMessage);
 				} catch (IOException e) {
@@ -207,9 +199,9 @@ public class EchoServer extends AbstractServer {
 				client.sendToClient(messageFromServer);
 				break;
 			case loan:
-				mysqlConnection.createLoan(message.getMessageData());
-//				messageFromServer = new Message(MessageType.loan, checkStatus);
-//				client.sendToClient(messageFromServer);
+				Map<String, String> loan = mysqlConnection.createLoan(message.getMessageData());
+				messageFromServer = new Message(MessageType.loan, loan);
+				client.sendToClient(messageFromServer);
 				break;
 
 			case loanReport:

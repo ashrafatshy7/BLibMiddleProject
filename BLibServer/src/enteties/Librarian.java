@@ -9,6 +9,10 @@ public class Librarian extends User implements Serializable {
     public Librarian(String ID, String name, String phoneNumber, String email) {
         super(ID, name, phoneNumber, email);
     }
+    
+    public Librarian(String ID) {
+		super(ID);
+	}
 
     @Override
     public String toString() {

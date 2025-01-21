@@ -124,7 +124,8 @@ public class BookDetailsFrameController {
 		} else {
 			isAvailable.setText(isAvailable.getText() + "No");
 			shelfReturnDate.setText("Return date: " + earliestReturnDate);
-			order.setVisible(true);
+			if(ClientUI.user instanceof Subscriber)
+				order.setVisible(true);
 		}
 
 	}
@@ -145,7 +146,7 @@ public class BookDetailsFrameController {
 	
 
 	
-	@FXML
+	
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/BookDetailsFrame.fxml"));
