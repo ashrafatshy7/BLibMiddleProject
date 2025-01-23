@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="650.0" prefWidth="876.0" stylesheets="@RegisterSubscriber.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.RegisterSubscriberController">
+<AnchorPane prefHeight="650.0" prefWidth="876.0" stylesheets="@RegisterSubscriber.css" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.RegisterSubscriberController">
     <children>
         <!-- Back Button -->
         <Button fx:id="backBtn" layoutX="750.0" layoutY="20.0" onAction="#goBack" text="Back" styleClass="modern-button" />

@@ -27,12 +27,6 @@ public class ServerUI extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-
-		// Start the scheduled task for end-of-month processing
-		startEndOfMonthTask();
-		startDailyDueDateCheckTask();
-
-		// TODO Auto-generated method stub
 		mysqlConnection.connectToDB();
 		ServerFrameController aFrame = new ServerFrameController();
 
@@ -54,10 +48,14 @@ public class ServerUI extends Application {
 
 		try {
 			server.listen(); // Start listening for connections
+			// Start the scheduled task for end-of-month processing
+			startEndOfMonthTask();
+			startDailyDueDateCheckTask();
 
 		} catch (Exception ex) {
 			System.out.println("ERROR - Could not listen for clients!");
 		}
+
 	}
 
 	public static void stopServer() {

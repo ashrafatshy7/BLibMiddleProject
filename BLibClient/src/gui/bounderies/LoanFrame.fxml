@@ -6,29 +6,33 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" stylesheets="@LoanFrame.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.LoanFrameController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" stylesheets="@LoanFrame.css" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.LoanFrameController">
    <children>
-      
+      <!-- Title -->
+      <Label fx:id="LoanLabel" layoutX="370.0" layoutY="50.0" styleClass="title-label" text="Set a Loan" />
+
       <!-- Reader Card Field -->
-      <Label layoutX="296.0" layoutY="189.0" text="Reader Card:" />
-      <TextField fx:id="readerCardTextField" layoutX="375.0" layoutY="185.0" prefHeight="25.0" prefWidth="167.0" />
+      <Label layoutX="150.0" layoutY="150.0" styleClass="form-label" text="Reader Card:" />
+      <TextField fx:id="readerCardTextField" layoutX="310.0" layoutY="145.0" styleClass="form-field" />
+      <Label fx:id="readerCardError" layoutX="310.0" layoutY="181.0" styleClass="error-label" text="Enter 9 digits" />
+
+      <!-- Book Barcode Field -->
+      <Label layoutX="150.0" layoutY="220.0" styleClass="form-label" text="Book Barcode:" />
+      <TextField fx:id="barcodeTextField" layoutX="310.0" layoutY="215.0" styleClass="form-field" />
+      <Label fx:id="barcodeError" layoutX="310.0" layoutY="250.0" styleClass="error-label" text="Enter 6 digits" />
 
       <!-- Loan Date Field -->
-      <Label layoutX="304.0" layoutY="308.0" text="Loan Date:" />
-      <DatePicker fx:id="currentDatePicker" editable="false" layoutX="372.0" layoutY="304.0" prefHeight="25.0" prefWidth="167.0" />
-      
-      <!-- Return Date Field -->
-      <Label layoutX="294.0" layoutY="358.0" text="Return Date:" />
-      <DatePicker fx:id="returnDatePicker" layoutX="372.0" layoutY="354.0" prefHeight="25.0" prefWidth="167.0" />
+      <Label layoutX="150.0" layoutY="290.0" styleClass="form-label" text="Loan Date:" />
+      <DatePicker fx:id="currentDatePicker" editable="false" layoutX="310.0" layoutY="285.0" prefHeight="30.0" prefWidth="300.0" styleClass="form-field" />
 
-      <!-- Set Loan Button -->
-      <Button fx:id="setLoanBtn" layoutX="412.0" layoutY="418.0" mnemonicParsing="false" onAction="#submitLoan" text="Set Loan" />
-         <TextField fx:id="barcodeTextField" layoutX="372.0" layoutY="246.0" prefHeight="32.0" prefWidth="167.0" promptText=" " styleClass="floating-textfield" />
-         <Label layoutX="285.0" layoutY="254.0" text="Book Barcode:" />
-      <Label fx:id="barcodeError" layoutX="379.0" layoutY="281.0" text="Enter 6 digits" textFill="#b3271f" />
-      <Label fx:id="readerCardError" layoutX="382.0" layoutY="222.0" text="Enter 9 digits" textFill="#b3271f" />
-      <Label fx:id="returnDateError" layoutX="377.0" layoutY="390.0" text="Enter valid date" textFill="#b3271f" />
-      <Button fx:id="checkStatusBtn" layoutX="554.0" layoutY="189.0" mnemonicParsing="false" onAction="#checkStatus" prefHeight="25.0" prefWidth="116.0" text="check status" />
-      <Button fx:id="btnBack" layoutX="670.0" layoutY="82.0" mnemonicParsing="false" onAction="#btnBackClicked" text="Back" />
+      <!-- Return Date Field -->
+      <Label layoutX="150.0" layoutY="360.0" styleClass="form-label" text="Return Date:" />
+      <DatePicker fx:id="returnDatePicker" layoutX="310.0" layoutY="355.0" prefHeight="30.0" prefWidth="300.0" styleClass="form-field" />
+      <Label fx:id="returnDateError" layoutX="310.0" layoutY="397.0" styleClass="error-label" text="Enter valid date" />
+
+      <!-- Buttons -->
+      <Button fx:id="setLoanBtn" layoutX="476.0" layoutY="450.0" onAction="#submitLoan" styleClass="form-button" text="Set Loan" />
+      <Button fx:id="checkStatusBtn" layoutX="618.0" layoutY="130.0" onAction="#checkStatus" styleClass="form-button" text="Check Status" />
+      <Button fx:id="btnBack" layoutX="252.0" layoutY="450.0" onAction="#btnBackClicked" styleClass="top-button" text="Back" />
    </children>
 </AnchorPane>

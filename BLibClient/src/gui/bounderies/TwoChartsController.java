@@ -187,13 +187,13 @@ public class TwoChartsController {
 			// Style the series after the nodes are created
 			borrowedSeries.nodeProperty().addListener((observable, oldValue, newValue) -> {
 				if (newValue != null) {
-					newValue.setStyle("-fx-bar-fill: red;");
+					newValue.setStyle("-fx-bar-fill: orange;");
 				}
 			});
 
 			lateReturnsSeries.nodeProperty().addListener((observable, oldValue, newValue) -> {
 				if (newValue != null) {
-					newValue.setStyle("-fx-bar-fill: orange;");
+					newValue.setStyle("-fx-bar-fill: red;");
 				}
 			});
 		});

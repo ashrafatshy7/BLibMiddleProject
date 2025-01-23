@@ -204,11 +204,12 @@ public class ChatClient extends AbstractClient {
 
 		case cardNumber:
 			HashMap<String, Object> response = (HashMap<String, Object>) ((Message) msg).getMessageData();
+			
 			// Pass the data to the controller
 			if (subscriberCardDetailsController != null) {
 				subscriberCardDetailsController.cardExist(response);
 			} else {
-				System.out.println("subscriberCardDetailsController is null.");
+				System.out.println("3-subscriberCardDetailsController is null.");
 			}
 			break;
 			
@@ -219,7 +220,7 @@ public class ChatClient extends AbstractClient {
 			if (subscriberCardDetailsController != null) {
 				subscriberCardDetailsController.btnUpdateDetailsClickedCheck(isUpdateSuccessful);
 			} else {
-				System.out.println("subscriberCardDetailsController is null.");
+				System.out.println("1- subscriberCardDetailsController is null.");
 			}
 			break;
 
@@ -229,7 +230,7 @@ public class ChatClient extends AbstractClient {
 			if (subscriberCardDetailsController != null) {
 				subscriberCardDetailsController.btnUpdateReturnDateCheck(isDateUpdated);
 			} else {
-				System.out.println("subscriberCardDetailsController is null.");
+				System.out.println("2-subscriberCardDetailsController is null.");
 			}
 			break;
 

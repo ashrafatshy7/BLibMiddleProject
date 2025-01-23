@@ -44,6 +44,9 @@ public class LoanFrameController {
 
 	@FXML
 	private Button checkStatusBtn;
+	
+	@FXML
+	private Button btnBackClicked;
 
 	@FXML
 	private Label barcodeError;

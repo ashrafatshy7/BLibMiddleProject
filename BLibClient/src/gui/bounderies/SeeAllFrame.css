@@ -1,5 +1,102 @@
-.clear-button {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-padding: 0;
+/* General Styles */
+.root {
+    -fx-background-color: #f4f6f9; /* Light modern background */
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Title Label */
+.title-label {
+    -fx-font-size: 24.0px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50; /* Dark gray for text */
+}
+
+/* Input Labels */
+.input-label {
+    -fx-font-size: 14.0px;
+    -fx-text-fill: #34495e; /* Slightly muted gray-blue */
+}
+
+/* Text Fields */
+.text-field {
+    -fx-background-color: transparent; /* No background for modern look */
+    -fx-border-color: transparent transparent #bdc3c7 transparent; /* Bottom underline only */
+    -fx-border-width: 0.0 0.0 1.5 0.0;
+    -fx-padding: 5.0 5.0 5.0 0.0;
+    -fx-font-size: 14.0px;
+}
+
+.text-field:focused {
+    -fx-border-color: transparent transparent #3498db transparent; /* Blue underline on focus */
+    -fx-border-width: 0.0 0.0 2.0 0.0;
+    -fx-prompt-text-fill: #95a5a6; /* Light gray for placeholder text */
+}
+
+/* ComboBox */
+.combo-box {
+    -fx-background-color: #ecf0f1; /* Soft light gray background */
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1.0;
+    -fx-padding: 5.0;
+    -fx-font-size: 14.0px;
+    -fx-background-radius: 5.0;
+    -fx-border-radius: 5.0;
+}
+
+.combo-box:hover {
+    -fx-border-color: #3498db; /* Border changes to blue on hover */
+}
+
+.combo-box:focused {
+    -fx-border-color: #3498db; /* Border changes to blue on focus */
+}
+
+/* Radio Buttons */
+.radio-button {
+    -fx-font-size: 14.0px;
+    -fx-text-fill: #2c3e50; /* Dark gray */
+}
+
+.radio-button:selected {
+    -fx-mark-color: #3498db; /* Blue mark for selected */
+}
+
+/* ScrollPane */
+.scroll-pane {
+    -fx-border-color: #bdc3c7; /* Light border */
+    -fx-border-width: 1.0;
+    -fx-background-color: transparent; /* No background */
+    -fx-padding: 10.0;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent; /* No background behind books */
+}
+
+/* FlowPane for Books */
+#booksPanel {
+    -fx-background-color: transparent; /* No background at all! */
+}
+
+/* Buttons */
+.backButton {
+    -fx-background-color: #3498db; /* Vibrant blue */
+    -fx-text-fill: white; /* White text */
+    -fx-font-size: 14.0px;
+    -fx-padding: 10.0 20.0;
+    -fx-border-radius: 5.0;
+    -fx-background-radius: 5.0;
+    -fx-cursor: hand; /* Pointer cursor for buttons */
+}
+
+.backButton:hover {
+    -fx-background-color: #2980b9; /* Darker blue on hover */
+}
+
+.backButton:pressed {
+    -fx-background-color: #1f618d; /* Even darker blue on press */
+}
+
+.bookBtn{
+	-fx-background-color: transparent;
 }

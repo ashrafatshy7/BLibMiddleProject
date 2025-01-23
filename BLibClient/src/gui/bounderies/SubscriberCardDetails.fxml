@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" stylesheets="@subscriberCardDetails.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.SubscriberCardDetailsController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" stylesheets="@subscriberCardDetails.css" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.SubscriberCardDetailsController">
 
 	<children>
 		<Button fx:id="btnSearch" layoutX="409.0" layoutY="35.0" mnemonicParsing="false" onAction="#btnSearchClicked" prefHeight="36.0" prefWidth="81.0" styleClass="modern-button" text="Search" />

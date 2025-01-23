@@ -169,14 +169,16 @@ public class SubscriberCardDetailsController {
 		});
 
 		if (ClientUI.user instanceof Subscriber) {
+			showComponents();
 			suscriberComponents();
 		}
 	}
 
 	@FXML
-	void btnSearchClicked(ActionEvent event) {
+	public void btnSearchClicked(ActionEvent event) {
 		String cardNumber;
 		if (ClientUI.user instanceof Subscriber) {
+			suscriberComponents();
 			// Get the inserted card number from the TextField
 			cardNumber = ClientUI.user.getID();
 		} else {
@@ -192,6 +194,14 @@ public class SubscriberCardDetailsController {
 			tfCardNumber.clear();
 			return;
 		}
+
+		Message sendToServer = new Message(MessageType.cardNumber, cardNumber);
+		ClientUI.chat.accept(sendToServer);
+	}
+
+	void noBtnForSubscriber() {
+		// Get the inserted card number from the TextField
+		String cardNumber = ClientUI.user.getID();
 
 		Message sendToServer = new Message(MessageType.cardNumber, cardNumber);
 		ClientUI.chat.accept(sendToServer);
@@ -511,15 +521,16 @@ public class SubscriberCardDetailsController {
 	}
 
 	private void suscriberComponents() {
-		showComponents();
 		lblInsertCardNumber.setVisible(false);
+		lblInvalidCardNumber.setVisible(false);
 		btnSearch.setVisible(false);
+		lblInvalidCardNumber.setVisible(false);
 		tfInsertCardNumber.setVisible(false);
 		colReturnDate.setEditable(false);
 		btnUpdateDates.setVisible(false);
 		btnUpdateDetails.setVisible(true);
 		btnExtend.setVisible(true);
-		btnSearchClicked(null);
+		
 	}
 
 	private void librarianComponents() {
@@ -543,8 +554,14 @@ public class SubscriberCardDetailsController {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 
+			if (ClientUI.user instanceof Subscriber) {
+
+				noBtnForSubscriber();
+			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+
 }

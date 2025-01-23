@@ -6,25 +6,26 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" stylesheets="@ReturnFrame.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ReturnFrameController">
-   <children>
-      <!-- Title -->
-      <Label fx:id="ReturnLabel" layoutX="310.0" layoutY="50.0" styleClass="title-label" text="Return a Book" />
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" stylesheets="@ReturnFrame.css" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ReturnFrameController">
+	<children>
+		<!-- Title -->
+		<Label fx:id="ReturnLabel" layoutX="310.0" layoutY="50.0" styleClass="title-label" text="Return a Book" />
 
-      <!-- Book Barcode -->
-      <Label layoutX="150.0" layoutY="150.0" styleClass="form-label" text="Book Barcode:" />
-      <TextField fx:id="bookBarcodeField" layoutX="310.0" layoutY="145.0" styleClass="form-field" />
+		<!-- Book Barcode -->
+		<Label layoutX="150.0" layoutY="150.0" styleClass="form-label" text="Book Barcode:" />
+		<TextField fx:id="bookBarcodeField" layoutX="310.0" layoutY="145.0" styleClass="form-field" />
 
-      <!-- Reader Card -->
-      <Label layoutX="150.0" layoutY="220.0" styleClass="form-label" text="Reader Card:" />
-      <TextField fx:id="readercardField" layoutX="310.0" layoutY="215.0" styleClass="form-field" />
+		<!-- Reader Card -->
+		<Label layoutX="150.0" layoutY="220.0" styleClass="form-label" text="Reader Card:" />
+		<TextField fx:id="readercardField" layoutX="310.0" layoutY="215.0" styleClass="form-field" />
 
-      <!-- Buttons -->
-      <Button fx:id="Returnbutton" layoutX="310.0" layoutY="360.0" onAction="#handleReturnButtonAction" styleClass="form-button" text="Return" />
-      <Button fx:id="backButton" layoutX="150.0" layoutY="360.0" onAction="#goBack" styleClass="top-button" text="Back" />
-      <Label layoutX="182.0" layoutY="292.0" text="Issue:" />
-      <ChoiceBox fx:id="issueChoice" layoutX="310.0" layoutY="286.0" prefHeight="30.0" prefWidth="300.0" />
-      <Label fx:id="readerCardIssue" layoutX="310.0" layoutY="254.0" prefHeight="18.0" prefWidth="185.0" text="Should be 9 digits" />
-      <Label fx:id="barcodeIssue" layoutX="310.0" layoutY="188.0" text="Should be 6 digits" />
-   </children>
+		<!-- Buttons -->
+		<Button fx:id="Returnbutton" layoutX="310.0" layoutY="360.0" onAction="#handleReturnButtonAction" styleClass="form-button" text="Return" />
+		<Button fx:id="backButton" layoutX="150.0" layoutY="360.0" onAction="#goBack" styleClass="top-button" text="Back" />
+		<Label layoutX="150.0" layoutY="290.0" styleClass="form-label" text="Issue:" />
+		<ChoiceBox fx:id="issueChoice" layoutX="310.0" layoutY="285.0" prefHeight="30.0" prefWidth="300.0" />
+
+		<Label fx:id="readerCardIssue" layoutX="310.0" layoutY="254.0" prefHeight="18.0" prefWidth="185.0" text="Should be 9 digits" />
+		<Label fx:id="barcodeIssue" layoutX="310.0" layoutY="188.0" text="Should be 6 digits" />
+	</children>
 </AnchorPane>

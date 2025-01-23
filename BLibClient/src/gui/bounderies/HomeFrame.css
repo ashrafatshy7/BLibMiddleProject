@@ -1,132 +1,104 @@
-/* Root styles */
+/* General Styles */
 .root {
-    -fx-background-color: #f5f5f5;
-    -fx-font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    -fx-padding: 20px;
+    -fx-background-color: #f4f4f4;
 }
 
-/* Header section */
-#activeFrozen {
-    -fx-font-weight: bold;
-    -fx-text-fill: #2e7d32;
-    -fx-background-color: rgba(46, 125, 50, 0.1);
-    -fx-background-radius: 20px;
-    -fx-padding: 6px 12px;
-    -fx-font-size: 14px;
+/* Sidebar */
+.sidebar {
+    -fx-background-color: #2C3E50;
+    -fx-padding: 20px 10px;
+    -fx-spacing: 10px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.2, 2, 2);
 }
 
-/* Login button */
-#login {
-    -fx-background-color: #4caf50;
-    -fx-background-radius: 25px;
-    -fx-min-width: 100px;
-    -fx-min-height: 40px;
-    -fx-font-size: 15px;
-    -fx-effect: dropshadow(gaussian, rgba(76, 175, 80, 0.25), 10, 0, 0, 4);
-}
-
-#login:hover {
-    -fx-background-color: #43a047;
-    -fx-effect: dropshadow(gaussian, rgba(76, 175, 80, 0.35), 15, 0, 0, 6);
-}
-
-/* Top 5 Section Header */
-.label:first-of-type {
-    -fx-font-weight: bold;
-    -fx-text-fill: #1976d2;
-    -fx-font-size: 18px;
-    -fx-background-color: rgba(25, 118, 210, 0.1);
-    -fx-background-radius: 8px;
-    -fx-padding: 10px 16px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);
-}
-
-/* See All button */
-#seeAll {
-    -fx-background-color: transparent;
-    -fx-text-fill: #1976d2;
-    -fx-font-size: 14px;
-    -fx-padding: 8px 16px;
-    -fx-border-color: #1976d2;
-    -fx-border-radius: 20px;
-    -fx-border-width: 2px;
-    -fx-cursor: hand;
-}
-
-#seeAll:hover {
-    -fx-background-color: rgba(25, 118, 210, 0.1);
-    -fx-border-color: #0d47a1;
-    -fx-text-fill: #0d47a1;
-}
-
-/* Book Images */
-.image-view {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 12, 0, 0, 4);
-    -fx-background-radius: 12px;
-    -fx-cursor: hand;
-    -fx-transition: all 0.3s ease;
-}
-
-.image-view:hover {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 18, 0, 0, 8);
-    -fx-translate-y: -4px;
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-}
-
-/* Book Names */
-#topBookName1, #topBookName2, #topBookName3, #topBookName4, #topBookName5 {
-    -fx-font-size: 15px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #424242;
-    -fx-alignment: center;
-    -fx-padding: 10px 16px;
-    -fx-background-color: white;
-    -fx-background-radius: 8px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0, 0, 2);
-    -fx-max-width: 100px;
-    -fx-wrap-text: true;
-    -fx-text-alignment: center;
-}
-
-/* My Info button */
-#myInfo {
-    -fx-background-color: #ff9800;
-    -fx-background-radius: 25px;
-    -fx-min-width: 120px;
-    -fx-min-height: 45px;
-    -fx-font-size: 15px;
-    -fx-effect: dropshadow(gaussian, rgba(255, 152, 0, 0.25), 10, 0, 0, 4);
-}
-
-#myInfo:hover {
-    -fx-background-color: #f57c00;
-    -fx-effect: dropshadow(gaussian, rgba(255, 152, 0, 0.35), 15, 0, 0, 6);
-    -fx-translate-y: -2px;
-}
-
-/* General button properties */
-.button {
-    -fx-cursor: hand;
-    -fx-font-weight: bold;
+.sidebar-button {
+    -fx-pref-width: 160px;
+    -fx-pref-height: 40px;
+    -fx-background-color: #34495E;
     -fx-text-fill: white;
-    -fx-transition-duration: 0.2s;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
 }
 
-/* Smooth transitions for all elements */
-* {
-    -fx-transition: -fx-background-color 0.2s, -fx-translate-y 0.2s, -fx-scale-x 0.2s, -fx-scale-y 0.2s;
+.sidebar-button:hover {
+    -fx-background-color: #3E4F6C;
 }
 
-
-/* In HomeFrame.css */
-.book-box {
-   
-    -fx-padding: 10;
-    -fx-border-radius: 5;
-    -fx-background-radius: 5;
-    -fx-alignment: center;
-    -fx-cursor: hand; /* Changes cursor to hand on hover */
+.sidebar-button:pressed {
+    -fx-background-color: #2A3C50;
 }
 
+/* Header */
+.header-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
 
+.header-button {
+    -fx-pref-width: 100px;
+    -fx-pref-height: 30px;
+    -fx-background-color: #007BFF;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.header-button:hover {
+    -fx-background-color: #0056b3;
+}
+
+/* Status */
+.status-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #555;
+}
+
+.status-value {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #28a745;
+}
+
+/* Section Titles */
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+    -fx-underline: true;
+}
+
+/* FlowPane for Top Books */
+.flow-pane {
+    -fx-background-color: #fff;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1px;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+/* Footer Buttons */
+.footer-button {
+    -fx-pref-width: 120px;
+    -fx-pref-height: 40px;
+    -fx-background-color: linear-gradient(to bottom, #6c757d, #5a6268);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.footer-button:hover {
+    -fx-background-color: #5a6268;
+}

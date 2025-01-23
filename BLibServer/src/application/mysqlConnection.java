@@ -1411,7 +1411,6 @@ public class mysqlConnection {
 //	}
 
 	public static void endOfMonthProcessingLoanReport() {
-		Connection conn = null;
 		PreparedStatement insertStmt = null;
 		PreparedStatement checkStmt = null;
 		ResultSet rs = null;
@@ -1420,8 +1419,6 @@ public class mysqlConnection {
 				"Gothic Fiction", "Fantasy", "Epic Poetry", "Dystopian", "Coming-of-Age", "Adventure");
 
 		try {
-			// Establish connection (assuming you have a mechanism to get a connection)
-			conn = getConnection();
 
 			// Query distinct years and months from the loan table
 			String distinctYearMonthQuery = "SELECT DISTINCT YEAR(borrowDate) AS year,MONTH(borrowDate) AS month FROM loan";
@@ -1482,7 +1479,6 @@ public class mysqlConnection {
 			e.printStackTrace();
 			if (e instanceof SQLNonTransientConnectionException) {
 				System.err.println("Failed to execute loan report due to connection issue. Attempting to reconnect...");
-				conn = getConnection(); // Implement reconnection logic here
 				if (conn != null) {
 					// Retry the operation if reconnection is successful
 					endOfMonthProcessingLoanReport(); // Recursive call to retry
@@ -1506,6 +1502,171 @@ public class mysqlConnection {
 			}
 		}
 	}
+
+	public static void endOfMonthProcessingStatusReport() {
+	    PreparedStatement insertStmt = null;
+	    ResultSet rs = null;
+
+	    try {
+	        // Get the date of the previous month
+	        Calendar cal = Calendar.getInstance();
+	        cal.add(Calendar.MONTH, -1); // Go back to the previous month
+	        int previousMonth = cal.get(Calendar.MONTH) + 1; // Adjust for 0-based month index
+	        int previousYear = cal.get(Calendar.YEAR);
+	        String previousMonthFormatted = String.format("%02d", previousMonth);
+	        String dateFormatted = previousYear + "-" + previousMonthFormatted + "-01"; // Format as yyyy-mm-01
+
+	        // Queries for counting users
+	        String activeUsersQuery = "SELECT COUNT(*) AS count FROM users WHERE LOWER(status) = 'active'";
+	        String frozenUsersQuery = "SELECT COUNT(*) AS count FROM users WHERE LOWER(status) = 'frozen'";
+
+	        // Prepare and execute the active users query
+	        PreparedStatement activeStmt = conn.prepareStatement(activeUsersQuery);
+	        rs = activeStmt.executeQuery();
+	        int activeCount = 0;
+	        if (rs.next()) {
+	            activeCount = rs.getInt("count");
+	        }
+	        rs.close();
+	        activeStmt.close();
+
+	        // Prepare and execute the frozen users query
+	        PreparedStatement frozenStmt = conn.prepareStatement(frozenUsersQuery);
+	        rs = frozenStmt.executeQuery();
+	        int frozenCount = 0;
+	        if (rs.next()) {
+	            frozenCount = rs.getInt("count");
+	        }
+	        rs.close();
+	        frozenStmt.close();
+
+	        System.out.println("Active users: " + activeCount + ", Frozen users: " + frozenCount);
+
+	        // Insert the data into the statusreport table (using ON DUPLICATE KEY UPDATE)
+	        String insertQuery = "INSERT INTO statusreport (monthAndYear, active, frozen) VALUES (?, ?, ?) "
+	                + "ON DUPLICATE KEY UPDATE active = VALUES(active), frozen = VALUES(frozen)";
+	        insertStmt = conn.prepareStatement(insertQuery);
+	        insertStmt.setString(1, dateFormatted); // Set the previous month's date
+	        insertStmt.setString(2, String.valueOf(activeCount)); // Convert active count to string
+	        insertStmt.setString(3, String.valueOf(frozenCount)); // Convert frozen count to string
+	        insertStmt.executeUpdate();
+
+	        System.out.println(
+	                "Inserted status report for previous month (" + previousMonthFormatted + "/" + previousYear + "):");
+	        System.out.println("Active Count: " + activeCount + ", Frozen Count: " + frozenCount);
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        // Clean up resources
+	        try {
+	            if (rs != null)
+	                rs.close();
+	            if (insertStmt != null)
+	                insertStmt.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+
+
+//	public static void endOfMonthProcessingStatusReport() {
+//	    PreparedStatement insertStmt = null;
+//	    PreparedStatement userStatusStmt = null;  // Use PreparedStatement for the SELECT query
+//	    ResultSet rs = null;
+//
+//	    try {
+//	        Calendar cal = Calendar.getInstance();
+//	        cal.add(Calendar.MONTH, -1); // Go back to previous month
+//	        int previousMonth = cal.get(Calendar.MONTH) + 1; // Adjust for 0-based month index
+//	        int previousYear = cal.get(Calendar.YEAR);
+//	        String previousMonthFormatted = String.format("%02d", previousMonth);
+//	        String dateFormatted = previousYear + "-" + previousMonthFormatted + "-01"; // Format to yyyy-mm-dd
+//
+//	        // Prepare the insertion query for statusreport
+//	        String insertQuery = "INSERT INTO statusreport (monthAndYear, active, frozen) VALUES (?, ?, ?)";
+//	        String updateQuery = "UPDATE statusreport SET active = ?, frozen = ? WHERE monthAndYear = ?";
+//
+//	        // Prepare the query to get active and frozen user counts
+//	        String userStatusQuery = "SELECT COUNT(*) AS count FROM users WHERE status = ?";
+//
+//	        // Prepare the user status statement for active users
+//	        userStatusStmt = conn.prepareStatement(userStatusQuery);
+//
+//	        // Count active users
+//	        userStatusStmt.setString(1, "active");
+//	        rs = userStatusStmt.executeQuery();
+//	        int activeCount = 0;
+//	        if (rs.next()) {
+//	            activeCount = rs.getInt("count");
+//	            System.out.println("Active Count: " + activeCount);
+//	        }
+//
+//	        // Check if the record for the monthAndYear already exists
+//	        String checkExistenceQuery = "SELECT COUNT(*) AS count FROM statusreport WHERE monthAndYear = ?";
+//	        PreparedStatement checkExistenceStmt = conn.prepareStatement(checkExistenceQuery);
+//	        checkExistenceStmt.setString(1, dateFormatted);
+//	        rs = checkExistenceStmt.executeQuery();
+//	        int existingCount = 0;
+//	        if (rs.next()) {
+//	            existingCount = rs.getInt("count");
+//	        }
+//
+//	        if (existingCount > 0) {
+//	            // If the record exists, update it
+//	            PreparedStatement updateStmt = conn.prepareStatement(updateQuery);
+//	            updateStmt.setInt(1, activeCount);
+//	            updateStmt.setInt(2, 0);  // Set frozen count to 0 for now
+//	            updateStmt.setString(3, dateFormatted);
+//	            updateStmt.executeUpdate();
+//	        } else {
+//	            // If the record does not exist, insert it
+//	            insertStmt = conn.prepareStatement(insertQuery);
+//	            insertStmt.setString(1, dateFormatted);
+//	            insertStmt.setInt(2, activeCount);
+//	            insertStmt.setInt(3, 0);  // Initialize frozen count to 0
+//	            insertStmt.executeUpdate();
+//	        }
+//
+//	        // Count frozen users
+//	        userStatusStmt.setString(1, "frozen");
+//	        rs = userStatusStmt.executeQuery();
+//	        int frozenCount = 0;
+//	        if (rs.next()) {
+//	            frozenCount = rs.getInt("count");
+//	        }
+//
+//	        if (existingCount > 0) {
+//	            // If the record exists, update it with frozen count
+//	            PreparedStatement updateStmt = conn.prepareStatement(updateQuery);
+//	            updateStmt.setInt(1, 0);  // Set active count to 0 for now
+//	            updateStmt.setInt(2, frozenCount);
+//	            updateStmt.setString(3, dateFormatted);
+//	            updateStmt.executeUpdate();
+//	        } else {
+//	            // If the record does not exist, insert frozen user count as well
+//	            insertStmt.setString(1, dateFormatted);  // Set date again
+//	            insertStmt.setInt(2, 0); // Set active count to 0
+//	            insertStmt.setInt(3, frozenCount);
+//	            insertStmt.executeUpdate();
+//	        }
+//
+//	        System.out.println("Status report processed for previous month (" + previousMonthFormatted + "/" + previousYear + ").");
+//
+//	    } catch (SQLException e) {
+//	        e.printStackTrace();
+//	    } finally {
+//	        // Clean up resources
+//	        try {
+//	            if (rs != null) rs.close();
+//	            if (insertStmt != null) insertStmt.close();
+//	            if (userStatusStmt != null) userStatusStmt.close();
+//	        } catch (SQLException e) {
+//	            e.printStackTrace();
+//	        }
+//	    }
+//	}
 
 //	public static void endOfMonthProcessingStatusReport() {
 //		PreparedStatement insertStmt = null;
@@ -1636,88 +1797,6 @@ public class mysqlConnection {
 //		}
 //	}
 
-	public static void endOfMonthProcessingStatusReport() {
-		Connection conn = null;
-		PreparedStatement insertStmt = null;
-		PreparedStatement userStatusStmt = null;
-		ResultSet rs = null;
-
-		try {
-			// Establish connection
-			conn = getConnection();
-
-			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.MONTH, -1); // Go back to previous month
-			int previousMonth = cal.get(Calendar.MONTH) + 1; // Adjust for 0-based month index
-			int previousYear = cal.get(Calendar.YEAR);
-			String previousMonthFormatted = String.format("%02d", previousMonth);
-
-			// Prepare the insertion query for statusreport
-			String insertQuery = "INSERT INTO statusreport (monthAndYear, active, frozen) VALUES (?, ?, ?)";
-			insertStmt = conn.prepareStatement(insertQuery);
-
-			// Prepare the query to get active and frozen user counts
-			String userStatusQuery = "SELECT COUNT(*) AS count FROM users WHERE status = ?";
-			userStatusStmt = conn.prepareStatement(userStatusQuery);
-
-			// Count active users
-			userStatusStmt.setString(1, "active");
-			rs = userStatusStmt.executeQuery();
-			int activeCount = 0;
-			if (rs.next()) {
-				activeCount = rs.getInt("count");
-			}
-			rs.close(); // Close the result set
-
-			// Insert active user count
-			insertStmt.setString(1, previousYear + "-" + previousMonthFormatted);
-			insertStmt.setInt(2, activeCount);
-			insertStmt.setInt(3, 0); // Initialize frozen count to 0
-			insertStmt.executeUpdate();
-
-			// Count frozen users
-			userStatusStmt.setString(1, "frozen");
-			rs = userStatusStmt.executeQuery();
-			int frozenCount = 0;
-			if (rs.next()) {
-				frozenCount = rs.getInt("count");
-			}
-			rs.close(); // Close the result set
-
-			// Update the statusreport with frozen user count
-			insertStmt.setString(1, previousYear + "-" + previousMonthFormatted); // Set monthAndYear again
-			insertStmt.setInt(2, 0); // Set active count to 0
-			insertStmt.setInt(3, frozenCount);
-			insertStmt.executeUpdate();
-
-			System.out.println(
-					"Status report inserted for previous month (" + previousMonthFormatted + "/" + previousYear + ").");
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			// Handle reconnection logic (if needed)
-			// ... (similar to your previous implementation) ...
-		} finally {
-			// Clean up resources
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (insertStmt != null) {
-					insertStmt.close();
-				}
-				if (userStatusStmt != null) {
-					userStatusStmt.close();
-				}
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 	public static Connection getConnection() {
 		Connection conn = null;
 		try {
@@ -1732,13 +1811,9 @@ public class mysqlConnection {
 	}
 
 	public static boolean checkDueDateAndSendSMS() {
-		Connection conn = null;
 		boolean smsSent = false;
 
 		try {
-			// Establish connection
-			conn = getConnection();
-
 			// Calculate tomorrow's date
 			LocalDate tomorrow = LocalDate.now().plusDays(1);
 
