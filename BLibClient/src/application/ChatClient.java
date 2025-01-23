@@ -51,12 +51,13 @@ public class ChatClient extends AbstractClient {
 	private LoginFrameController loginFrameController;
 	private LoanFrameController loanFrameController;
 	private TwoChartsController twoChartsController;
-	
+
 	/**
 	 * The interface type variable. It allows the implementation of the display
 	 * method in the client.
 	 */
 	ChatIF clientUI;
+	private User user;
 	public static boolean awaitResponse = false;
 
 	// Constructors ****************************************************
@@ -103,11 +104,11 @@ public class ChatClient extends AbstractClient {
 	public void setLoginFrameController(LoginFrameController loginFrameController) {
 		this.loginFrameController = loginFrameController;
 	}
-	
+
 	public void setLoanFrameController(LoanFrameController loanFrameController) {
 		this.loanFrameController = loanFrameController;
 	}
-	
+
 	public void setTwoChartsController(TwoChartsController twoChartsController) {
 		this.twoChartsController = twoChartsController;
 	}
@@ -123,7 +124,7 @@ public class ChatClient extends AbstractClient {
 
 		Message message = (Message) msg;
 		MessageType messageType = message.getMessageType();
-		
+
 		String type = null;
 		String status = null;
 		String messageLog = null;
@@ -266,18 +267,22 @@ public class ChatClient extends AbstractClient {
 			Map<String, String> isReturnSuccessful = (Map<String, String>) message.getMessageData();
 			type = isReturnSuccessful.get("type");
 			messageLog = isReturnSuccessful.get("message");
-			if(type.equals("success")) showSuccessAlert(messageLog);
-			else if(type.equals("noLoan") || type.equals("frozen") || type.equals("error")|| type.equals("Lost") || type.equals("lateWithoutFreeze")) showErrorAlert(messageLog);
+			if (type.equals("success"))
+				showSuccessAlert(messageLog);
+			else if (type.equals("noLoan") || type.equals("frozen") || type.equals("error") || type.equals("Lost")
+					|| type.equals("lateWithoutFreeze"))
+				showErrorAlert(messageLog);
 			break;
 		case checkStatus:
 			Map<String, String> checkStatus = (Map<String, String>) message.getMessageData();
 			type = checkStatus.get("type");
 			status = checkStatus.get("status");
 			messageLog = checkStatus.get("message");
-			if(type.equals("notFound") || (type.equals("found") && status.equals("Frozen"))) showErrorAlert(messageLog);
-			if(type.equals("found") && status.equals("Active")) { 
+			if (type.equals("notFound") || (type.equals("found") && status.equals("Frozen")))
+				showErrorAlert(messageLog);
+			if (type.equals("found") && status.equals("Active")) {
 				try {
-					
+
 					if (loanFrameController != null) {
 						loanFrameController.setActive();
 					} else {
@@ -291,12 +296,59 @@ public class ChatClient extends AbstractClient {
 		case loan:
 			Map<String, String> loan = (Map<String, String>) message.getMessageData();
 			type = loan.get("type");
-			messageLog = loan.get("message"); 
-			if(type.equals("notFound") || type.equals("unsuccessful") || type.equals("alreadyLoaned")) showErrorAlert(messageLog);
-			if (type.equals("success")) showSuccessAlert(messageLog);
+			messageLog = loan.get("message");
+			if (type.equals("notFound") || type.equals("unsuccessful") || type.equals("alreadyLoaned"))
+				showErrorAlert(messageLog);
+			if (type.equals("success"))
+				showSuccessAlert(messageLog);
+			break;
+
+		case loanReport:
+			Platform.runLater(() -> {
+				try {
+					Map<String, Map<String, String>> loanReportMap = (Map<String, Map<String, String>>) message
+							.getMessageData();
+
+					if (loanReportMap == null) {
+						showAlert("No Data Found", "No loan report data is available for the selected month and year.");
+						return;
+					}
+
+					if (twoChartsController != null) {
+						twoChartsController.showLoanReportData(loanReportMap);
+					} else {
+						System.err.println("twoChartsController is not set in ChatClient.");
+					}
+				} catch (Exception e) {
+					System.err.println("Error processing return case: " + e.getMessage());
+				}
+			});
+			break;
+
+		case StatusReport:
+			Platform.runLater(() -> {
+				try {
+					Map<String, String> statusReportMap = (Map<String, String>) message.getMessageData();
+
+					if (statusReportMap == null) {
+						showAlert("No Data Found",
+								"No status report data is available for the selected month and year.");
+						return;
+					}
+
+					if (twoChartsController != null) {
+						twoChartsController.showStatusReportData(statusReportMap);
+					} else {
+						System.err.println("twoChartsController is not set in ChatClient.");
+					}
+				} catch (Exception e) {
+					System.err.println("Error processing return case: " + e.getMessage());
+				}
+			});
 			break;
 
 		}
+
 	}
 
 	/**
@@ -323,6 +375,14 @@ public class ChatClient extends AbstractClient {
 			clientUI.display("Could not send message to server: Terminating client." + e);
 			quit();
 		}
+	}
+
+	private void showAlert(String title, String content) {
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle(title);
+		alert.setHeaderText(null);
+		alert.setContentText(content);
+		alert.showAndWait();
 	}
 
 	/**
