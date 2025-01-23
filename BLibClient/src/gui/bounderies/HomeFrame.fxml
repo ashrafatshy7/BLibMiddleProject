@@ -23,12 +23,12 @@
         <FlowPane fx:id="topBooksContainer" hgap="20.0" layoutX="50.0" layoutY="220.0" prefHeight="200.0" prefWidth="750.0" vgap="20.0" />
 
         <!-- Other Buttons -->
-        <Button fx:id="subscriberInfo" layoutX="85.0" layoutY="516.0" mnemonicParsing="false" onAction="#btnShowSubscriberDetails" prefHeight="38.0" prefWidth="100.0" text="My Info">
+        <Button fx:id="subscriberInfo" layoutX="93.0" layoutY="516.0" mnemonicParsing="false" onAction="#btnShowSubscriberDetails" prefHeight="38.0" prefWidth="100.0" text="My Info">
          <opaqueInsets>
             <Insets />
          </opaqueInsets></Button>
         <Button fx:id="seeAll" layoutX="724.0" layoutY="90.0" mnemonicParsing="false" onAction="#seeAllBooks" text="View all books" />
-        <Button fx:id="librarianRegisterReader" layoutX="214.0" layoutY="516.0" mnemonicParsing="false" onAction="#registerReader" prefHeight="38.0" prefWidth="109.0" text="Register Reader">
+        <Button fx:id="librarianRegisterReader" layoutX="219.0" layoutY="516.0" mnemonicParsing="false" onAction="#registerReader" prefHeight="38.0" prefWidth="109.0" text="Register Reader">
          <opaqueInsets>
             <Insets />
          </opaqueInsets></Button>
@@ -40,11 +40,7 @@
          <opaqueInsets>
             <Insets />
          </opaqueInsets></Button>
-        <Button fx:id="librarianOrderBook" layoutX="607.0" layoutY="516.0" mnemonicParsing="false" onAction="#orderBook" prefHeight="38.0" prefWidth="109.0" text="Order Book">
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets></Button>
-        <Button fx:id="librarianReport" layoutX="736.0" layoutY="516.0" mnemonicParsing="false" onAction="#report" prefHeight="38.0" prefWidth="109.0" text="Report">
+        <Button fx:id="librarianReport" layoutX="631.0" layoutY="516.0" mnemonicParsing="false" onAction="#report" prefHeight="38.0" prefWidth="109.0" text="Report">
          <opaqueInsets>
             <Insets />
          </opaqueInsets></Button>

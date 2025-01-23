@@ -204,7 +204,6 @@ public class ChatClient extends AbstractClient {
 
 		case cardNumber:
 			HashMap<String, Object> response = (HashMap<String, Object>) ((Message) msg).getMessageData();
-
 			// Pass the data to the controller
 			if (subscriberCardDetailsController != null) {
 				subscriberCardDetailsController.cardExist(response);
@@ -212,6 +211,7 @@ public class ChatClient extends AbstractClient {
 				System.out.println("subscriberCardDetailsController is null.");
 			}
 			break;
+			
 		case updateEmailAndPhone:
 			// Get the boolean value indicating if the update was successful
 			boolean isUpdateSuccessful = (boolean) message.getMessageData();

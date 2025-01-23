@@ -29,5 +29,6 @@
       <Label fx:id="readerCardError" layoutX="382.0" layoutY="222.0" text="Enter 9 digits" textFill="#b3271f" />
       <Label fx:id="returnDateError" layoutX="377.0" layoutY="390.0" text="Enter valid date" textFill="#b3271f" />
       <Button fx:id="checkStatusBtn" layoutX="554.0" layoutY="189.0" mnemonicParsing="false" onAction="#checkStatus" prefHeight="25.0" prefWidth="116.0" text="check status" />
+      <Button fx:id="btnBack" layoutX="670.0" layoutY="82.0" mnemonicParsing="false" onAction="#btnBackClicked" text="Back" />
    </children>
 </AnchorPane>

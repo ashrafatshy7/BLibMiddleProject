@@ -54,9 +54,6 @@ public class HomeFrameController {
 	private Button librarianLoanBook;
 
 	@FXML
-	private Button librarianOrderBook;
-
-	@FXML
 	private Button librarianReport;
 
 	@FXML
@@ -77,7 +74,7 @@ public class HomeFrameController {
 		this.chatClient = chatClient;
 		this.chatClient.setHomeFrameController(this);
 	}
-	
+
 	@FXML
 	public void start(Stage primaryStage) throws Exception {
 		try {
@@ -117,25 +114,24 @@ public class HomeFrameController {
 		librarianRegisterReader.setVisible(false);
 		librarianreturnBook.setVisible(false);
 		librarianLoanBook.setVisible(false);
-		librarianOrderBook.setVisible(false);
 		librarianReport.setVisible(false);
 		status.setVisible(false);
 		activeFrozen.setVisible(false);
+		subscriberInfo.setVisible(true);
 
 		// Show buttons based on user type
 		if (ClientUI.user instanceof Subscriber) {
-			subscriberInfo.setVisible(true);
+			// subscriberInfo.setVisible(true);
 			status.setVisible(true);
 			activeFrozen.setVisible(true);
 		} else if (ClientUI.user instanceof Librarian) {
 			librarianRegisterReader.setVisible(true);
 			librarianreturnBook.setVisible(true);
 			librarianLoanBook.setVisible(true);
-			librarianOrderBook.setVisible(true);
 			librarianReport.setVisible(true);
 		}
-		
-		if(ClientUI.user != null) {
+
+		if (ClientUI.user != null) {
 			login.setText("Logout");
 		}
 	}
@@ -193,14 +189,14 @@ public class HomeFrameController {
 		SeeAllFrameController seeAllFrame = new SeeAllFrameController();
 		seeAllFrame.start(primaryStage);
 	}
-	
+
 	public void loginBtn(ActionEvent event) throws Exception {
-		if(login.getText().equals("Login")) {
-		((Node) event.getSource()).getScene().getWindow().hide();
-		Stage primaryStage = new Stage();
-		LoginFrameController loginFrameController = new LoginFrameController();
-		loginFrameController.start(primaryStage);
-		}else if(login.getText().equals("Logout")) {
+		if (login.getText().equals("Login")) {
+			((Node) event.getSource()).getScene().getWindow().hide();
+			Stage primaryStage = new Stage();
+			LoginFrameController loginFrameController = new LoginFrameController();
+			loginFrameController.start(primaryStage);
+		} else if (login.getText().equals("Logout")) {
 			ClientUI.user = null;
 			configureUserInterface();
 			login.setText("Login");

@@ -1731,4 +1731,51 @@ public class mysqlConnection {
 		return conn;
 	}
 
+	public static boolean checkDueDateAndSendSMS() {
+		Connection conn = null;
+		boolean smsSent = false;
+
+		try {
+			// Establish connection
+			conn = getConnection();
+
+			// Calculate tomorrow's date
+			LocalDate tomorrow = LocalDate.now().plusDays(1);
+
+			// SQL query to find loans due on tomorrow's date
+			String query = "SELECT dueDate FROM loan WHERE dueDate = ?";
+			PreparedStatement statement = conn.prepareStatement(query);
+			statement.setDate(1, java.sql.Date.valueOf(tomorrow)); // Use tomorrow's date here
+
+			// Execute the query
+			ResultSet resultSet = statement.executeQuery();
+
+			// Process the results
+			if (!resultSet.isBeforeFirst()) {
+				System.out.println("No loans due tomorrow (" + tomorrow + ").");
+			} else {
+				System.out.println("Loans due tomorrow (" + tomorrow + ") found. Sending SMS notifications...");
+
+				while (resultSet.next()) {
+					// Fetch loan data
+					LocalDate dueDate = resultSet.getDate("dueDate").toLocalDate();
+
+					// Simulate sending SMS (replace this with your actual SMS API)
+					System.out.println("Sending SMS for loan due on: " + dueDate);
+				}
+
+				smsSent = true; // Set flag to true if notifications were sent
+			}
+
+			// Close resources
+			resultSet.close();
+			statement.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return smsSent;
+	}
+
 }

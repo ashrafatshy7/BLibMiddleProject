@@ -49,6 +49,9 @@ public class SubscriberCardDetailsController {
 	private Button btnExtend;
 
 	@FXML
+	private Button btnSearch;
+
+	@FXML
 	private TextField tfInsertCardNumber;
 
 	@FXML
@@ -65,6 +68,9 @@ public class SubscriberCardDetailsController {
 
 	@FXML
 	private Label lblUserName;
+
+	@FXML
+	private Label lblInsertCardNumber;
 
 	@FXML
 	private Label lblPhoneNumber;
@@ -162,12 +168,21 @@ public class SubscriberCardDetailsController {
 
 		});
 
+		if (ClientUI.user instanceof Subscriber) {
+			suscriberComponents();
+		}
 	}
 
 	@FXML
 	void btnSearchClicked(ActionEvent event) {
-		// Get the inserted card number from the TextField
-		String cardNumber = tfInsertCardNumber.getText();
+		String cardNumber;
+		if (ClientUI.user instanceof Subscriber) {
+			// Get the inserted card number from the TextField
+			cardNumber = ClientUI.user.getID();
+		} else {
+			// Get the inserted card number from the TextField
+			cardNumber = tfInsertCardNumber.getText();
+		}
 
 		// Check if the card number is empty
 		if (cardNumber.isEmpty()) {
@@ -207,15 +222,15 @@ public class SubscriberCardDetailsController {
 
 			tfInsertCardNumber.getStyleClass().remove("text-field-invalid");
 
-			// Show buttons based on user type
-			if (ClientUI.user instanceof Subscriber) {
-				suscriberComponents();
-			} else if (ClientUI.user instanceof Librarian) {
+//			// Show buttons based on user type
+//			if (ClientUI.user instanceof Subscriber) {
+//				suscriberComponents();
+//			} else 
+			if (ClientUI.user instanceof Librarian) {
 				librarianComponents();
+				// Make the labels and buttons visible
+				showComponents();
 			}
-
-			// Make the labels and buttons visible
-			showComponents();
 
 			tfCardNumber.setText((String) cardDetails.get("cardNum"));
 			tfUserName.setText((String) cardDetails.get("username"));
@@ -496,10 +511,15 @@ public class SubscriberCardDetailsController {
 	}
 
 	private void suscriberComponents() {
+		showComponents();
+		lblInsertCardNumber.setVisible(false);
+		btnSearch.setVisible(false);
+		tfInsertCardNumber.setVisible(false);
 		colReturnDate.setEditable(false);
 		btnUpdateDates.setVisible(false);
 		btnUpdateDetails.setVisible(true);
 		btnExtend.setVisible(true);
+		btnSearchClicked(null);
 	}
 
 	private void librarianComponents() {

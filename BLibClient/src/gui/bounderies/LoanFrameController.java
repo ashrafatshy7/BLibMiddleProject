@@ -10,6 +10,7 @@ import application.ClientUI;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -142,8 +143,7 @@ public class LoanFrameController {
 		String returntformattedDate = returnSelectedDate.format(formatter);
 
 		ArrayList<Object> loanDetails = new ArrayList<>();
-		loanDetails.add(new Loan(barcodeTextField.getText(), currentformattedDate,
-				returntformattedDate, true));
+		loanDetails.add(new Loan(barcodeTextField.getText(), currentformattedDate, returntformattedDate, true));
 		loanDetails.add(new Subscriber(readerCardTextField.getText()));
 		ClientUI.chat.accept(new Message(MessageType.loan, loanDetails));
 
@@ -222,6 +222,19 @@ public class LoanFrameController {
 		}
 
 		return true;
+	}
+
+	@FXML
+	public void btnBackClicked(ActionEvent event) {
+		Stage primaryStage = new Stage();
+		((Node) event.getSource()).getScene().getWindow().hide();
+		HomeFrameController homeFrameController = new HomeFrameController();
+		try {
+			homeFrameController.start(primaryStage);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
