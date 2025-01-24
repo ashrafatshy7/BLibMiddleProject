@@ -49,8 +49,8 @@ public class ServerUI extends Application {
 		try {
 			server.listen(); // Start listening for connections
 			// Start the scheduled task for end-of-month processing
-			startEndOfMonthTask();
-			startDailyDueDateCheckTask();
+//			startEndOfMonthTask();
+//			startDailyDueDateCheckTask();
 
 		} catch (Exception ex) {
 			System.out.println("ERROR - Could not listen for clients!");

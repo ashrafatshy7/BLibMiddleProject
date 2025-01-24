@@ -856,7 +856,7 @@ public class mysqlConnection {
 			}
 
 			if (isFrozen || lateWithoutFreeze) {
-				String insertLateBookSQL = "INSERT INTO issuehistory (subscriberId, type, date, bookBarcode) VALUES (?, ?, ?, ?)";
+				String insertLateBookSQL = "INSERT INTO issuehistory (id, issueType, issueDate, barcode) VALUES (?, ?, ?, ?)";
 				pstmt.close();
 				pstmt = conn.prepareStatement(insertLateBookSQL);
 				pstmt.setString(1, readerCard);
