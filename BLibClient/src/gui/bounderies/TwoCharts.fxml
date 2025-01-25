@@ -26,7 +26,7 @@
                 <VBox prefHeight="356.0" prefWidth="1091.0" style="-fx-padding: 5; -fx-background-color: #ffffff; -fx-border-color: #bdbdbd; -fx-border-radius: 10; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5);">
                     <children>
                         <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #444;" text="Loan Report" />
-                        <BarChart fx:id="chartOne" prefWidth="1079.0" prefHeight="356.0" style="-fx-background-color: transparent; -fx-bar-gap: 5px; -fx-category-spacing: 10px;">
+                        <BarChart fx:id="chartOne" prefHeight="356.0" prefWidth="1079.0" style="-fx-background-color: transparent; -fx-bar-gap: 5px; -fx-category-spacing: 10px;">
                             <xAxis>
                                 <CategoryAxis label="Book category" prefWidth="971.0" fx:id="xOneAxis" />
                             </xAxis>
@@ -69,9 +69,9 @@
                         </children>
                     </VBox>
                     <!-- Input Fields for Pie Chart -->
-                    <GridPane alignment="CENTER" hgap="10" prefHeight="193.0" prefWidth="446.0" vgap="10">
+                    <GridPane alignment="CENTER" hgap="10" prefHeight="216.0" prefWidth="581.0" vgap="10">
                         <children>
-                            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #444;" text="Month:" GridPane.columnIndex="0" />
+                            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #444;" text="Month:" />
                             <TextField fx:id="tfMonthTwo" prefWidth="113.0" promptText="Enter Month (1-12)" style="-fx-background-color: #f0f8ff; -fx-border-color: #90caf9; -fx-border-radius: 5; -fx-padding: 5;" GridPane.columnIndex="1" />
                             <Label fx:id="errorMonthTwo" style="-fx-text-fill: red; -fx-font-size: 12px;" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                             <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #444;" text="Year:" GridPane.columnIndex="2" />

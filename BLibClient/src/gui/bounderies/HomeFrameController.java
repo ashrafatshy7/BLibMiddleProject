@@ -190,6 +190,7 @@ public class HomeFrameController {
 		seeAllFrame.start(primaryStage);
 	}
 
+	//bulululu
 	public void loginBtn(ActionEvent event) throws Exception {
 		if (login.getText().equals("Login")) {
 			((Node) event.getSource()).getScene().getWindow().hide();
@@ -200,6 +201,7 @@ public class HomeFrameController {
 			ClientUI.user = null;
 			configureUserInterface();
 			login.setText("Login");
+			subscriberInfo.setVisible(false);
 		}
 	}
 

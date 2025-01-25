@@ -44,7 +44,7 @@ public class LoanFrameController {
 
 	@FXML
 	private Button checkStatusBtn;
-	
+
 	@FXML
 	private Button btnBackClicked;
 
@@ -152,9 +152,11 @@ public class LoanFrameController {
 
 	}
 
+	
+	//bulululu
 	@FXML
 	public void checkStatus(ActionEvent event) throws Exception {
-		if (checkStatusBtn.getText().equals("check status")) {
+		if (checkStatusBtn.getText().equals("Check Status")) {
 			String readerCard = readerCardTextField.getText();
 			boolean valid = true;
 			if (!readerCard.matches("^\\d{9}$")) {
@@ -168,24 +170,25 @@ public class LoanFrameController {
 
 			Message sendToServer = new Message(MessageType.checkStatus, new Subscriber(readerCard));
 			ClientUI.chat.accept(sendToServer);
-		} else if (checkStatusBtn.getText().equals("change subscriber")) {
+		} else if (checkStatusBtn.getText().equals("Change Card")) {
 			barcodeTextField.setDisable(true);
 			returnDatePicker.setDisable(true);
 			currentDatePicker.setDisable(true);
 			setLoanBtn.setDisable(true);
-			checkStatusBtn.setText("check status");
+			checkStatusBtn.setText("Check Status");
 			readerCardTextField.setDisable(false);
 		}
 
 	}
 
+	//bulululu
 	public void setActive() {
 		javafx.application.Platform.runLater(() -> {
 			barcodeTextField.setDisable(false);
 			returnDatePicker.setDisable(false);
 			setLoanBtn.setDisable(false);
 			currentDatePicker.setDisable(false);
-			checkStatusBtn.setText("change subscriber");
+			checkStatusBtn.setText("Change Card");
 		});
 	}
 

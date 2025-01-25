@@ -489,6 +489,7 @@ public class mysqlConnection {
 		}
 	}
 
+	// bulululu
 	public static Map<String, Object> getCardDetailsIfExists(String cardNum) {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -537,8 +538,9 @@ public class mysqlConnection {
 				resultSet.close();
 				preparedStatement.close();
 
-				// Step 3: Fetch loan history for the cardNum
-				String loanHistoryQuery = "SELECT bookTitle, dueDate, borrowDate FROM loan WHERE id = ?";
+				// Step 3: Fetch loan history for the cardNum, joining with the books table
+				String loanHistoryQuery = "SELECT b.title AS bookTitle, l.dueDate, l.borrowDate " + "FROM loan l "
+						+ "JOIN books b ON l.barcode = b.barcode " + "WHERE l.id = ?";
 				preparedStatement = conn.prepareStatement(loanHistoryQuery);
 				preparedStatement.setString(1, cardNum);
 
@@ -548,14 +550,20 @@ public class mysqlConnection {
 
 				while (resultSet.next()) {
 					Map<String, Object> row = new HashMap<>();
-					row.put("bookTitle", resultSet.getString("bookTitle"));
-					row.put("returnDate", resultSet.getDate("dueDate"));
-					row.put("borrowDate", resultSet.getDate("borrowDate"));
+					row.put("title", resultSet.getString("bookTitle")); // Get the title from the books table
+
+					// Add 1 day to the dates
+					LocalDate dueDate = resultSet.getDate("dueDate").toLocalDate().plusDays(1);
+					LocalDate borrowDate = resultSet.getDate("borrowDate").toLocalDate().plusDays(1);
+
+					row.put("returnDate", dueDate);
+					row.put("borrowDate", borrowDate);
 					loanHistory.add(row);
 				}
 
 				result.put("loanHistory", loanHistory);
 
+				// Close resources
 				resultSet.close();
 				preparedStatement.close();
 
@@ -632,42 +640,298 @@ public class mysqlConnection {
 		}
 	}
 
+	// bulululu
+
+//	public static boolean updateReturnDate(Object messageData) {
+//		// Cast the messageData to the expected Map format
+//		Map<String, Map<String, String>> dataMap = (Map<String, Map<String, String>>) messageData;
+//
+//		// Iterate over each subscriberId and corresponding loanDetails
+//		for (Map.Entry<String, Map<String, String>> entry : dataMap.entrySet()) {
+//			String subscriberId = entry.getKey(); // Get the subscriberId
+//			Map<String, String> subscriberData = entry.getValue(); // Get the map of subscriber data
+//
+//			if (subscriberId == null || subscriberData == null || subscriberData.isEmpty()) {
+//				System.err.println("Invalid or missing data for subscriber: " + subscriberId);
+//				continue; // Skip to the next subscriber if data is invalid
+//			}
+//
+//			// Extract the userName and bookDetails
+//			String userName = subscriberData.get("userName");
+//			String bookDetails = subscriberData.get("bookDetails");
+//
+//			if (userName == null || bookDetails == null || bookDetails.isEmpty()) {
+//				System.err.println("Invalid or missing data for subscriber: " + subscriberId);
+//				continue; // Skip to the next subscriber if userName or bookDetails are missing
+//			}
+//
+//			// Split bookDetails by newline to get each book entry
+//			String[] bookEntries = bookDetails.split("\n");
+//
+//			// SQL queries
+//			String barcodeQuery = "SELECT barcode FROM books WHERE title = ?";
+//			String updateLoanQuery = "UPDATE loan SET dueDate = ?, librarianUserName = ?, updateReturnDate = ? WHERE id = ? AND borrowDate = ? AND barcode = ?";
+//
+//			try (PreparedStatement barcodeStmt = conn.prepareStatement(barcodeQuery);
+//					PreparedStatement updateLoanStmt = conn.prepareStatement(updateLoanQuery)) {
+//
+//				// Get the current date
+//				LocalDate currentDate = LocalDate.now();
+//				String currentDateStr = currentDate.toString(); // Convert to String (format: YYYY-MM-DD)
+//
+//				// Process each book entry
+//				for (String bookEntry : bookEntries) {
+//					// Split the book entry into bookTitle+borrowDate: returnDate
+//					String[] entryParts = bookEntry.split(":");
+//					if (entryParts.length != 2) {
+//						System.err.println("Invalid format for book entry: " + bookEntry);
+//						continue; // Skip to the next book entry if the format is wrong
+//					}
+//					String key = entryParts[0].trim(); // Extract bookTitle+borrowDate
+//					String returnDate = entryParts[1].trim(); // Extract returnDate
+//
+//					// Split the key into bookTitle and borrowDate
+//					String[] keyParts = key.split("\\+");
+//					if (keyParts.length != 2) {
+//						System.err.println("Invalid format for key: " + key);
+//						continue; // Skip to the next book entry if the format is wrong
+//					}
+//					String bookTitle = keyParts[0].trim(); // Extract bookTitle
+//					String borrowDate = keyParts[1].trim(); // Extract borrowDate
+//
+//					if (bookTitle.isEmpty() || borrowDate.isEmpty() || returnDate.isEmpty()) {
+//						System.err.println("Invalid loan details for bookTitle: " + bookTitle);
+//						continue; // Skip to the next book entry if any data is missing
+//					}
+//
+//					// Parse the borrowDate string to LocalDate
+//					LocalDate borrowLocalDate = LocalDate.parse(borrowDate, DateTimeFormatter.ISO_LOCAL_DATE);
+//
+//					// Add one day to the borrowDate
+//					LocalDate updatedBorrowDate = borrowLocalDate.plusDays(1);
+//
+//					// Convert updated borrowDate back to String (format: YYYY-MM-DD)
+//					String updatedBorrowDateStr = updatedBorrowDate.toString();
+//
+//					// Retrieve the barcode for the current bookTitle
+//					barcodeStmt.setString(1, bookTitle);
+//					ResultSet rs = barcodeStmt.executeQuery();
+//
+//					String barcode = null;
+//					if (rs.next()) {
+//						barcode = rs.getString("barcode");
+//					} else {
+//						System.err.println("Barcode not found for bookTitle: " + bookTitle);
+//						continue; // Skip to the next book entry if barcode is not found
+//					}
+//
+//					// Update the loan table
+//					updateLoanStmt.setString(1, returnDate); // Set the new dueDate
+//					updateLoanStmt.setString(2, userName); // Set librarianUserName to userName
+//					updateLoanStmt.setString(3, currentDateStr); // Set the updateReturnDate to current date
+//					updateLoanStmt.setString(4, subscriberId); // Set subscriberId
+//					updateLoanStmt.setString(5, updatedBorrowDateStr); // Set borrowDate
+//					updateLoanStmt.setString(6, barcode); // Set barcode
+//
+//					int rowsUpdated = updateLoanStmt.executeUpdate();
+//					if (rowsUpdated == 0) {
+//						System.err.println("Failed to update loan for book: " + bookTitle);
+//					} else {
+//						System.out.println("Successfully updated loan for book: " + bookTitle);
+//					}
+//				}
+//
+//				return true; // All updates attempted
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//				return false;
+//			}
+//		}
+//		return false;
+//	}
+
+//	public static boolean updateReturnDate(Object messageData) {
+//		// Cast the messageData to the expected Map format
+//		Map<String, Map<String, Object>> dataMap = (Map<String, Map<String, Object>>) messageData;
+//
+//		// Iterate over each subscriberId and corresponding loanDetails
+//		for (Map.Entry<String, Map<String, Object>> entry : dataMap.entrySet()) {
+//			String subscriberId = entry.getKey(); // Get the subscriberId
+//			Map<String, Object> subscriberData = entry.getValue(); // Get the map of subscriber data
+//
+//			if (subscriberId == null || subscriberData == null || subscriberData.isEmpty()) {
+//				System.err.println("Invalid or missing data for subscriber: " + subscriberId);
+//				continue; // Skip to the next subscriber if data is invalid
+//			}
+//
+//			// Extract the userName and bookDetails
+//			String userName = (String) subscriberData.get("userName");
+//			Map<String, String> loanDetails = (Map<String, String>) subscriberData.get("bookDetails");
+//
+//			if (userName == null || loanDetails == null || loanDetails.isEmpty()) {
+//				System.err.println("Invalid or missing data for subscriber: " + subscriberId);
+//				continue; // Skip to the next subscriber if userName or loanDetails are missing
+//			}
+//
+//			// SQL queries
+//			String barcodeQuery = "SELECT barcode FROM books WHERE title = ?";
+//			String updateLoanQuery = "UPDATE loan SET dueDate = ?, librarianUserName = ?, updateReturnDate = ? WHERE id = ? AND borrowDate = ? AND barcode = ?";
+//
+//			try (PreparedStatement barcodeStmt = conn.prepareStatement(barcodeQuery);
+//					PreparedStatement updateLoanStmt = conn.prepareStatement(updateLoanQuery)) {
+//
+//				// Get the current date
+//				LocalDate currentDate = LocalDate.now();
+//				String currentDateStr = currentDate.toString(); // Convert to String (format: YYYY-MM-DD)
+//
+//				// Process each book's details
+//				for (Map.Entry<String, String> loanEntry : loanDetails.entrySet()) {
+//					String key = loanEntry.getKey(); // The key is bookTitle+borrowDate
+//					String returnDate = loanEntry.getValue(); // The value is the new returnDate
+//
+//					// Split the key to get bookTitle and borrowDate
+//					String[] keyParts = key.split("\\+");
+//					if (keyParts.length != 2) {
+//						System.err.println("Invalid format for key: " + key);
+//						continue; // Skip to the next loan entry if the format is wrong
+//					}
+//					String bookTitle = keyParts[0]; // Extract bookTitle
+//					String borrowDate = keyParts[1]; // Extract borrowDate
+//
+//					if (bookTitle == null || borrowDate == null || returnDate == null) {
+//						System.err.println("Invalid loan details for bookTitle: " + bookTitle);
+//						continue; // Skip to the next loan entry if any data is missing
+//					}
+//
+//					// Parse the borrowDate string to LocalDate
+//					LocalDate borrowLocalDate = LocalDate.parse(borrowDate, DateTimeFormatter.ISO_LOCAL_DATE);
+//
+//					// Add one day to the borrowDate
+//					LocalDate updatedBorrowDate = borrowLocalDate.plusDays(1);
+//
+//					// Convert updated borrowDate back to String (format: YYYY-MM-DD)
+//					String updatedBorrowDateStr = updatedBorrowDate.toString();
+//
+//					// Retrieve the barcode for the current bookTitle
+//					barcodeStmt.setString(1, bookTitle);
+//					ResultSet rs = barcodeStmt.executeQuery();
+//
+//					String barcode = null;
+//					if (rs.next()) {
+//						barcode = rs.getString("barcode");
+//					} else {
+//						System.err.println("Barcode not found for bookTitle: " + bookTitle);
+//						continue; // Skip to the next loan entry if barcode is not found
+//					}
+//
+//					// Update the loan table
+//					updateLoanStmt.setString(1, returnDate); // Set the new dueDate
+//					updateLoanStmt.setString(2, userName); // Set librarianUserName to userName
+//					updateLoanStmt.setString(3, currentDateStr); // Set the updateReturnDate to current date
+//					updateLoanStmt.setString(4, subscriberId); // Set subscriberId
+//					updateLoanStmt.setString(5, updatedBorrowDateStr); // Set borrowDate
+//					updateLoanStmt.setString(6, barcode); // Set barcode
+//
+//					int rowsUpdated = updateLoanStmt.executeUpdate();
+//					if (rowsUpdated == 0) {
+//						System.err.println("Failed to update loan for book: " + bookTitle);
+//					} else {
+//						System.out.println("Successfully updated loan for book: " + bookTitle);
+//					}
+//				}
+//
+//				return true; // All updates attempted
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//				return false;
+//			}
+//		}
+//		return false;
+//	}
+
+	// bulululu
 	public static boolean updateReturnDate(Object messageData) {
 		// Cast the messageData to the expected Map format
-		Map<String, String> temp = (Map<String, String>) messageData;
+		Map<String, Map<String, String>> dataMap = (Map<String, Map<String, String>>) messageData;
 
-		// Check if the map is empty
-		if (temp == null || temp.isEmpty()) {
-			return false;
-		}
+		// Iterate over each subscriberId and corresponding loanDetails
+		for (Map.Entry<String, Map<String, String>> entry : dataMap.entrySet()) {
+			String subscriberId = entry.getKey(); // Get the subscriberId
+			Map<String, String> loanDetails = entry.getValue(); // Get the map of loan details (bookTitle+borrowDate ->
+																// newReturnDate)
 
-		// Query to update the return date based on the book title
-		String query = "UPDATE loan SET dueDate = ? WHERE bookTitle = ?";
-
-		try (PreparedStatement stmt = conn.prepareStatement(query)) {
-			// Iterate through the map entries
-			for (Map.Entry<String, String> entry : temp.entrySet()) {
-				String bookTitle = entry.getKey(); // Get the book title (key)
-				String returnDate = entry.getValue(); // Get the return date (value)
-
-				// Set parameters in the prepared statement
-				stmt.setString(1, returnDate);
-				stmt.setString(2, bookTitle);
-
-				// Execute the update
-				int rowsUpdated = stmt.executeUpdate();
-				if (rowsUpdated == 0) {
-					System.err.println("Failed to update book: " + bookTitle);
-				} else {
-					System.out.println("Successfully updated book: " + bookTitle);
-				}
+			if (subscriberId == null || loanDetails == null || loanDetails.isEmpty()) {
+				System.err.println("Invalid or missing data for subscriber: " + subscriberId);
+				continue; // Skip to the next subscriber if data is invalid
 			}
 
-			return true; // All updates completed successfully
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
+			// SQL queries
+			String barcodeQuery = "SELECT barcode FROM books WHERE title = ?";
+			String updateLoanQuery = "UPDATE loan SET dueDate = ? WHERE id = ? AND borrowDate = ? AND barcode = ?";
+
+			try (PreparedStatement barcodeStmt = conn.prepareStatement(barcodeQuery);
+					PreparedStatement updateLoanStmt = conn.prepareStatement(updateLoanQuery)) {
+				// Process each book's details
+				for (Map.Entry<String, String> loanEntry : loanDetails.entrySet()) {
+					String key = loanEntry.getKey(); // The key is bookTitle+borrowDate
+					String returnDate = loanEntry.getValue(); // The value is the new returnDate
+
+					// Split the key to get bookTitle and borrowDate
+					String[] keyParts = key.split("\\+");
+					if (keyParts.length != 2) {
+						System.err.println("Invalid format for key: " + key);
+						continue; // Skip to the next loan entry if the format is wrong
+					}
+					String bookTitle = keyParts[0]; // Extract bookTitle
+					String borrowDate = keyParts[1]; // Extract borrowDate
+
+					if (bookTitle == null || borrowDate == null || returnDate == null) {
+						System.err.println("Invalid loan details for bookTitle: " + bookTitle);
+						continue; // Skip to the next loan entry if any data is missing
+					}
+
+					// Parse the borrowDate string to LocalDate
+					LocalDate borrowLocalDate = LocalDate.parse(borrowDate, DateTimeFormatter.ISO_LOCAL_DATE);
+
+					// Add one day to the borrowDate
+					LocalDate updatedBorrowDate = borrowLocalDate.plusDays(1);
+
+					// Convert updated borrowDate back to String (format: YYYY-MM-DD)
+					String updatedBorrowDateStr = updatedBorrowDate.toString();
+
+					// Retrieve the barcode for the current bookTitle
+					barcodeStmt.setString(1, bookTitle);
+					ResultSet rs = barcodeStmt.executeQuery();
+
+					String barcode = null;
+					if (rs.next()) {
+						barcode = rs.getString("barcode");
+					} else {
+						System.err.println("Barcode not found for bookTitle: " + bookTitle);
+						continue; // Skip to the next loan entry if barcode is not found
+					}
+
+					// Update the loan table
+					updateLoanStmt.setString(1, returnDate); // Set the new dueDate
+					updateLoanStmt.setString(2, subscriberId); // Set subscriberId
+					updateLoanStmt.setString(3, updatedBorrowDateStr); // Set borrowDate
+					updateLoanStmt.setString(4, barcode); // Set barcode
+
+					int rowsUpdated = updateLoanStmt.executeUpdate();
+					if (rowsUpdated == 0) {
+						System.err.println("Failed to update loan for book: " + bookTitle);
+					} else {
+						System.out.println("Successfully updated loan for book: " + bookTitle);
+					}
+				}
+
+				return true; // All updates attempted
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
 		}
+		return false;
 	}
 
 	// Method to retrieve loans for books with return dates after 1 week
@@ -676,7 +940,15 @@ public class mysqlConnection {
 		Map<String, String> loanMap = new LinkedHashMap<>(); // Using LinkedHashMap to maintain insertion order
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		String query = "SELECT bookTitle, dueDate FROM loan WHERE id = ? AND dueDate BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY ";
+
+		// Updated query to join the 'loan' and 'books' tables using barcode
+		String query = "SELECT b.title, l.dueDate FROM loan l " + "JOIN books b ON l.barcode = b.barcode " + // Joining
+																												// the
+																												// 'books'
+																												// table
+																												// on
+																												// barcode
+				"WHERE l.id = ? AND l.dueDate BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY ";
 
 		try {
 			preparedStatement = conn.prepareStatement(query);
@@ -687,8 +959,8 @@ public class mysqlConnection {
 
 			// Process the result set
 			while (resultSet.next()) {
-				String bookTitle = resultSet.getString("bookTitle");
-				String returnDate = resultSet.getDate("dueDate").toString();
+				String bookTitle = resultSet.getString("title");
+				String returnDate = resultSet.getDate("dueDate").toLocalDate().plusDays(1).toString();
 
 				// Store in the map
 				loanMap.put(bookTitle, returnDate);
@@ -710,18 +982,73 @@ public class mysqlConnection {
 		return loanMap;
 	}
 
+//	public static Map<String, String> getExtendedBooks(Object number) {
+//		String cardNum = (String) number;
+//		Map<String, String> loanMap = new LinkedHashMap<>(); // Using LinkedHashMap to maintain insertion order
+//		PreparedStatement preparedStatement = null;
+//		ResultSet resultSet = null;
+//		String query = "SELECT bookTitle, dueDate FROM loan WHERE id = ? AND dueDate BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY ";
+//
+//		try {
+//			preparedStatement = conn.prepareStatement(query);
+//			preparedStatement.setString(1, cardNum); // Set the cardNum parameter
+//
+//			// Execute the query
+//			resultSet = preparedStatement.executeQuery();
+//
+//			// Process the result set
+//			while (resultSet.next()) {
+//				String bookTitle = resultSet.getString("bookTitle");
+//				String returnDate = resultSet.getDate("dueDate").toString();
+//
+//				// Store in the map
+//				loanMap.put(bookTitle, returnDate);
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} finally {
+//			// Close the ResultSet and PreparedStatement to prevent resource leaks
+//			try {
+//				if (resultSet != null)
+//					resultSet.close();
+//				if (preparedStatement != null)
+//					preparedStatement.close();
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//
+//		return loanMap;
+//	}
+
 	public static boolean updateExtensionReturnDate(Object messageData) {
 		Map<String, String> data = (Map<String, String>) messageData;
 
 		String cardNum = data.get("cardNum");
 		String bookTitle = data.get("bookTitle");
-		String returnDate = data.get("dueDate");
+		String returnDate = data.get("returnDate");
 
 		try {
-			// SQL query to check if there is an order for the same book
-			String checkOrderQuery = "SELECT COUNT(*) FROM orders WHERE bookTitle = ?";
+			// SQL query to get the barcode from the books table based on bookTitle
+			String getBarcodeQuery = "SELECT barcode FROM books WHERE title = ?";
+			PreparedStatement getBarcodeStatement = conn.prepareStatement(getBarcodeQuery);
+			getBarcodeStatement.setString(1, bookTitle);
+
+			// Execute the query to get the barcode
+			ResultSet barcodeResult = getBarcodeStatement.executeQuery();
+			String barcode = null;
+
+			if (barcodeResult.next()) {
+				barcode = barcodeResult.getString("barcode");
+			} else {
+				// If no matching bookTitle found, return false
+				return false;
+			}
+
+			// SQL query to check if there is an order for the same barcode
+			String checkOrderQuery = "SELECT COUNT(*) FROM orders WHERE barcode = ?";
 			PreparedStatement checkOrderStatement = conn.prepareStatement(checkOrderQuery);
-			checkOrderStatement.setString(1, bookTitle);
+			checkOrderStatement.setString(1, barcode);
 
 			// Execute the query
 			ResultSet orderResult = checkOrderStatement.executeQuery();
@@ -739,13 +1066,14 @@ public class mysqlConnection {
 			String updatedReturnDate = newReturnDate.format(formatter); // Convert back to string
 
 			// SQL query to update the returnDate in the loan table
-			String updateQuery = "UPDATE loan SET dueDate = ? WHERE id = ? AND bookTitle = ?";
+			String updateQuery = "UPDATE loan SET dueDate = ? WHERE id = ? AND barcode = ? AND dueDate = ?";
 			PreparedStatement updateStatement = conn.prepareStatement(updateQuery);
 
 			// Set the parameters for the query
 			updateStatement.setString(1, updatedReturnDate); // Set the new returnDate
 			updateStatement.setString(2, cardNum); // Set cardNum
-			updateStatement.setString(3, bookTitle); // Set bookTitle
+			updateStatement.setString(3, barcode); // Set barcode (not bookTitle)
+			updateStatement.setString(4, returnDate);
 
 			// Execute the update query
 			int rowsUpdated = updateStatement.executeUpdate();
@@ -761,6 +1089,58 @@ public class mysqlConnection {
 			return false;
 		}
 	}
+
+//	public static boolean updateExtensionReturnDate(Object messageData) {
+//		Map<String, String> data = (Map<String, String>) messageData;
+//
+//		String cardNum = data.get("cardNum");
+//		String bookTitle = data.get("bookTitle");
+//		String returnDate = data.get("dueDate");
+//
+//		try {
+//			// SQL query to check if there is an order for the same book
+//			String checkOrderQuery = "SELECT COUNT(*) FROM orders WHERE bookTitle = ?";
+//			PreparedStatement checkOrderStatement = conn.prepareStatement(checkOrderQuery);
+//			checkOrderStatement.setString(1, bookTitle);
+//
+//			// Execute the query
+//			ResultSet orderResult = checkOrderStatement.executeQuery();
+//			if (orderResult.next() && orderResult.getInt(1) > 0) {
+//				// If there are orders for the book, return false
+//				return false;
+//			}
+//
+//			// Parse the returnDate string to LocalDate
+//			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//			LocalDate currentReturnDate = LocalDate.parse(returnDate, formatter);
+//
+//			// Add one week to the current return date
+//			LocalDate newReturnDate = currentReturnDate.plusWeeks(2);
+//			String updatedReturnDate = newReturnDate.format(formatter); // Convert back to string
+//
+//			// SQL query to update the returnDate in the loan table
+//			String updateQuery = "UPDATE loan SET dueDate = ? WHERE id = ? AND bookTitle = ?";
+//			PreparedStatement updateStatement = conn.prepareStatement(updateQuery);
+//
+//			// Set the parameters for the query
+//			updateStatement.setString(1, updatedReturnDate); // Set the new returnDate
+//			updateStatement.setString(2, cardNum); // Set cardNum
+//			updateStatement.setString(3, bookTitle); // Set bookTitle
+//
+//			// Execute the update query
+//			int rowsUpdated = updateStatement.executeUpdate();
+//
+//			// If rowsUpdated > 0, the update was successful
+//			return rowsUpdated > 0;
+//
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			return false;
+//		} catch (Exception e) {
+//			System.err.println("Error parsing or updating date: " + e.getMessage());
+//			return false;
+//		}
+//	}
 
 	public static User login(Object message) {
 		PreparedStatement pstmt = null;
@@ -1267,6 +1647,8 @@ public class mysqlConnection {
 					String borrowed = rs.getString("borrowed");
 					String lateReturn = rs.getString("lateReturn");
 
+					System.out.println("borrowed = " + borrowed);
+					System.out.println("lateReturn = " + lateReturn);
 					// Create or update the category-specific map
 					Map<String, String> categoryData = new HashMap<>();
 					categoryData.put("borrowed", borrowed);
@@ -1504,72 +1886,71 @@ public class mysqlConnection {
 	}
 
 	public static void endOfMonthProcessingStatusReport() {
-	    PreparedStatement insertStmt = null;
-	    ResultSet rs = null;
+		PreparedStatement insertStmt = null;
+		ResultSet rs = null;
 
-	    try {
-	        // Get the date of the previous month
-	        Calendar cal = Calendar.getInstance();
-	        cal.add(Calendar.MONTH, -1); // Go back to the previous month
-	        int previousMonth = cal.get(Calendar.MONTH) + 1; // Adjust for 0-based month index
-	        int previousYear = cal.get(Calendar.YEAR);
-	        String previousMonthFormatted = String.format("%02d", previousMonth);
-	        String dateFormatted = previousYear + "-" + previousMonthFormatted + "-01"; // Format as yyyy-mm-01
+		try {
+			// Get the date of the previous month
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.MONTH, -1); // Go back to the previous month
+			int previousMonth = cal.get(Calendar.MONTH) + 1; // Adjust for 0-based month index
+			int previousYear = cal.get(Calendar.YEAR);
+			String previousMonthFormatted = String.format("%02d", previousMonth);
+			String dateFormatted = previousYear + "-" + previousMonthFormatted + "-01"; // Format as yyyy-mm-01
 
-	        // Queries for counting users
-	        String activeUsersQuery = "SELECT COUNT(*) AS count FROM users WHERE LOWER(status) = 'active'";
-	        String frozenUsersQuery = "SELECT COUNT(*) AS count FROM users WHERE LOWER(status) = 'frozen'";
+			// Queries for counting users
+			String activeUsersQuery = "SELECT COUNT(*) AS count FROM users WHERE LOWER(status) = 'active'";
+			String frozenUsersQuery = "SELECT COUNT(*) AS count FROM users WHERE LOWER(status) = 'frozen'";
 
-	        // Prepare and execute the active users query
-	        PreparedStatement activeStmt = conn.prepareStatement(activeUsersQuery);
-	        rs = activeStmt.executeQuery();
-	        int activeCount = 0;
-	        if (rs.next()) {
-	            activeCount = rs.getInt("count");
-	        }
-	        rs.close();
-	        activeStmt.close();
+			// Prepare and execute the active users query
+			PreparedStatement activeStmt = conn.prepareStatement(activeUsersQuery);
+			rs = activeStmt.executeQuery();
+			int activeCount = 0;
+			if (rs.next()) {
+				activeCount = rs.getInt("count");
+			}
+			rs.close();
+			activeStmt.close();
 
-	        // Prepare and execute the frozen users query
-	        PreparedStatement frozenStmt = conn.prepareStatement(frozenUsersQuery);
-	        rs = frozenStmt.executeQuery();
-	        int frozenCount = 0;
-	        if (rs.next()) {
-	            frozenCount = rs.getInt("count");
-	        }
-	        rs.close();
-	        frozenStmt.close();
+			// Prepare and execute the frozen users query
+			PreparedStatement frozenStmt = conn.prepareStatement(frozenUsersQuery);
+			rs = frozenStmt.executeQuery();
+			int frozenCount = 0;
+			if (rs.next()) {
+				frozenCount = rs.getInt("count");
+			}
+			rs.close();
+			frozenStmt.close();
 
-	        System.out.println("Active users: " + activeCount + ", Frozen users: " + frozenCount);
+			System.out.println("Active users: " + activeCount + ", Frozen users: " + frozenCount);
 
-	        // Insert the data into the statusreport table (using ON DUPLICATE KEY UPDATE)
-	        String insertQuery = "INSERT INTO statusreport (monthAndYear, active, frozen) VALUES (?, ?, ?) "
-	                + "ON DUPLICATE KEY UPDATE active = VALUES(active), frozen = VALUES(frozen)";
-	        insertStmt = conn.prepareStatement(insertQuery);
-	        insertStmt.setString(1, dateFormatted); // Set the previous month's date
-	        insertStmt.setString(2, String.valueOf(activeCount)); // Convert active count to string
-	        insertStmt.setString(3, String.valueOf(frozenCount)); // Convert frozen count to string
-	        insertStmt.executeUpdate();
+			// Insert the data into the statusreport table (using ON DUPLICATE KEY UPDATE)
+			String insertQuery = "INSERT INTO statusreport (monthAndYear, active, frozen) VALUES (?, ?, ?) "
+					+ "ON DUPLICATE KEY UPDATE active = VALUES(active), frozen = VALUES(frozen)";
+			insertStmt = conn.prepareStatement(insertQuery);
+			insertStmt.setString(1, dateFormatted); // Set the previous month's date
+			insertStmt.setString(2, String.valueOf(activeCount)); // Convert active count to string
+			insertStmt.setString(3, String.valueOf(frozenCount)); // Convert frozen count to string
+			insertStmt.executeUpdate();
 
-	        System.out.println(
-	                "Inserted status report for previous month (" + previousMonthFormatted + "/" + previousYear + "):");
-	        System.out.println("Active Count: " + activeCount + ", Frozen Count: " + frozenCount);
+			System.out.println(
+					"Inserted status report for previous month (" + previousMonthFormatted + "/" + previousYear + "):");
+			System.out.println("Active Count: " + activeCount + ", Frozen Count: " + frozenCount);
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } finally {
-	        // Clean up resources
-	        try {
-	            if (rs != null)
-	                rs.close();
-	            if (insertStmt != null)
-	                insertStmt.close();
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			// Clean up resources
+			try {
+				if (rs != null)
+					rs.close();
+				if (insertStmt != null)
+					insertStmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-
 
 //	public static void endOfMonthProcessingStatusReport() {
 //	    PreparedStatement insertStmt = null;

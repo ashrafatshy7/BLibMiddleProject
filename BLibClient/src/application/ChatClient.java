@@ -204,7 +204,7 @@ public class ChatClient extends AbstractClient {
 
 		case cardNumber:
 			HashMap<String, Object> response = (HashMap<String, Object>) ((Message) msg).getMessageData();
-			
+
 			// Pass the data to the controller
 			if (subscriberCardDetailsController != null) {
 				subscriberCardDetailsController.cardExist(response);
@@ -212,7 +212,7 @@ public class ChatClient extends AbstractClient {
 				System.out.println("3-subscriberCardDetailsController is null.");
 			}
 			break;
-			
+
 		case updateEmailAndPhone:
 			// Get the boolean value indicating if the update was successful
 			boolean isUpdateSuccessful = (boolean) message.getMessageData();
@@ -303,14 +303,14 @@ public class ChatClient extends AbstractClient {
 			if (type.equals("success"))
 				showSuccessAlert(messageLog);
 			break;
-
+		// bulululu
 		case loanReport:
 			Platform.runLater(() -> {
 				try {
 					Map<String, Map<String, String>> loanReportMap = (Map<String, Map<String, String>>) message
 							.getMessageData();
 
-					if (loanReportMap == null) {
+					if (loanReportMap == null || loanReportMap.isEmpty()) {
 						showAlert("No Data Found", "No loan report data is available for the selected month and year.");
 						return;
 					}
@@ -325,13 +325,13 @@ public class ChatClient extends AbstractClient {
 				}
 			});
 			break;
-
+		// bulululu
 		case StatusReport:
 			Platform.runLater(() -> {
 				try {
 					Map<String, String> statusReportMap = (Map<String, String>) message.getMessageData();
 
-					if (statusReportMap == null) {
+					if (statusReportMap == null || statusReportMap.isEmpty()) {
 						showAlert("No Data Found",
 								"No status report data is available for the selected month and year.");
 						return;
