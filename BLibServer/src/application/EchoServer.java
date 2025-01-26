@@ -136,8 +136,8 @@ public class EchoServer extends AbstractServer {
 				client.sendToClient(messageFromServer);
 				break;
 			case registerSubscriber:
-				boolean success = mysqlConnection.saveNewSubscriber(message.getMessageData());
-				Message response = new Message(MessageType.registerSubscriber, success);
+				Map<String, String> register = mysqlConnection.saveNewSubscriber(message.getMessageData());
+				Message response = new Message(MessageType.registerSubscriber, register);
 				client.sendToClient(response);
 				break;
 

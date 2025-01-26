@@ -7,6 +7,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -48,8 +49,9 @@ public class ServerUI extends Application {
 
 		try {
 			server.listen(); // Start listening for connections
+//			startMidnightTask();
 			// Start the scheduled task for end-of-month processing
-//			startEndOfMonthTask();
+			// startEndOfMonthTask();
 //			startDailyDueDateCheckTask();
 
 		} catch (Exception ex) {
@@ -104,6 +106,39 @@ public class ServerUI extends Application {
 
 		// Schedule the task to run after one minute and then every minute
 		scheduler.scheduleAtFixedRate(task, 1, 1, TimeUnit.MINUTES);
+	}
+
+	private static void startMidnightTask() {
+		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+		Runnable task = () -> {
+			LocalDateTime now = LocalDateTime.now();
+			System.out.println("Checking for midnight task at: " + now);
+
+			// Check if it's exactly midnight
+			if (now.toLocalTime().equals(LocalTime.MIDNIGHT)) {
+				System.out.println("Midnight detected. Calling mysqlConnection.removeOrder()...");
+				try {
+					mysqlConnection.removeOrder();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				System.out.println("Not midnight yet.");
+			}
+		};
+
+		long initialDelay = computeInitialDelay();
+		long period = TimeUnit.DAYS.toSeconds(1); // 24 hours
+
+		// Schedule the task to run daily at midnight
+		scheduler.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.SECONDS);
+	}
+
+	private static long computeInitialDelay() {
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime nextMidnight = now.toLocalDate().atStartOfDay().plusDays(1);
+		Duration duration = Duration.between(now, nextMidnight);
+		return duration.getSeconds();
 	}
 
 //	/**
