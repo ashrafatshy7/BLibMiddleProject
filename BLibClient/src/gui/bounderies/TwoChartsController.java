@@ -13,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -24,6 +25,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import message.Message;
 import message.MessageType;
@@ -118,20 +120,20 @@ public class TwoChartsController {
 		String yearOne = tfYearOne.getText().trim();
 
 		if (monthOne.isEmpty() || yearOne.isEmpty()) {
-			errorMonthOne.setText("Month is required (format: MM).");
-			errorYearOne.setText("Year is required (format: YYYY).");
+			errorMonthOne.setText("Month is required MM");
+			errorYearOne.setText("Year is required YYYY");
 			return;
 		}
 
 		// Check if the month is in two-digit format
 		if (!monthOne.matches("^0[1-9]|1[0-2]$")) {
-			errorMonthOne.setText("Invalid month! Enter a value between 01 and 12.");
+			errorMonthOne.setText("value between 01 and 12");
 			return;
 		}
 
 		// Check if the year is in four-digit format
 		if (!yearOne.matches("^[0-9]{4}$")) {
-			errorYearOne.setText("Invalid year! Enter a four-digit year (e.g., 2021).");
+			errorYearOne.setText("Enter a 4 digit year");
 			return;
 		}
 
@@ -172,13 +174,50 @@ public class TwoChartsController {
 			for (String category : categories) {
 				Map<String, String> data = loanReportMap.getOrDefault(category, new HashMap<>());
 
-				// Add data for borrowed books
+				// Get data for borrowed and lateReturn
 				int borrowed = Integer.parseInt(data.getOrDefault("borrowed", "0"));
-				borrowedSeries.getData().add(new XYChart.Data<>(category, borrowed));
-
-				// Add data for late returns
 				int lateReturn = Integer.parseInt(data.getOrDefault("lateReturn", "0"));
-				lateReturnsSeries.getData().add(new XYChart.Data<>(category, lateReturn));
+
+				// Add data to the series
+				XYChart.Data<String, Number> borrowedData = new XYChart.Data<>(category, borrowed);
+				borrowedSeries.getData().add(borrowedData);
+
+				XYChart.Data<String, Number> lateReturnData = new XYChart.Data<>(category, lateReturn);
+				lateReturnsSeries.getData().add(lateReturnData);
+
+				// Add a label to display the number of borrowed books above the column
+				borrowedData.nodeProperty().addListener((observable, oldValue, newValue) -> {
+					if (newValue != null) {
+						Label borrowedLabel = new Label(String.valueOf(borrowed));
+						borrowedLabel.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: black;");
+
+						// Position the label above the borrowed column
+						StackPane stackPane = (StackPane) newValue;
+						stackPane.getChildren().add(borrowedLabel);
+						StackPane.setAlignment(borrowedLabel, Pos.TOP_CENTER);
+						borrowedLabel.setTranslateY(-10); // Adjust position slightly above the bar
+					}
+				});
+
+				// Calculate the percentage of late returns
+				if (borrowed > 0) {
+					double percentage = (double) lateReturn / borrowed * 100;
+
+					// Add a label to display the percentage above the late returns column
+					lateReturnData.nodeProperty().addListener((observable, oldValue, newValue) -> {
+						if (newValue != null) {
+							Label lateReturnLabel = new Label(String.format("%.1f%%", percentage));
+							lateReturnLabel
+									.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: black;");
+
+							// Position the label above the late returns column
+							StackPane stackPane = (StackPane) newValue;
+							stackPane.getChildren().add(lateReturnLabel);
+							StackPane.setAlignment(lateReturnLabel, Pos.TOP_CENTER);
+							lateReturnLabel.setTranslateY(-10); // Adjust position slightly above the bar
+						}
+					});
+				}
 			}
 
 			// Add the series to the chart
@@ -199,6 +238,128 @@ public class TwoChartsController {
 		});
 	}
 
+//	public void showLoanReportData(Map<String, Map<String, String>> loanReportMap) {
+//		Platform.runLater(() -> {
+//			// Clear existing data from the chart
+//			chartOne.getData().clear();
+//
+//			// Predefined categories for the xAxis
+//			List<String> categories = Arrays.asList("Science Fiction", "Romance", "Political Satire",
+//					"Historical Fiction", "Gothic Fiction", "Fantasy", "Epic Poetry", "Dystopian", "Coming-of-Age",
+//					"Adventure");
+//
+//			// Set categories on the xAxis
+//			xOneAxis.setCategories(FXCollections.observableArrayList(categories));
+//
+//			// Create two series for the chart: Borrowed and Late Returns
+//			XYChart.Series<String, Number> borrowedSeries = new XYChart.Series<>();
+//			borrowedSeries.setName("Borrowed Books");
+//
+//			XYChart.Series<String, Number> lateReturnsSeries = new XYChart.Series<>();
+//			lateReturnsSeries.setName("Late Returns");
+//
+//			// Populate the series with data for each category
+//			for (String category : categories) {
+//				Map<String, String> data = loanReportMap.getOrDefault(category, new HashMap<>());
+//
+//				// Get data for borrowed and lateReturn
+//				int borrowed = Integer.parseInt(data.getOrDefault("borrowed", "0"));
+//				int lateReturn = Integer.parseInt(data.getOrDefault("lateReturn", "0"));
+//
+//				// Add data to the series
+//				borrowedSeries.getData().add(new XYChart.Data<>(category, borrowed));
+//				XYChart.Data<String, Number> lateReturnData = new XYChart.Data<>(category, lateReturn);
+//				lateReturnsSeries.getData().add(lateReturnData);
+//
+//				// Calculate the percentage of late returns
+//				if (borrowed > 0) {
+//					double percentage = (double) lateReturn / borrowed * 100;
+//
+//					// Add a label to display the percentage above the column
+//					lateReturnData.nodeProperty().addListener((observable, oldValue, newValue) -> {
+//						if (newValue != null) {
+//							Label label = new Label(String.format("%.1f%%", percentage));
+//							label.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: black;");
+//
+//							// Position the label above the column
+//							StackPane stackPane = (StackPane) newValue;
+//							stackPane.getChildren().add(label);
+//							StackPane.setAlignment(label, Pos.TOP_CENTER);
+//							label.setTranslateY(-10); // Adjust position slightly above the bar
+//						}
+//					});
+//				}
+//			}
+//
+//			// Add the series to the chart
+//			chartOne.getData().addAll(borrowedSeries, lateReturnsSeries);
+//
+//			// Style the series after the nodes are created
+//			borrowedSeries.nodeProperty().addListener((observable, oldValue, newValue) -> {
+//				if (newValue != null) {
+//					newValue.setStyle("-fx-bar-fill: orange;");
+//				}
+//			});
+//
+//			lateReturnsSeries.nodeProperty().addListener((observable, oldValue, newValue) -> {
+//				if (newValue != null) {
+//					newValue.setStyle("-fx-bar-fill: red;");
+//				}
+//			});
+//		});
+//	}
+
+//	public void showLoanReportData(Map<String, Map<String, String>> loanReportMap) {
+//		Platform.runLater(() -> {
+//			// Clear existing data from the chart
+//			chartOne.getData().clear();
+//
+//			// Predefined categories for the xAxis
+//			List<String> categories = Arrays.asList("Science Fiction", "Romance", "Political Satire",
+//					"Historical Fiction", "Gothic Fiction", "Fantasy", "Epic Poetry", "Dystopian", "Coming-of-Age",
+//					"Adventure");
+//
+//			// Set categories on the xAxis
+//			xOneAxis.setCategories(FXCollections.observableArrayList(categories));
+//
+//			// Create two series for the chart: Borrowed and Late Returns
+//			XYChart.Series<String, Number> borrowedSeries = new XYChart.Series<>();
+//			borrowedSeries.setName("Borrowed Books");
+//
+//			XYChart.Series<String, Number> lateReturnsSeries = new XYChart.Series<>();
+//			lateReturnsSeries.setName("Late Returns");
+//
+//			// Populate the series with data for each category
+//			for (String category : categories) {
+//				Map<String, String> data = loanReportMap.getOrDefault(category, new HashMap<>());
+//
+//				// Add data for borrowed books
+//				int borrowed = Integer.parseInt(data.getOrDefault("borrowed", "0"));
+//				borrowedSeries.getData().add(new XYChart.Data<>(category, borrowed));
+//
+//				// Add data for late returns
+//				int lateReturn = Integer.parseInt(data.getOrDefault("lateReturn", "0"));
+//				lateReturnsSeries.getData().add(new XYChart.Data<>(category, lateReturn));
+//			}
+//
+//			// Add the series to the chart
+//			chartOne.getData().addAll(borrowedSeries, lateReturnsSeries);
+//
+//			// Style the series after the nodes are created
+//			borrowedSeries.nodeProperty().addListener((observable, oldValue, newValue) -> {
+//				if (newValue != null) {
+//					newValue.setStyle("-fx-bar-fill: orange;");
+//				}
+//			});
+//
+//			lateReturnsSeries.nodeProperty().addListener((observable, oldValue, newValue) -> {
+//				if (newValue != null) {
+//					newValue.setStyle("-fx-bar-fill: red;");
+//				}
+//			});
+//		});
+//	}
+
 	@FXML
 	private void btnGenerateTwoClicked() {
 		Map<String, String> chartOneData = new HashMap<>();
@@ -208,23 +369,21 @@ public class TwoChartsController {
 		String yearOne = tfYearTwo.getText().trim();
 
 		if (monthOne.isEmpty() || yearOne.isEmpty()) {
-			errorMonthTwo.setText("Month is required (format: MM).");
-			errorYearTwo.setText("Year is required (format: YYYY).");
+			errorMonthTwo.setText("Month is required: MM");
+			errorYearTwo.setText("Year is required: YYYY");
 			return;
 		}
 
 		// Check if the month is in two-digit format
 		if (!monthOne.matches("^0[1-9]|1[0-2]$")) {
-			errorMonthTwo.setText("Invalid month! Enter a value between 01 and 12.");
-			System.out.println("Error: Invalid month format.");
+			errorMonthTwo.setText("value between 01 and 12.");
 			return;
 		}
 
 		// Check if the year is in four-digit format
 		if (!yearOne.matches("^[0-9]{4}$")) {
-			errorYearTwo.setText("Invalid year! Enter a four-digit year (e.g., 2021).");
+			errorYearTwo.setText("Enter a 4 digit year");
 			errorMonthTwo.setText("");
-			System.out.println("Error: Invalid year format.");
 			return;
 		}
 

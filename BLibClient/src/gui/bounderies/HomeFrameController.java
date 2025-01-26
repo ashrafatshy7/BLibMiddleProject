@@ -75,7 +75,6 @@ public class HomeFrameController {
 		this.chatClient.setHomeFrameController(this);
 	}
 
-	
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/HomeFrame.fxml"));
@@ -126,8 +125,10 @@ public class HomeFrameController {
 			boolean isActive = ((Subscriber)ClientUI.user).getIsActive();
 			if(isActive) {
 				activeFrozen.setText("Active");
+				activeFrozen.setStyle("-fx-text-fill: green;");
 			}else {
 				activeFrozen.setText("Frozen");
+				activeFrozen.setStyle("-fx-text-fill: red;");
 			}
 			subscriberInfo.setText("My Details");
 		} else if (ClientUI.user instanceof Librarian) {

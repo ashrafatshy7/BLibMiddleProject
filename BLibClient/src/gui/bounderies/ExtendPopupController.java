@@ -42,6 +42,8 @@ public class ExtendPopupController {
 	private String cardNumber;
 	private SubscriberCardDetailsController subscriberCardDetailsController;
 
+	private String borrowDate;
+
 	public ExtendPopupController() {
 		chatClient = ClientUI.chat.getClient();
 	}
@@ -134,6 +136,7 @@ public class ExtendPopupController {
 			updateExtensionRequestsMap.put("cardNum", cardNumber);
 			updateExtensionRequestsMap.put("bookTitle", bookTitle);
 			updateExtensionRequestsMap.put("returnDate", returnDate);
+
 			Message sendToServer = new Message(MessageType.bookExtensionSucceeded, updateExtensionRequestsMap);
 			ClientUI.chat.accept(sendToServer);
 

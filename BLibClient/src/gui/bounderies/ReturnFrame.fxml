@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" stylesheets="@ReturnFrame.css" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ReturnFrameController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" stylesheets="@ReturnFrame.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ReturnFrameController">
 	<children>
 		<!-- Title -->
 		<Label fx:id="ReturnLabel" layoutX="310.0" layoutY="50.0" styleClass="title-label" text="Return a Book" />
@@ -25,7 +25,7 @@
 		<Label layoutX="150.0" layoutY="290.0" styleClass="form-label" text="Issue:" />
 		<ChoiceBox fx:id="issueChoice" layoutX="310.0" layoutY="285.0" prefHeight="30.0" prefWidth="300.0" />
 
-		<Label fx:id="readerCardIssue" layoutX="310.0" layoutY="254.0" prefHeight="18.0" prefWidth="185.0" text="Should be 9 digits" />
-		<Label fx:id="barcodeIssue" layoutX="310.0" layoutY="188.0" text="Should be 6 digits" />
+		<Label fx:id="readerCardIssue" layoutX="310.0" layoutY="254.0" prefHeight="18.0" prefWidth="185.0" text="Should be 9 digits" textFill="RED" />
+		<Label fx:id="barcodeIssue" layoutX="310.0" layoutY="188.0" text="Should be 6 digits" textFill="RED" />
 	</children>
 </AnchorPane>

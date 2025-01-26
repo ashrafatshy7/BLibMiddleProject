@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 
 import application.ChatClient;
 import application.ClientUI;
+import enteties.Book;
 import enteties.IssueHistory;
 import enteties.Librarian;
 import enteties.Loan;
@@ -37,8 +38,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class SubscriberCardDetailsController  {
-	
+public class SubscriberCardDetailsController {
 
 	private ChatClient chatClient;
 
@@ -131,7 +131,8 @@ public class SubscriberCardDetailsController  {
 	@FXML
 	private Label lblUpdateDateMessage;
 
-	private Map<String, Loan> updatedReturnDates = new HashMap<>();
+	private Map<Loan, ArrayList<Object>> updatedReturnDates = new HashMap<>();
+	
 	// public static String type = "subscriber";
 
 	public SubscriberCardDetailsController() {
@@ -161,17 +162,15 @@ public class SubscriberCardDetailsController  {
 
 		// Handle editing of the Return Date column
 		colReturnDate.setOnEditCommit(event -> {
-			Loan loanRow = event.getRowValue(); // Get the current row
-			String newReturnDate = event.getNewValue(); // Get the new value entered
-			String bookTitle = loanRow.getBookTitle(); // Get the book title for the row
-			String borrowDate = loanRow.getBorrowDate();
+			Loan loanRow = event.getRowValue();
+			loanRow.setReturnDate(event.getNewValue());
 
-			// Update the Loan object
-			loanRow.setReturnDate(newReturnDate);
-
-			// Save the change to the map
-			updatedReturnDates.put(bookTitle + "+" + borrowDate, loanRow); // Save the whole row using bookTitle and
-																			// borrowDate as key
+			// subscriber[0] -> ID, librarian[1] -> ID, book[2] -> name
+			ArrayList<Object> details = new ArrayList<>();
+			details.add(new Subscriber(tfInsertCardNumber.getText()));
+			details.add(new Librarian(ClientUI.user.getID()));
+			details.add(new Book(loanRow.getBookTitle()));
+			updatedReturnDates.put(loanRow, details);
 
 		});
 
@@ -367,215 +366,41 @@ public class SubscriberCardDetailsController  {
 		});
 	}
 
-	// bulululu
 	@FXML
 	private void btnUpdateDateClicked(ActionEvent event) {
-	    // Get the card ID from the text field
-	    String id = tfInsertCardNumber.getText();
 
-	    // Get the current date
-	    LocalDate currentDate = LocalDate.now();
+		LocalDate currentDate = LocalDate.now();
+		
+		for (Loan loan : updatedReturnDates.keySet()) {
+			LocalDate returnDate = LocalDate.parse(loan.getReturnDate());
 
-	    // Initialize a map to hold the updated details for this subscriber
-	    Map<String, String> updatedBookDetails = new HashMap<>();
+			try {
+				if (returnDate.isBefore(currentDate)) {
+					lblUpdateDateMessage.setVisible(true);
+					lblUpdateDateMessage
+							.setText("Invalid return date for " + loan.getBookTitle() + ": cannot be before today.");
+					lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
+					return; // Stop the process if validation fails
+				}
 
-	    // Iterate through the map to validate and collect the updated data
-	    for (Entry<String, Loan> entry : updatedReturnDates.entrySet()) {
-	        String bookTitle = entry.getKey().split("\\+")[0]; // Extract bookTitle from the key
-	        String borrowDate = entry.getKey().split("\\+")[1]; // Extract borrowDate from the key
-	        Loan loan = entry.getValue(); // Get the loan object (containing bookTitle, borrowDate, and returnDate)
+			} catch (DateTimeParseException e) {
+				// Handle invalid date format
+				lblUpdateDateMessage.setVisible(true);
+				lblUpdateDateMessage
+						.setText("Invalid date format for " + loan.getBookTitle() + ". Please use YYYY-MM-DD.");
+				lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
+				return; // Stop the process if validation fails
+			}
+		}
 
-	        String newReturnDate = loan.getReturnDate(); // Get the new return date
+		
+		// Send the data to the server
+		Message sendToServer = new Message(MessageType.updateReturnDate, updatedReturnDates);
+		ClientUI.chat.accept(sendToServer);
 
-	        System.out.println("borrowDate = " + borrowDate);
-	        System.out.println("newReturnDate = " + newReturnDate);
-
-	        // Parse the return date to validate it
-	        try {
-	            LocalDate returnDate = LocalDate.parse(newReturnDate);
-
-	            // Check if the return date is before the current date
-	            if (returnDate.isBefore(currentDate)) {
-	                lblUpdateDateMessage.setVisible(true);
-	                lblUpdateDateMessage.setText("Invalid return date for " + bookTitle + ": cannot be before today.");
-	                lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
-	                return; // Stop the process if validation fails
-	            }
-
-	            // Add the book's details to the updatedBookDetails map (store as a String)
-	            updatedBookDetails.put(bookTitle + "+" + borrowDate, newReturnDate);
-
-	        } catch (DateTimeParseException e) {
-	            // Handle invalid date format
-	            lblUpdateDateMessage.setVisible(true);
-	            lblUpdateDateMessage.setText("Invalid date format for " + bookTitle + ". Please use YYYY-MM-DD.");
-	            lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
-	            return; // Stop the process if validation fails
-	        }
-
-	        System.out.println("updatedBookDetails map = " + updatedBookDetails.toString());
-	    }
-
-	    // Now save the updated details to the main map using the subscriber's ID
-	    Map<String, Map<String, String>> updatedSubscriberData = new HashMap<>();
-
-	    // Add the user's name along with the updated book details to the map
-	    StringBuilder bookDetailsString = new StringBuilder();
-	    for (Map.Entry<String, String> entry : updatedBookDetails.entrySet()) {
-	        bookDetailsString.append(entry.getKey())
-	                          .append(": ")
-	                          .append(entry.getValue())
-	                          .append("\n");
-	    }
-
-	    updatedSubscriberData.put(id, new HashMap<String, String>() {
-	        {
-	            put("userName", "lfjkjfdlsiljkfsdklmfsd"); // Add user name
-	            put("bookDetails", bookDetailsString.toString()); // Add the updated book details as a string
-	        }
-	    });
-
-	    System.out.println("updatedSubscriberData MAP = " + updatedSubscriberData.toString());
-
-	    // Send the data to the server
-	    Message sendToServer = new Message(MessageType.updateReturnDate, updatedSubscriberData);
-	    ClientUI.chat.accept(sendToServer);
-
-	    // Optionally clear the message label after the process is done
-	    lblUpdateDateMessage.setVisible(false);
+		// Optionally clear the message label after the process is done
+		lblUpdateDateMessage.setVisible(false);
 	}
-
-	
-//	@FXML
-//	private void btnUpdateDateClicked(ActionEvent event) {
-//		// Get the card ID from the text field
-//		String id = tfInsertCardNumber.getText();
-//
-//		// Get the current date
-//		LocalDate currentDate = LocalDate.now();
-//
-//		// Initialize a map to hold the updated details for this subscriber
-//		Map<String, String> updatedBookDetails = new HashMap<>();
-//
-//		// Iterate through the map to validate and collect the updated data
-//		for (Entry<String, Loan> entry : updatedReturnDates.entrySet()) {
-//			String bookTitle = entry.getKey().split("\\+")[0]; // Extract bookTitle from the key
-//			String borrowDate = entry.getKey().split("\\+")[1]; // Extract borrowDate from the key
-//			Loan loan = entry.getValue(); // Get the loan object (containing bookTitle, borrowDate, and returnDate)
-//
-//			String newReturnDate = loan.getReturnDate(); // Get the new return date
-//
-//			System.out.println("borrowDate = " + borrowDate);
-//			System.out.println("newReturnDate = " + newReturnDate);
-//
-//			// Parse the return date to validate it
-//			try {
-//				LocalDate returnDate = LocalDate.parse(newReturnDate);
-//
-//				// Check if the return date is before the current date
-//				if (returnDate.isBefore(currentDate)) {
-//					lblUpdateDateMessage.setVisible(true);
-//					lblUpdateDateMessage.setText("Invalid return date for " + bookTitle + ": cannot be before today.");
-//					lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
-//					return; // Stop the process if validation fails
-//				}
-//
-//				// Add the book's details to the updatedBookDetails map
-//				updatedBookDetails.put(bookTitle + "+" + borrowDate, newReturnDate);
-//
-//			} catch (DateTimeParseException e) {
-//				// Handle invalid date format
-//				lblUpdateDateMessage.setVisible(true);
-//				lblUpdateDateMessage.setText("Invalid date format for " + bookTitle + ". Please use YYYY-MM-DD.");
-//				lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
-//				return; // Stop the process if validation fails
-//			}
-//
-//			System.out.println("updatedBookDetails map = " + updatedBookDetails.toString());
-//		}
-//
-//		// Now save the updated details to the main map using the subscriber's ID
-//		Map<String, Map<String, Object>> updatedSubscriberData = new HashMap<>();
-//
-//		// Add the user's name along with the updated book details to the map
-//		updatedSubscriberData.put(id, new HashMap<String, Object>() {
-//			{
-//				put("userName", ClientUI.user.getID()); // Add user name
-//				put("bookDetails", updatedBookDetails); // Add the updated book details
-//			}
-//		});
-//
-//		System.out.println("updatedSubscriberData MAP = " + updatedSubscriberData.toString());
-//
-//		// Send the data to the server
-//		Message sendToServer = new Message(MessageType.updateReturnDate, updatedSubscriberData);
-//		ClientUI.chat.accept(sendToServer);
-//
-//		// Optionally clear the message label after the process is done
-//		lblUpdateDateMessage.setVisible(false);
-//	}
-
-//	@FXML
-//	private void btnUpdateDateClicked(ActionEvent event) {
-//		// Get the card ID from the text field
-//		String id = tfInsertCardNumber.getText();
-//
-//		// Get the current date
-//		LocalDate currentDate = LocalDate.now();
-//
-//		// Initialize a map to hold the updated details for this subscriber
-//		Map<String, String> updatedBookDetails = new HashMap<>();
-//
-//		// Iterate through the map to validate and collect the updated data
-//		for (Entry<String, Loan> entry : updatedReturnDates.entrySet()) {
-//			String bookTitle = entry.getKey().split("\\+")[0]; // Extract bookTitle from the key
-//			String borrowDate = entry.getKey().split("\\+")[1]; // Extract borrowDate from the key
-//			Loan loan = entry.getValue(); // Get the loan object (containing bookTitle, borrowDate, and returnDate)
-//
-//			String newReturnDate = loan.getReturnDate(); // Get the new return date
-//
-//			System.out.println("borrowDate = " + borrowDate);
-//			System.out.println("newReturnDate = " + newReturnDate);
-//
-//			// Parse the return date to validate it
-//			try {
-//				LocalDate returnDate = LocalDate.parse(newReturnDate);
-//
-//				// Check if the return date is before the current date
-//				if (returnDate.isBefore(currentDate)) {
-//					lblUpdateDateMessage.setVisible(true);
-//					lblUpdateDateMessage.setText("Invalid return date for " + bookTitle + ": cannot be before today.");
-//					lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
-//					return; // Stop the process if validation fails
-//				}
-//
-//				// Add the book's details to the updatedBookDetails map
-//				updatedBookDetails.put(bookTitle + "+" + borrowDate, newReturnDate);
-//
-//			} catch (DateTimeParseException e) {
-//				// Handle invalid date format
-//				lblUpdateDateMessage.setVisible(true);
-//				lblUpdateDateMessage.setText("Invalid date format for " + bookTitle + ". Please use YYYY-MM-DD.");
-//				lblUpdateDateMessage.setStyle("-fx-text-fill: red;");
-//				return; // Stop the process if validation fails
-//			}
-//
-//			System.out.println("updatedBookDetails map = " + updatedBookDetails.toString());
-//		}
-//
-//		// Now save the updated details to the main map using the subscriber's ID
-//		Map<String, Map<String, String>> updatedSubscriberData = new HashMap<>();
-//		updatedSubscriberData.put(id, updatedBookDetails);
-//
-//		System.out.println("updatedSubscriberData MAP = " + updatedSubscriberData.toString());
-//
-//		// Send the data to the server
-//		Message sendToServer = new Message(MessageType.updateReturnDate, updatedSubscriberData);
-//		ClientUI.chat.accept(sendToServer);
-//
-//		// Optionally clear the message label after the process is done
-//		lblUpdateDateMessage.setVisible(false);
-//	}
 
 	public void btnUpdateReturnDateCheck(boolean isUpdated) {
 		Platform.runLater(() -> {

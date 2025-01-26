@@ -42,8 +42,6 @@ public class LoginFrameController {
 	    @FXML
 	    private Button loginButton;
 
-	    @FXML
-	    private Button forgotPasswordButton;
 
 	    @FXML
 	    private Label errorLabel;

@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="320.0" prefWidth="360.0" stylesheets="@popup.css" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" styleClass="popup-pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ExtendPopupController">
+<AnchorPane prefHeight="320.0" prefWidth="360.0" stylesheets="@Extend.css" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" styleClass="popup-pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ExtendPopupController">
     <Label layoutX="20" layoutY="10" text="Books Available for Extension" styleClass="popup-title" />
     <TableView fx:id="extendTable" layoutX="20.0" layoutY="40.0" prefHeight="200.0" prefWidth="320.0" styleClass="popup-table">
         <columns>

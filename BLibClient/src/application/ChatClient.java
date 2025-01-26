@@ -309,7 +309,7 @@ public class ChatClient extends AbstractClient {
 					Map<String, Map<String, String>> loanReportMap = (Map<String, Map<String, String>>) message
 							.getMessageData();
 
-					if (loanReportMap == null) {
+					if (loanReportMap == null || loanReportMap.isEmpty()) {
 						showAlert("No Data Found", "No loan report data is available for the selected month and year.");
 						return;
 					}
@@ -324,13 +324,12 @@ public class ChatClient extends AbstractClient {
 				}
 			});
 			break;
-
 		case StatusReport:
 			Platform.runLater(() -> {
 				try {
 					Map<String, String> statusReportMap = (Map<String, String>) message.getMessageData();
 
-					if (statusReportMap == null) {
+					if (statusReportMap == null || statusReportMap.isEmpty()) {
 						showAlert("No Data Found",
 								"No status report data is available for the selected month and year.");
 						return;

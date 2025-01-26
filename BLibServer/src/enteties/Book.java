@@ -48,6 +48,10 @@ public class Book implements Serializable {
 }
     
     
+    public Book(String title) {
+    	this.title=title;
+    }
+    
     public byte[] getImageBytes() {
         return imageBytes;
     }

@@ -21,12 +21,9 @@ public class Subscriber extends User implements Serializable {
 		super(ID);
 	}
 
-	public boolean setIsActive() {
-		return isActive;
-	}
 
-	public void getIsActive(boolean isActive) {
-		this.isActive = isActive;
+	public boolean getIsActive() {
+		return isActive;
 	}
 	
 }

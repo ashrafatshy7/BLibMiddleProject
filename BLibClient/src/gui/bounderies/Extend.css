@@ -45,7 +45,7 @@
 }
 
 .popup-table .table-row-cell:selected {
-    -fx-background-color: #FFE4B2; /* Light pastel orange */
+    -fx-background-color: #90CAF9; /* Light blue */
     -fx-text-fill: #3E4A61;
 }
 
