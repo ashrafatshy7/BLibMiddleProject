@@ -75,7 +75,7 @@ public class HomeFrameController {
 		this.chatClient.setHomeFrameController(this);
 	}
 
-	@FXML
+	
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/HomeFrame.fxml"));
@@ -121,14 +121,22 @@ public class HomeFrameController {
 
 		// Show buttons based on user type
 		if (ClientUI.user instanceof Subscriber) {
-			// subscriberInfo.setVisible(true);
 			status.setVisible(true);
 			activeFrozen.setVisible(true);
+			boolean isActive = ((Subscriber)ClientUI.user).getIsActive();
+			if(isActive) {
+				activeFrozen.setText("Active");
+			}else {
+				activeFrozen.setText("Frozen");
+			}
+			subscriberInfo.setText("My Details");
 		} else if (ClientUI.user instanceof Librarian) {
 			librarianRegisterReader.setVisible(true);
 			librarianreturnBook.setVisible(true);
 			librarianLoanBook.setVisible(true);
 			librarianReport.setVisible(true);
+		}else {
+			subscriberInfo.setVisible(false);
 		}
 
 		if (ClientUI.user != null) {

@@ -96,10 +96,7 @@ public class RegisterSubscriberController {
 		}
 
 		// Send data to server
-		ArrayList<Object> subscriber = new ArrayList<Object>();
-		Subscriber sub = new Subscriber(readCard, username, phone, email);
-		subscriber.add(sub);
-		subscriber.add(password);
+		Subscriber subscriber = new Subscriber(readCard, username, phone, email, password);
 		Message sendToserver = new Message(MessageType.registerSubscriber, subscriber);
 		ClientUI.chat.accept(sendToserver);
 	}

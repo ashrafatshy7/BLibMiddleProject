@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import application.ChatClient;
 import application.ClientUI;
 import enteties.Book;
+import enteties.Order;
 import enteties.Subscriber;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -64,7 +65,7 @@ public class BookDetailsFrameController {
 		if (book != null) {
 			populateBookDetails();
 		}
-		
+
 		bookOrdered.setVisible(false);
 		if (ClientUI.user instanceof Subscriber) {
 			order.setVisible(false);
@@ -93,6 +94,7 @@ public class BookDetailsFrameController {
 			if (book.getAvailableCopies() == 0) {
 				Message sendToServer = new Message(MessageType.getEarliestReturnDate, book.getBarcode());
 				ClientUI.chat.accept(sendToServer);
+				
 			}
 			populateBookDetails();
 		}
@@ -103,6 +105,7 @@ public class BookDetailsFrameController {
 	}
 
 	public void setAlreadyOrdered(boolean ordered) {
+	
 		alreadyOrdered = ordered;
 		if (alreadyOrdered) {
 			order.setDisable(true);
@@ -124,8 +127,18 @@ public class BookDetailsFrameController {
 		} else {
 			isAvailable.setText(isAvailable.getText() + "No");
 			shelfReturnDate.setText("Return date: " + earliestReturnDate);
-			if(ClientUI.user instanceof Subscriber)
+			if (ClientUI.user instanceof Subscriber) {
 				order.setVisible(true);
+				boolean isActive = ((Subscriber)ClientUI.user).getIsActive();
+				if(isActive) {
+					bookOrdered.setText("You ordered this book!");
+					order.setDisable(false);
+				}else {
+					bookOrdered.setText("Your Account is Frozen!");
+					bookOrdered.setVisible(true);
+					order.setDisable(true);
+				}
+			}
 		}
 
 	}
@@ -142,11 +155,7 @@ public class BookDetailsFrameController {
 
 		description.setText(book.getDescription());
 	}
-	
-	
 
-	
-	
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/BookDetailsFrame.fxml"));
@@ -170,14 +179,10 @@ public class BookDetailsFrameController {
 			primaryStage.setTitle("Book Details");
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			
-		
-			if (ClientUI.user instanceof Subscriber) {
 
-				ArrayList<String> checkOrder = new ArrayList<>();
-				checkOrder.add(book.getBarcode());
-				checkOrder.add(ClientUI.user.getID());
-				Message sendToServer = new Message(MessageType.checkOderBook, checkOrder);
+			if (ClientUI.user instanceof Subscriber) {
+				Order orderBook = new Order(ClientUI.user.getID(), book.getBarcode());
+				Message sendToServer = new Message(MessageType.checkOderBook, orderBook);
 				ClientUI.chat.accept(sendToServer);
 			}
 
@@ -201,10 +206,8 @@ public class BookDetailsFrameController {
 
 	@FXML
 	public void orderBtn(ActionEvent event) throws Exception {
-		ArrayList<String> orderDetails = new ArrayList<>();
-		orderDetails.add(book.getBarcode());
-		orderDetails.add(ClientUI.user.getID());
-		Message sendToServer = new Message(MessageType.orderBook, orderDetails);
+		Order orderBook = new Order(ClientUI.user.getID(), book.getBarcode());
+		Message sendToServer = new Message(MessageType.orderBook, orderBook);
 		ClientUI.chat.accept(sendToServer);
 		order.setDisable(true);
 		bookOrdered.setVisible(true);

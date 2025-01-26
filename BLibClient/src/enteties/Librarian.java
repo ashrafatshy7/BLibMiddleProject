@@ -6,9 +6,14 @@ public class Librarian extends User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // Constructor
+    public Librarian(String ID, String name, String phoneNumber, String email, String password) {
+        super(ID, name, phoneNumber, email, password);
+    }
+    
     public Librarian(String ID, String name, String phoneNumber, String email) {
         super(ID, name, phoneNumber, email);
     }
+    
     
     public Librarian(String ID) {
 		super(ID);

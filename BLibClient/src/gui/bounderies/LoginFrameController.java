@@ -81,7 +81,6 @@ public class LoginFrameController {
 	    	if(user != null) {
 	    		ClientUI.user = user;
 	    		Platform.runLater(() -> {
-	                // Get current Stage from an actual UI Node
 	                Stage currentStage = (Stage) loginButton.getScene().getWindow();
 	                currentStage.close();
 

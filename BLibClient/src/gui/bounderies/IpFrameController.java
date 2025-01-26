@@ -43,7 +43,7 @@ public class IpFrameController {
 	}
 
 	public void connect(ActionEvent event) throws Exception {
-		String ipAddress = "10.0.0.17";
+		String ipAddress = "127.0.0.1";
 
 		if (!isValidPort(portText.getText())) {
 			showErrorAlert("port is invalid");

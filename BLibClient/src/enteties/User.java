@@ -9,8 +9,16 @@ public class User implements Serializable {
 	private String name;
 	private String phoneNumber;
 	private String email;
+	private String password;
 
-	// Constructor
+	public User(String ID, String name, String phoneNumber, String email, String password) {
+		this.ID = ID;
+		this.name = name;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+		this.password = password;
+	}
+	
 	public User(String ID, String name, String phoneNumber, String email) {
 		this.ID = ID;
 		this.name = name;
@@ -53,6 +61,14 @@ public class User implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	@Override

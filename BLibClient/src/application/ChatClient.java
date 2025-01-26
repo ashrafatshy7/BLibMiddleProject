@@ -171,6 +171,7 @@ public class ChatClient extends AbstractClient {
 				boolean ordered = (boolean) message.getMessageData();
 				if (bookDetailsFrameController != null) {
 					bookDetailsFrameController.setAlreadyOrdered(ordered);
+					showSuccessAlert("Order Successed");
 				} else {
 					System.err.println("bookDetailsFrameController is not set in ChatClient.");
 				}
@@ -191,15 +192,13 @@ public class ChatClient extends AbstractClient {
 			}
 			break;
 		case registerSubscriber:
-			boolean success = (boolean) message.getMessageData();
+			Map<String, String> regiter = (Map<String, String>) message.getMessageData();
 
-			Platform.runLater(() -> {
-				if (success) {
-					showSuccessAlert("Subscriber registered successfully!");
-				} else {
-					showErrorAlert("Failed to register subscriber. Please try again.");
-				}
-			});
+			type = regiter.get("type");
+			messageLog = regiter.get("message");
+			if (type.equals("success"))
+				showSuccessAlert(messageLog);
+			else showErrorAlert(messageLog);
 			break;
 
 		case cardNumber:
