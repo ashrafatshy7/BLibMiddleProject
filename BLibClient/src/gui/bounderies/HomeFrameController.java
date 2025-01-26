@@ -237,13 +237,13 @@ public class HomeFrameController {
 				VBox bookBox = new VBox();
 				bookBox.setSpacing(5);
 				ImageView imageView = new ImageView(book.getImage());
-				imageView.setFitWidth(109.0);
-				imageView.setFitHeight(182.0);
+				imageView.setFitWidth(150.0);
+				imageView.setFitHeight(223.0);
 				imageView.setPreserveRatio(true);
 
 				Label bookName = new Label(book.getTitle());
 				bookName.setWrapText(true);
-				bookName.setMaxWidth(109.0);
+				bookName.setMaxWidth(150.0);
 				bookName.setStyle("-fx-alignment: center;");
 
 				bookBox.setOnMouseClicked(event -> {

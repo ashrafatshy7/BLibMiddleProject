@@ -125,6 +125,7 @@ public class mysqlConnection {
 		return books;
 	}
 
+	// bululu2
 	public static boolean orderBook(Object msg) {
 		boolean ordered = false;
 		Order orderBook = (Order) msg;
@@ -148,6 +149,46 @@ public class mysqlConnection {
 			pstmt.executeUpdate();
 			ordered = true;
 
+			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+			String requestDateOnly = dateFormatter.format(new Date());
+
+			String bookTitleQuery = "SELECT title FROM books WHERE barcode = ?";
+			String orderHistoryQuery = "INSERT INTO orderhistory (orderDate, subscriberID, bookTitle) VALUES (?, ?, ?)";
+
+			PreparedStatement bookTitleStmt = null;
+			PreparedStatement orderHistoryStmt = null;
+
+			try {
+				bookTitleStmt = conn.prepareStatement(bookTitleQuery);
+				bookTitleStmt.setString(1, barcode);
+				ResultSet rs = bookTitleStmt.executeQuery();
+
+				String bookTitle = null;
+				if (rs.next()) {
+					bookTitle = rs.getString("title");
+				} else {
+					throw new SQLException("No book found for the given barcode: " + barcode);
+				}
+
+				orderHistoryStmt = conn.prepareStatement(orderHistoryQuery);
+				orderHistoryStmt.setString(1, requestDateOnly);
+				orderHistoryStmt.setString(2, id);
+				orderHistoryStmt.setString(3, bookTitle);
+				orderHistoryStmt.executeUpdate();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				// Close additional statements
+				try {
+					if (bookTitleStmt != null)
+						bookTitleStmt.close();
+					if (orderHistoryStmt != null)
+						orderHistoryStmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -607,13 +648,53 @@ public class mysqlConnection {
 
 				while (resultSet.next()) {
 					Map<String, Object> row = new HashMap<>();
+					String barcode = resultSet.getString("barcode");
+
 					row.put("issueType", resultSet.getString("issueType"));
 					row.put("issueDate", resultSet.getDate("issueDate"));
-					row.put("barcode", resultSet.getString("barcode"));
+
+					String bookTitleQuery = "SELECT title FROM books WHERE barcode = ?";
+					try (PreparedStatement bookStatement = conn.prepareStatement(bookTitleQuery)) {
+						bookStatement.setString(1, barcode);
+						try (ResultSet bookResultSet = bookStatement.executeQuery()) {
+							if (bookResultSet.next()) {
+								row.put("title", bookResultSet.getString("title"));
+							} else {
+								row.put("title", "Unknown Title");
+							}
+						}
+					}
 					issuesHistory.add(row);
 				}
 
+				System.out.println("issuesHistory MAP = " + issuesHistory.toString());
+
 				result.put("issuesHistory", issuesHistory);
+
+				// Close resources
+				resultSet.close();
+				preparedStatement.close();
+
+				// order history
+				String orderHistoryQuery = "SELECT orderDate, bookTitle FROM orderhistory WHERE subscriberId = ?";
+				preparedStatement = conn.prepareStatement(orderHistoryQuery);
+				preparedStatement.setString(1, cardNum);
+
+				resultSet = preparedStatement.executeQuery();
+
+				List<Map<String, Object>> orderHistory = new ArrayList<>();
+
+				while (resultSet.next()) {
+					Map<String, Object> row = new HashMap<>();
+					row.put("orderDate", resultSet.getString("orderDate"));
+					row.put("bookTitle", resultSet.getString("bookTitle"));
+					orderHistory.add(row);
+				}
+
+				System.out.println("orderHistory MAP = " + orderHistory.toString());
+
+				result.put("orderHistory", orderHistory);
+
 			}
 
 		} catch (SQLException e) {
@@ -629,7 +710,7 @@ public class mysqlConnection {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("resultresultresultresult = " + result.toString());
+		System.out.println("result MAP = " + result.toString());
 		return result;
 	}
 
@@ -710,88 +791,80 @@ public class mysqlConnection {
 	// key: Loan,,, subscriber[0] -> ID, librarian[1] -> ID, book[2] -> name
 	public static boolean updateReturnDate(Object messageData) {
 
-	    Map<Loan, ArrayList<Object>> updatedDetails = (Map<Loan, ArrayList<Object>>) messageData;
+		Map<Loan, ArrayList<Object>> updatedDetails = (Map<Loan, ArrayList<Object>>) messageData;
 
-	    String barcodeQuery = "SELECT barcode FROM books WHERE title = ?";
-	    // Set the returnDate column, rather than dueDate
-	    String updateLoanQuery = 
-	          "UPDATE loan "
-	        + "   SET dueDate = ?, "
-	        + "       librarianUserName = ?, "
-	        + "       updateReturnDate = ? "
-	        + " WHERE id = ? "
-	        + "   AND borrowDate = ? "
-	        + "   AND barcode = ?";
-	    String getLibrarianNameQuery = 
-	          "SELECT username FROM users WHERE id = ? AND type = 'Librarian'";
+		String barcodeQuery = "SELECT barcode FROM books WHERE title = ?";
+		// Set the returnDate column, rather than dueDate
+		String updateLoanQuery = "UPDATE loan " + "   SET dueDate = ?, " + "       librarianUserName = ?, "
+				+ "       updateReturnDate = ? " + " WHERE id = ? " + "   AND borrowDate = ? " + "   AND barcode = ?";
+		String getLibrarianNameQuery = "SELECT username FROM users WHERE id = ? AND type = 'Librarian'";
 
-	    LocalDate currentDate = LocalDate.now();
-	    String currentDateStr = currentDate.toString();
+		LocalDate currentDate = LocalDate.now();
+		String currentDateStr = currentDate.toString();
 
-	    for (Loan loan : updatedDetails.keySet()) {
-	        ArrayList<Object> value = updatedDetails.get(loan);
-	        Subscriber subscriber = new Subscriber(((Subscriber) value.get(0)).getID());
-	        Librarian librarian = new Librarian(((Librarian) value.get(1)).getID());
-	        Book book = new Book(((Book) value.get(2)).getTitle());
+		for (Loan loan : updatedDetails.keySet()) {
+			ArrayList<Object> value = updatedDetails.get(loan);
+			Subscriber subscriber = new Subscriber(((Subscriber) value.get(0)).getID());
+			Librarian librarian = new Librarian(((Librarian) value.get(1)).getID());
+			Book book = new Book(((Book) value.get(2)).getTitle());
 
-	        try (PreparedStatement barcodeStmt = conn.prepareStatement(barcodeQuery);
-	             PreparedStatement updateLoanStmt = conn.prepareStatement(updateLoanQuery);
-	             PreparedStatement updateLibrarianNameStmt = conn.prepareStatement(getLibrarianNameQuery)) {
+			try (PreparedStatement barcodeStmt = conn.prepareStatement(barcodeQuery);
+					PreparedStatement updateLoanStmt = conn.prepareStatement(updateLoanQuery);
+					PreparedStatement updateLibrarianNameStmt = conn.prepareStatement(getLibrarianNameQuery)) {
 
-	            // 1. Find the book’s barcode based on its title
-	            barcodeStmt.setString(1, book.getTitle());
-	            ResultSet rs = barcodeStmt.executeQuery();
+				// 1. Find the book’s barcode based on its title
+				barcodeStmt.setString(1, book.getTitle());
+				ResultSet rs = barcodeStmt.executeQuery();
 
-	            if (rs.next()) {
-	                book.setBarcode(rs.getString("barcode"));
-	            } else {
-	                System.err.println("Barcode not found for bookTitle: " + book.getTitle());
-	                continue;
-	            }
+				if (rs.next()) {
+					book.setBarcode(rs.getString("barcode"));
+				} else {
+					System.err.println("Barcode not found for bookTitle: " + book.getTitle());
+					continue;
+				}
 
-	            // 2. Retrieve the librarian's username
-	            updateLibrarianNameStmt.setString(1, librarian.getID());
-	            rs = updateLibrarianNameStmt.executeQuery();
+				// 2. Retrieve the librarian's username
+				updateLibrarianNameStmt.setString(1, librarian.getID());
+				rs = updateLibrarianNameStmt.executeQuery();
 
-	            if (rs.next()) {
-	                librarian.setName(rs.getString("username"));
-	            } else {
-	                System.err.println("librarian name invalid");
-	                continue;
-	            }
+				if (rs.next()) {
+					librarian.setName(rs.getString("username"));
+				} else {
+					System.err.println("librarian name invalid");
+					continue;
+				}
 
-	            // Debugging prints
-	            System.out.println("loan.getReturnDate(): " + loan.getReturnDate());
-	            System.out.println("librarian.getName(): " + librarian.getName());
-	            System.out.println("currentDateStr: " + currentDateStr);
-	            System.out.println("subscriber.getID(): " + subscriber.getID());
-	            System.out.println("loan.getBorrowDate(): " + loan.getBorrowDate());
-	            System.out.println("book.getBarcode(): " + book.getBarcode());
+				// Debugging prints
+				System.out.println("loan.getReturnDate(): " + loan.getReturnDate());
+				System.out.println("librarian.getName(): " + librarian.getName());
+				System.out.println("currentDateStr: " + currentDateStr);
+				System.out.println("subscriber.getID(): " + subscriber.getID());
+				System.out.println("loan.getBorrowDate(): " + loan.getBorrowDate());
+				System.out.println("book.getBarcode(): " + book.getBarcode());
 
-	            // 3. Update the row in the loan table
-	            updateLoanStmt.setString(1, loan.getReturnDate());     // returnDate
-	            updateLoanStmt.setString(2, librarian.getName());      // librarianUserName
-	            updateLoanStmt.setString(3, currentDateStr);           // updateReturnDate
-	            updateLoanStmt.setString(4, subscriber.getID());       // WHERE id = ?
-	            updateLoanStmt.setString(5, loan.getBorrowDate());     // WHERE borrowDate = ?
-	            updateLoanStmt.setString(6, book.getBarcode());        // WHERE barcode = ?
+				// 3. Update the row in the loan table
+				updateLoanStmt.setString(1, loan.getReturnDate()); // returnDate
+				updateLoanStmt.setString(2, librarian.getName()); // librarianUserName
+				updateLoanStmt.setString(3, currentDateStr); // updateReturnDate
+				updateLoanStmt.setString(4, subscriber.getID()); // WHERE id = ?
+				updateLoanStmt.setString(5, loan.getBorrowDate()); // WHERE borrowDate = ?
+				updateLoanStmt.setString(6, book.getBarcode()); // WHERE barcode = ?
 
-	            int rowsUpdated = updateLoanStmt.executeUpdate();
-	            if (rowsUpdated == 0) {
-	                System.err.println("Failed to update loan for book: " + book.getTitle());
-	            } else {
-	                System.out.println("Successfully updated loan for book: " + book.getTitle());
-	            }
+				int rowsUpdated = updateLoanStmt.executeUpdate();
+				if (rowsUpdated == 0) {
+					System.err.println("Failed to update loan for book: " + book.getTitle());
+				} else {
+					System.out.println("Successfully updated loan for book: " + book.getTitle());
+				}
 
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	            return false;
-	        }
-	    }
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
 
-	    return true;
+		return true;
 	}
-
 
 	// Method to retrieve loans for books with return dates after 1 week
 	public static Map<String, String> getExtendedBooks(Object number) {
@@ -1500,6 +1573,115 @@ public class mysqlConnection {
 		return statusData;
 	}
 
+	public static void endOfMonthProcessingLoanReport() {
+		PreparedStatement insertStmt = null;
+		PreparedStatement checkStmt = null;
+		PreparedStatement duplicateCheckStmt = null;
+		ResultSet rs = null;
+
+		List<String> categories = Arrays.asList("Science Fiction", "Romance", "Political Satire", "Historical Fiction",
+				"Gothic Fiction", "Fantasy", "Epic Poetry", "Dystopian", "Coming-of-Age", "Adventure");
+
+		try {
+			// Query distinct years and months from the loan table
+			String distinctYearMonthQuery = "SELECT DISTINCT YEAR(borrowDate) AS year, MONTH(borrowDate) AS month FROM loan";
+			Statement stmt = conn.createStatement();
+			rs = stmt.executeQuery(distinctYearMonthQuery);
+
+			// Prepare the insertion query for loanreport (without loanReportId)
+			String insertQuery = "INSERT INTO loanreport (month, year, category, borrowed, lateReturn) VALUES (?, ?, ?, ?, ?)";
+			insertStmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
+
+			// Prepare the query to check borrowed and late return counts
+			String checkQuery = "SELECT COUNT(*) AS borrowed, SUM(CASE WHEN returnDate > dueDate THEN 1 ELSE 0 END) AS lateReturn "
+					+ "FROM loan l JOIN books b ON l.barcode = b.barcode "
+					+ "WHERE MONTH(l.borrowDate) = ? AND YEAR(l.borrowDate) = ? AND b.category = ?";
+			checkStmt = conn.prepareStatement(checkQuery);
+
+			// Prepare the query to check for duplicate entries in loanreport
+			String duplicateCheckQuery = "SELECT COUNT(*) FROM loanreport WHERE month = ? AND year = ? AND category = ?";
+			duplicateCheckStmt = conn.prepareStatement(duplicateCheckQuery);
+
+			// Iterate over each distinct year and month
+			while (rs.next()) {
+				int year = rs.getInt("year");
+				int month = rs.getInt("month");
+				String monthFormatted = String.format("%02d", month); // Format as 01, 02, etc.
+
+				// For each category, check borrowed and lateReturn counts
+				for (String category : categories) {
+					// Check if the record already exists in loanreport
+					duplicateCheckStmt.setString(1, monthFormatted);
+					duplicateCheckStmt.setString(2, String.valueOf(year));
+					duplicateCheckStmt.setString(3, category);
+
+					ResultSet duplicateCheckRs = duplicateCheckStmt.executeQuery();
+					duplicateCheckRs.next(); // Always expect one row from COUNT(*)
+					int existingCount = duplicateCheckRs.getInt(1);
+
+					// Skip if a record already exists
+					if (existingCount > 0) {
+						System.out.println("Skipping duplicate record for month: " + monthFormatted + ", year: " + year
+								+ ", category: " + category);
+						continue;
+					}
+
+					// Check borrowed and late return counts
+					checkStmt.setInt(1, month); // Set month parameter
+					checkStmt.setInt(2, year); // Set year parameter
+					checkStmt.setString(3, category); // Set category parameter
+
+					ResultSet checkRs = checkStmt.executeQuery();
+					int borrowed = 0;
+					int lateReturn = 0;
+
+					if (checkRs.next()) {
+						borrowed = checkRs.getInt("borrowed");
+						lateReturn = checkRs.getInt("lateReturn");
+					}
+
+					// Insert the data into loanreport table
+					insertStmt.setString(1, monthFormatted);
+					insertStmt.setString(2, String.valueOf(year));
+					insertStmt.setString(3, category);
+					insertStmt.setInt(4, borrowed);
+					insertStmt.setInt(5, lateReturn);
+
+					insertStmt.executeUpdate();
+
+					// Retrieve the auto-generated primary key using getGeneratedKeys()
+					ResultSet generatedKeys = insertStmt.getGeneratedKeys();
+					if (generatedKeys.next()) {
+						int loanReportId = generatedKeys.getInt(1);
+						System.out.println("Loan report inserted with ID: " + loanReportId);
+					}
+				}
+			}
+
+			System.out.println("End-of-month processing completed. Data inserted into loanreport table.");
+
+		} catch (SQLException e) {
+			// Handle SQL exceptions
+			e.printStackTrace();
+		} finally {
+			// Clean up resources
+			try {
+				if (rs != null)
+					rs.close();
+				if (insertStmt != null)
+					insertStmt.close();
+				if (checkStmt != null)
+					checkStmt.close();
+				if (duplicateCheckStmt != null)
+					duplicateCheckStmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 //	public static void endOfMonthProcessingLoanReport() {
 //		PreparedStatement insertStmt = null;
 //		PreparedStatement checkStmt = null;
@@ -1509,6 +1691,7 @@ public class mysqlConnection {
 //				"Gothic Fiction", "Fantasy", "Epic Poetry", "Dystopian", "Coming-of-Age", "Adventure");
 //
 //		try {
+//
 //			// Query distinct years and months from the loan table
 //			String distinctYearMonthQuery = "SELECT DISTINCT YEAR(borrowDate) AS year,MONTH(borrowDate) AS month FROM loan";
 //			Statement stmt = conn.createStatement();
@@ -1562,12 +1745,19 @@ public class mysqlConnection {
 //			}
 //
 //			System.out.println("End-of-month processing completed. Data inserted into loanreport table.");
-//			
-//			
-//			
 //
 //		} catch (SQLException e) {
+//			// Handle SQL exceptions
 //			e.printStackTrace();
+//			if (e instanceof SQLNonTransientConnectionException) {
+//				System.err.println("Failed to execute loan report due to connection issue. Attempting to reconnect...");
+//				if (conn != null) {
+//					// Retry the operation if reconnection is successful
+//					endOfMonthProcessingLoanReport(); // Recursive call to retry
+//				} else {
+//					System.err.println("Reconnection failed. Loan report processing skipped.");
+//				}
+//			}
 //		} finally {
 //			// Clean up resources
 //			try {
@@ -1584,99 +1774,6 @@ public class mysqlConnection {
 //			}
 //		}
 //	}
-
-	public static void endOfMonthProcessingLoanReport() {
-		PreparedStatement insertStmt = null;
-		PreparedStatement checkStmt = null;
-		ResultSet rs = null;
-
-		List<String> categories = Arrays.asList("Science Fiction", "Romance", "Political Satire", "Historical Fiction",
-				"Gothic Fiction", "Fantasy", "Epic Poetry", "Dystopian", "Coming-of-Age", "Adventure");
-
-		try {
-
-			// Query distinct years and months from the loan table
-			String distinctYearMonthQuery = "SELECT DISTINCT YEAR(borrowDate) AS year,MONTH(borrowDate) AS month FROM loan";
-			Statement stmt = conn.createStatement();
-			rs = stmt.executeQuery(distinctYearMonthQuery);
-
-			// Prepare the insertion query for loanreport (without loanReportId)
-			String insertQuery = "INSERT INTO loanreport (month, year, category, borrowed, lateReturn) VALUES (?, ?, ?, ?, ?)";
-			insertStmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
-
-			// Prepare the query to check borrowed and late return counts
-			String checkQuery = "SELECT COUNT(*) AS borrowed,SUM(CASE WHEN returnDate > dueDate THEN 1 ELSE 0 END) AS lateReturn FROM loan l JOIN books b ON l.barcode = b.barcode WHERE MONTH(l.borrowDate) = ? AND YEAR(l.borrowDate) = ? AND b.category = ?";
-			checkStmt = conn.prepareStatement(checkQuery);
-
-			// Iterate over each distinct year and month
-			while (rs.next()) {
-				int year = rs.getInt("year");
-				int month = rs.getInt("month");
-				String monthFormatted = String.format("%02d", month); // Format as 01, 02, etc.
-
-				// For each category, check borrowed and lateReturn counts
-				for (String category : categories) {
-					checkStmt.setInt(1, month); // Set month parameter
-					checkStmt.setInt(2, year); // Set year parameter
-					checkStmt.setString(3, category); // Set category parameter
-
-					ResultSet checkRs = checkStmt.executeQuery();
-					int borrowed = 0;
-					int lateReturn = 0;
-
-					if (checkRs.next()) {
-						borrowed = checkRs.getInt("borrowed");
-						lateReturn = checkRs.getInt("lateReturn");
-					}
-
-					// Insert the data into loanreport table
-					insertStmt.setString(1, monthFormatted);
-					insertStmt.setString(2, String.valueOf(year));
-					insertStmt.setString(3, category);
-					insertStmt.setInt(4, borrowed);
-					insertStmt.setInt(5, lateReturn);
-
-					insertStmt.executeUpdate();
-
-					// Retrieve the auto-generated primary key using getGeneratedKeys()
-					ResultSet generatedKeys = insertStmt.getGeneratedKeys();
-					if (generatedKeys.next()) {
-						int loanReportId = generatedKeys.getInt(1);
-						System.out.println("Loan report inserted with ID: " + loanReportId);
-					}
-				}
-			}
-
-			System.out.println("End-of-month processing completed. Data inserted into loanreport table.");
-
-		} catch (SQLException e) {
-			// Handle SQL exceptions
-			e.printStackTrace();
-			if (e instanceof SQLNonTransientConnectionException) {
-				System.err.println("Failed to execute loan report due to connection issue. Attempting to reconnect...");
-				if (conn != null) {
-					// Retry the operation if reconnection is successful
-					endOfMonthProcessingLoanReport(); // Recursive call to retry
-				} else {
-					System.err.println("Reconnection failed. Loan report processing skipped.");
-				}
-			}
-		} finally {
-			// Clean up resources
-			try {
-				if (rs != null)
-					rs.close();
-				if (insertStmt != null)
-					insertStmt.close();
-				if (checkStmt != null)
-					checkStmt.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 
 	public static void endOfMonthProcessingStatusReport() {
 		PreparedStatement insertStmt = null;

@@ -49,10 +49,9 @@ public class ServerUI extends Application {
 
 		try {
 			server.listen(); // Start listening for connections
-//			startMidnightTask();
-			// Start the scheduled task for end-of-month processing
-			// startEndOfMonthTask();
-//			startDailyDueDateCheckTask();
+			startMidnightTask();
+			startEndOfMonthTask();
+			startDailyDueDateCheckTask();
 
 		} catch (Exception ex) {
 			System.out.println("ERROR - Could not listen for clients!");
@@ -106,6 +105,10 @@ public class ServerUI extends Application {
 
 		// Schedule the task to run after one minute and then every minute
 		scheduler.scheduleAtFixedRate(task, 1, 1, TimeUnit.MINUTES);
+
+//        long oneMonthInMinutes = 30L * 24L * 60L;
+//        scheduler.scheduleAtFixedRate(task, oneMonthInMinutes, 1, TimeUnit.MINUTES);
+
 	}
 
 	private static void startMidnightTask() {
@@ -140,26 +143,6 @@ public class ServerUI extends Application {
 		Duration duration = Duration.between(now, nextMidnight);
 		return duration.getSeconds();
 	}
-
-//	/**
-//	 * Scheduled task for generating end-of-month graphs (simulated for testing).
-//	 */
-//	private static void startEndOfMonthTask() {
-//		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-//
-//		Runnable task = () -> {
-//			System.out.println("Calling mysqlConnection method after one minute...");
-//			try {
-//				mysqlConnection.endOfMonthProcessingLoanReport();
-//				mysqlConnection.endOfMonthProcessingStatusReport();
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		};
-//
-//		// Schedule the task to run after one minute and then every minute
-//		scheduler.scheduleAtFixedRate(task, 1, 1, TimeUnit.MINUTES);
-//	}
 
 	/**
 	 * Scheduled task for daily due date checking.
@@ -198,15 +181,6 @@ public class ServerUI extends Application {
 //		long oneDay = TimeUnit.DAYS.toMillis(1); // One day in milliseconds
 //
 //		scheduler.scheduleAtFixedRate(task, initialDelay, oneDay, TimeUnit.MILLISECONDS);
-	}
-
-	/**
-	 * Helper method to calculate the initial delay to the next midnight.
-	 */
-	private static long calculateInitialDelay() {
-		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime nextMidnight = now.toLocalDate().atStartOfDay().plusDays(1);
-		return java.time.Duration.between(now, nextMidnight).toMillis();
 	}
 
 }
