@@ -6,40 +6,40 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="650.0" prefWidth="876.0" stylesheets="@RegisterSubscriber.css" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.RegisterSubscriberController">
+<AnchorPane prefHeight="720.0" prefWidth="1171.0" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" stylesheets="@RegisterSubscriber.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.RegisterSubscriberController">
     <children>
         <!-- Back Button -->
-        <Button fx:id="backBtn" layoutX="750.0" layoutY="20.0" onAction="#goBack" text="Back" styleClass="modern-button" />
+        <Button fx:id="backBtn" layoutX="881.0" layoutY="34.0" onAction="#goBack" styleClass="modern-button" text="Back" />
 
         <!-- Title -->
-        <Label layoutX="277.0" layoutY="30.0" styleClass="title-label" text="Register New Subscriber" />
+        <Label layoutX="425.0" layoutY="31.0" styleClass="title-label" text="Register New Subscriber" />
 
         <!-- Form Elements -->
-        <Label layoutX="290.0" layoutY="100.0" styleClass="form-label" text="Read Card:" />
-        <TextField fx:id="readCardField" layoutX="290.0" layoutY="120.0" styleClass="underlined-field" />
-        <Label fx:id="readCardError" layoutX="290.0" layoutY="150.0" styleClass="error-label" visible="false" />
+        <Label layoutX="423.0" layoutY="108.0" styleClass="form-label" text="Read Card:" />
+        <TextField fx:id="readCardField" layoutX="424.0" layoutY="138.0" styleClass="underlined-field" />
+        <Label fx:id="readCardError" layoutX="500.0" layoutY="170.0" styleClass="error-label" visible="false" />
 
-        <Label layoutX="290.0" layoutY="180.0" styleClass="form-label" text="Email:" />
-        <TextField fx:id="emailField" layoutX="290.0" layoutY="200.0" styleClass="underlined-field" />
-        <Label fx:id="emailError" layoutX="290.0" layoutY="230.0" styleClass="error-label" visible="false" />
+        <Label layoutX="425.0" layoutY="188.0" styleClass="form-label" text="Email:" />
+        <TextField fx:id="emailField" layoutX="424.0" layoutY="218.0" styleClass="underlined-field" />
+        <Label fx:id="emailError" layoutX="500.0" layoutY="250.0" styleClass="error-label" visible="false" />
 
-        <Label layoutX="290.0" layoutY="260.0" styleClass="form-label" text="Password:" />
-        <PasswordField fx:id="passwordField" layoutX="290.0" layoutY="280.0" styleClass="underlined-field" />
-        <Label fx:id="passwordError" layoutX="290.0" layoutY="310.0" styleClass="error-label" visible="false" />
+        <Label layoutX="426.0" layoutY="268.0" styleClass="form-label" text="Password:" />
+        <PasswordField fx:id="passwordField" layoutX="424.0" layoutY="298.0" styleClass="underlined-field" />
+        <Label fx:id="passwordError" layoutX="500.0" layoutY="330.0" styleClass="error-label" visible="false" />
 
-        <Label layoutX="290.0" layoutY="340.0" styleClass="form-label" text="Confirm Password:" />
-        <PasswordField fx:id="confirmPasswordField" layoutX="290.0" layoutY="360.0" styleClass="underlined-field" />
-        <Label fx:id="confirmPasswordError" layoutX="290.0" layoutY="390.0" styleClass="error-label" visible="false" />
+        <Label layoutX="424.0" layoutY="348.0" styleClass="form-label" text="Confirm Password:" />
+        <PasswordField fx:id="confirmPasswordField" layoutX="424.0" layoutY="378.0" styleClass="underlined-field" />
+        <Label fx:id="confirmPasswordError" layoutX="500.0" layoutY="410.0" styleClass="error-label" visible="false" />
 
-        <Label layoutX="290.0" layoutY="420.0" styleClass="form-label" text="Username:" />
-        <TextField fx:id="usernameField" layoutX="290.0" layoutY="440.0" styleClass="underlined-field" />
-        <Label fx:id="usernameError" layoutX="290.0" layoutY="470.0" styleClass="error-label" visible="false" />
+        <Label layoutX="424.0" layoutY="428.0" styleClass="form-label" text="Username:" />
+        <TextField fx:id="usernameField" layoutX="425.0" layoutY="458.0" styleClass="underlined-field" />
+        <Label fx:id="usernameError" layoutX="500.0" layoutY="490.0" styleClass="error-label" visible="false" />
 
-        <Label layoutX="290.0" layoutY="500.0" styleClass="form-label" text="Phone Number:" />
-        <TextField fx:id="phoneField" layoutX="290.0" layoutY="520.0" styleClass="underlined-field" />
-        <Label fx:id="phoneError" layoutX="290.0" layoutY="550.0" styleClass="error-label" visible="false" />
+        <Label layoutX="425.0" layoutY="508.0" styleClass="form-label" text="Phone Number:" />
+        <TextField fx:id="phoneField" layoutX="425.0" layoutY="538.0" styleClass="underlined-field" />
+        <Label fx:id="phoneError" layoutX="500.0" layoutY="570.0" styleClass="error-label" visible="false" />
 
         <!-- Register Button -->
-        <Button fx:id="registerBtn" layoutX="365.0" layoutY="590.0" onAction="#registerSubscriber" text="Register" styleClass="modern-button" />
+        <Button fx:id="registerBtn" layoutX="530.0" layoutY="608.0" onAction="#registerSubscriber" styleClass="modern-button" text="Register" />
     </children>
 </AnchorPane>

@@ -6,10 +6,10 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="577.0" prefWidth="876.0" stylesheets="@HomeFrame.css" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="720.0" prefWidth="1171.0" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" stylesheets="@HomeFrame.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <!-- Sidebar (Buttons in VBox) -->
-        <VBox fx:id="sidebar" layoutX="10.0" layoutY="10.0" prefHeight="557.0" prefWidth="180.0" styleClass="sidebar">
+        <VBox fx:id="sidebar" layoutX="10.0" layoutY="10.0" prefHeight="696.0" prefWidth="180.0" styleClass="sidebar">
             <children>
                 <Button fx:id="subscriberInfo" onAction="#btnShowSubscriberDetails" styleClass="sidebar-button" text="Subscriber Details" />
                 <Button fx:id="librarianRegisterReader" onAction="#registerReader" styleClass="sidebar-button" text="Register Reader" />
@@ -20,16 +20,16 @@
         </VBox>
 
         <!-- Header -->
-        <Label layoutX="306.0" layoutY="18.0" styleClass="header-label" text="Library Management System" />
-        <Label fx:id="status" layoutX="210.0" layoutY="85.0" styleClass="status-label" text="Status:" />
-        <Label fx:id="activeFrozen" layoutX="264.0" layoutY="85.0" styleClass="status-value" text="Active" />
-        <Button fx:id="login" layoutX="740.0" layoutY="20.0" onAction="#loginBtn" styleClass="header-button" text="Login" />
+        <Label layoutX="431.0" layoutY="34.0" styleClass="header-label" text="Library Management System" />
+        <Label fx:id="status" layoutX="210.0" layoutY="110.0" styleClass="status-label" text="Status:" />
+        <Label fx:id="activeFrozen" layoutX="265.0" layoutY="110.0" styleClass="status-value" text="Active" />
+        <Button fx:id="login" layoutX="1011.0" layoutY="36.0" onAction="#loginBtn" styleClass="header-button" text="Login" />
 
         <!-- Top Books Section -->
-        <Label layoutX="210.0" layoutY="138.0" styleClass="section-title" text="Top 5 Loaned Books" />
-        <FlowPane fx:id="topBooksContainer" hgap="20.0" layoutX="210.0" layoutY="181.0" prefHeight="250.0" prefWidth="640.0" vgap="20.0" />
+        <Label layoutX="217.0" layoutY="185.0" styleClass="section-title" text="Top 5 Loaned Books" />
+        <FlowPane fx:id="topBooksContainer" hgap="20.0" layoutX="210.0" layoutY="232.0" prefHeight="323.0" prefWidth="912.0" vgap="20.0" />
 
         <!-- Footer (View All Books Button) -->
-        <Button fx:id="seeAll" layoutX="720.0" layoutY="510.0" onAction="#seeAllBooks" styleClass="footer-button" text="View All Books" />
+        <Button fx:id="seeAll" layoutX="975.0" layoutY="572.0" minWidth="136.0" onAction="#seeAllBooks" prefWidth="136.0" styleClass="footer-button" text="View All Books" />
     </children>
 </AnchorPane>

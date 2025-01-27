@@ -25,36 +25,48 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-/*import javafx.stage.Stage;
-import javafx.event.ActionEvent;*/
+
+/**
+ * Controller for handling user login.
+ */
 public class LoginFrameController {
-	private ChatClient chatClient;
-	
-	    @FXML
-	    private Label LoginLabel;
-	    
-	    @FXML
-	    private TextField emailField;
+	 /** Chat client instance. */
+    private ChatClient chatClient;
+    
+    /** Label to display login title. */
+    @FXML
+    private Label LoginLabel;
+    
+    /** TextField to input email. */
+    @FXML
+    private TextField emailField;
 
-	    @FXML
-	    private PasswordField passwordField;
+    /** PasswordField to input password. */
+    @FXML
+    private PasswordField passwordField;
 
-	    @FXML
-	    private Button loginButton;
+    /** Button to initiate login. */
+    @FXML
+    private Button loginButton;
 
+    /** Label to display error messages. */
+    @FXML
+    private Label errorLabel;
 
-	    @FXML
-	    private Label errorLabel;
-	    	    
-	    @FXML
-	    private Label EmailAddresserrorLabel;
-	    
-	    @FXML
-	    private Label EmailLabel;
-	    
-	    @FXML
-	    private Label PasswordLabel;
-	    
+    /** Label to display email address error messages. */
+    @FXML
+    private Label EmailAddresserrorLabel;
+    
+    /** Label to display email field label. */
+    @FXML
+    private Label EmailLabel;
+    
+    /** Label to display password field label. */
+    @FXML
+    private Label PasswordLabel;
+    /**
+     * Initializes UI components and event listeners.
+     */
 	    @FXML
 	    private void initialize() {
 	    	
@@ -74,7 +86,10 @@ public class LoginFrameController {
 	        });
 	    }
 	    
-	    
+	    /**
+	     * Sets the user after successful login.
+	     * @param user The logged-in user.
+	     */
 	    public void setUser(User user) {
 	    	if(user != null) {
 	    		ClientUI.user = user;
@@ -98,16 +113,28 @@ public class LoginFrameController {
 	    	
 	    }
 	    
+	    /**
+	     * Default constructor that initializes the chat client.
+	     */
 	    public LoginFrameController() {
 			chatClient = ClientUI.chat.getClient();
 		}
 	    
+	    /**
+	     * Sets the chat client instance.
+	     * @param chatClient The chat client to set.
+	     */
 	    public void setChatClient(ChatClient chatClient) {
 			this.chatClient = chatClient;
 			this.chatClient.setLoginFrameController(this);
 		}
 	    
 	   
+	    /**
+	     * Handles login button action.
+	     * @param event The action event.
+	     * @throws Exception If an error occurs.
+	     */
 	    public void handleLoginButtonAction(ActionEvent event) throws Exception {
 	    	
 	     String email = emailField.getText();
@@ -151,24 +178,25 @@ public class LoginFrameController {
         ClientUI.chat.accept(sendToServer);
         
 
-        // Check credentials (replace this with actual database validation)\\\ צריך חיבור לדאטא 
-        /*if ("admin".equals(Email) && "password".equals(password)) {
-            showAlert(AlertType.INFORMATION, "Login Successful", "Welcome to BLib!");
-        } else {
-            showAlert(AlertType.ERROR, "Login Failed", "Invalid username or password. Try again.");
-            if (!passwordField.getStyleClass().contains("invalid-border")) {
-                passwordField.getStyleClass().add("invalid-border");
-            }
-        }
-        return;*/
     }
-
+	    /**
+	     * Validates the email address format.
+	     * @param email The email to validate.
+	     * @return True if valid, false otherwise.
+	     */
 	    private boolean isValidEmail(String email)
 	    {
 	        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 	        return email.matches(emailRegex);
 	    }
 	    
+	    
+	    /**
+	     * Displays an alert message.
+	     * @param alertType The type of alert.
+	     * @param title The title of the alert.
+	     * @param message The alert message.
+	     */
 	    private void showAlert(AlertType alertType, String title, String message) {
 	        Alert alert = new Alert(alertType);
 	        alert.setTitle(title);
@@ -177,24 +205,12 @@ public class LoginFrameController {
 	        alert.showAndWait();
 	    }
 	    
-	    @FXML
-	    private void handleForgotPasswordButtonAction() {
-	        String email = emailField.getText();
-	        
-	        if (email.isEmpty()) {
-	            showAlert(AlertType.WARNING, "Error", "Please enter your email address.");
-	            return;
-	        }
-
-	        /*boolean success = DatabaseConnection.sendPasswordResetEmail(email);*/
-	        boolean success=true;
-	        if (success) {
-	            showAlert(AlertType.INFORMATION, "Password Reset", 
-	                      "A password reset link has been sent to your email.");
-	        } else {
-	            showAlert(AlertType.ERROR, "Error", "Email not found. Please check and try again.");
-	        }
-	    }
+	    
+	    /**
+	     * Starts the Login Frame.
+	     * @param primaryStage The primary stage.
+	     * @throws Exception If an error occurs while loading the frame.
+	     */
 	    public void start(Stage primaryStage) throws Exception {
 	        try {
 	            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/LoginFrame.fxml"));

@@ -19,47 +19,66 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import message.Message;
 import message.MessageType;
-
+/**
+ * Controller for handling the extend book popup functionality.
+ */
 public class ExtendPopupController {
 
-	private ChatClient chatClient;
+	 /** Chat client instance. */
+    private ChatClient chatClient;
 
-	@FXML
-	private Button btnRequestExtention;
+    /** Button to request book extension. */
+    @FXML
+    private Button btnRequestExtention;
 
-	@FXML
-	private Label lblRequest;
+    /** Label to display request status messages. */
+    @FXML
+    private Label lblRequest;
 
-	@FXML
-	private TableView<Loan> extendTable;
+    /** TableView to display loans eligible for extension. */
+    @FXML
+    private TableView<Loan> extendTable;
 
-	@FXML
-	private TableColumn<Loan, String> bookTitleColumn;
+    /** TableColumn for book title. */
+    @FXML
+    private TableColumn<Loan, String> bookTitleColumn;
 
-	@FXML
-	private TableColumn<Loan, String> returnDateColumn;
+    /** TableColumn for book return date. */
+    @FXML
+    private TableColumn<Loan, String> returnDateColumn;
 
-	private String cardNumber;
-	private SubscriberCardDetailsController subscriberCardDetailsController;
+    /** Subscriber card number. */
+    private String cardNumber;
 
-	private String borrowDate;
+    /** Reference to the subscriber card details controller. */
+    private SubscriberCardDetailsController subscriberCardDetailsController;
 
+    
+    /**
+     * Default constructor that initializes the chat client.
+     */
 	public ExtendPopupController() {
 		chatClient = ClientUI.chat.getClient();
 	}
 
+	
+	/**
+     * Sets the chat client instance.
+     * @param chatClient The chat client to set.
+     */
 	public void setChatClient(ChatClient chatClient) {
 		this.chatClient = chatClient;
 		this.chatClient.setExtendPopupController(this);
 	}
 
+	/**
+     * Initializes UI components and binds table columns.
+     */
 	@FXML
 	private void initialize() {
 		lblRequest.setVisible(false);
 		// Initially disable the button
 		btnRequestExtention.setDisable(true); // Disable the button
-
-		// tableFillRequest();
 
 		// Add a listener to the selection model of the TableView
 		extendTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -76,16 +95,27 @@ public class ExtendPopupController {
 		returnDateColumn.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
 
 	}
-
+	
+	/**
+     * Sets the subscriber card details controller.
+     * @param subscriberCardDetailsController The controller to set.
+     */
 	public void setSubscriberCardDetailsController(SubscriberCardDetailsController subscriberCardDetailsController) {
 		this.subscriberCardDetailsController = subscriberCardDetailsController;
 	}
 
-	// Setter method to set the card number
+
+	 /**
+     * Sets the subscriber card number.
+     * @param cardNum The card number to set.
+     */
 	public void setCardNumber(String cardNum) {
 		cardNumber = cardNum;
 	}
 
+	/**
+     * Sends a request to fill the table with loan extension requests.
+     */
 	public void tableFillRequest() {
 		// Disable UI interactions and show loading message
 		Platform.runLater(() -> {
@@ -97,6 +127,10 @@ public class ExtendPopupController {
 		ClientUI.chat.accept(sendToServer);
 	}
 
+	/**
+     * Displays books available for extension.
+     * @param booksCanExtend A map of book titles and return dates.
+     */
 	public void showExtentionBooks(Map<String, String> booksCanExtend) {
 		Platform.runLater(() -> {
 			// Clear existing items in the table
@@ -115,6 +149,9 @@ public class ExtendPopupController {
 		});
 	}
 
+	/**
+     * Handles the close button click event.
+     */
 	@FXML
 	private void onCloseClicked() {
 		// Close the popup
@@ -123,6 +160,11 @@ public class ExtendPopupController {
 		stage.close();
 	}
 
+	
+	/**
+     * Handles the book extension request button click event.
+     * @param event The action event.
+     */
 	@FXML
 	private void onRequestExtensionClicked(ActionEvent event) {
 		// Get the selected row (Loan object)
@@ -147,6 +189,11 @@ public class ExtendPopupController {
 		}
 	}
 
+	
+	/**
+     * Handles the result of the book extension request.
+     * @param extensionSuccess Whether the extension was successful.
+     */
 	public void bookExtensionSucceess(boolean extensionSuccess) {
 		Platform.runLater(() -> {
 			if (extensionSuccess) {

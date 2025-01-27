@@ -6,25 +6,26 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="876.0" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" stylesheets="@LoginFrame.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.LoginFrameController">
-   <children>
-      <!-- Title Label: Centered and stylized -->
-      <Label layoutX="387.0" layoutY="67.0" prefHeight="56.0" prefWidth="86.0" style="-fx-font-size: 39px; -fx-font-weight: bold; -fx-text-fill: #2e3a59;" text="BLib" textAlignment="CENTER" />
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1171.0" style="-fx-background-color: linear-gradient(to bottom, #e3f2fd, #ffffff);" stylesheets="@LoginFrame.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.LoginFrameController">
+	<children>
+		<!-- Title Label: Centered and stylized -->
+		<Label layoutX="535.0" layoutY="100.0" prefHeight="66.0" prefWidth="123.0" style="-fx-font-size: 45px; -fx-font-weight: bold; -fx-text-fill: #2e3a59;" text="BLib" textAlignment="CENTER" />
 
-      <!-- Email Label and TextField: Positioned with proper spacing -->
-      <Label layoutX="313.0" layoutY="150.0" style="-fx-font-size: 14px; -fx-text-fill: #2e3a59;" text="Email" textAlignment="CENTER" />
-      <TextField fx:id="emailField" layoutX="313.0" layoutY="183.0" prefHeight="30.0" prefWidth="234.0" style="-fx-background-color: #f0f0f0; -fx-border-color: #ddd; -fx-border-radius: 5px;" />
+		<!-- Email Label and TextField: Positioned with proper spacing -->
+		<Label layoutX="469.0" layoutY="183.0" style="-fx-font-size: 20px; -fx-text-fill: #2e3a59;" text="Email" textAlignment="CENTER" />
+		<TextField fx:id="emailField" layoutX="469.0" layoutY="224.0" prefHeight="30.0" prefWidth="234.0" style="-fx-background-color: #f0f0f0; -fx-border-color: #ddd; -fx-border-radius: 5px;" />
 
-      <!-- Password Label and PasswordField: Aligned with similar spacing as Email -->
-      <Label layoutX="314.0" layoutY="234.0" style="-fx-font-size: 14px; -fx-text-fill: #2e3a59;" text="Password" textAlignment="CENTER" />
-      <PasswordField fx:id="passwordField" layoutX="314.0" layoutY="264.0" prefHeight="30.0" prefWidth="234.0" style="-fx-background-color: #f0f0f0; -fx-border-color: #ddd; -fx-border-radius: 5px;" />
+		<!-- Password Label and PasswordField: Aligned with similar spacing as 
+			Email -->
+		<Label layoutX="469.0" layoutY="297.0" style="-fx-font-size: 20px; -fx-text-fill: #2e3a59;" text="Password" textAlignment="CENTER" />
+		<PasswordField fx:id="passwordField" layoutX="469.0" layoutY="334.0" prefHeight="30.0" prefWidth="234.0" style="-fx-background-color: #f0f0f0; -fx-border-color: #ddd; -fx-border-radius: 5px;" />
 
-      <!-- Error Message for Login Failure: Hidden by default, styled -->
-      <Label fx:id="errorLabel" layoutX="320.0" layoutY="270.0" style="-fx-text-fill: red; -fx-font-size: 12px;" text="Login Failed" visible="false" />
-      <Label fx:id="EmailAddresserrorLabel" layoutX="320.0" layoutY="290.0" style="-fx-text-fill: red; -fx-font-size: 12px;" text="Incorrect email address" visible="false" />
+		<!-- Error Message for Login Failure: Hidden by default, styled -->
+		<Label fx:id="errorLabel" layoutX="549.0" layoutY="373.0" style="-fx-text-fill: red; -fx-font-size: 14px;" text="Login Failed" visible="false" />
+		<Label fx:id="EmailAddresserrorLabel" layoutX="520.0" layoutY="266.0" style="-fx-text-fill: red; -fx-font-size: 14px;" text="Incorrect email address" visible="false" />
 
-      <!-- Buttons: Styled and properly positioned -->
-      <Button fx:id="loginButton" layoutX="473.0" layoutY="319.0" mnemonicParsing="false" onAction="#handleLoginButtonAction" style="-fx-background-color: #2e3a59; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20 10 20;" text="Login" />
+		<!-- Buttons: Styled and properly positioned -->
+		<Button fx:id="loginButton" layoutX="597.0" layoutY="416.0" mnemonicParsing="false" onAction="#handleLoginButtonAction" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #2e3a59; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20 10 20; -fx-font-size: 18px;" text="Login" />
 
-   </children>
+	</children>
 </AnchorPane>

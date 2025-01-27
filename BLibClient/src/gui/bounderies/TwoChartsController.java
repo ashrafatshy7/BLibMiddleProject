@@ -30,71 +30,96 @@ import javafx.stage.Stage;
 import message.Message;
 import message.MessageType;
 
+
+/**
+ * Controller for handling the display of two charts: loan report and status report.
+ */
 public class TwoChartsController {
-	private ChatClient chatClient;
+	 /** Chat client instance. */
+    private ChatClient chatClient;
 
-	// First chart and its input fields
-	@FXML
-	private BarChart<String, Number> chartOne;
+    /** Bar chart for displaying loan report data. */
+    @FXML
+    private BarChart<String, Number> chartOne;
 
-	@FXML
-	private CategoryAxis xOneAxis; // Change from NumberAxis to CategoryAxis
+    /** Category axis for the loan report x-axis. */
+    @FXML
+    private CategoryAxis xOneAxis;
 
-	@FXML
-	private NumberAxis yOneAxis;
+    /** Number axis for the loan report y-axis. */
+    @FXML
+    private NumberAxis yOneAxis;
 
-	@FXML
-	private TextField tfMonthOne;
+    /** TextField for entering the month of the loan report. */
+    @FXML
+    private TextField tfMonthOne;
 
-	@FXML
-	private TextField tfYearOne;
+    /** TextField for entering the year of the loan report. */
+    @FXML
+    private TextField tfYearOne;
 
-	@FXML
-	private Button btnGenerateOne;
+    /** Button to generate the loan report. */
+    @FXML
+    private Button btnGenerateOne;
 
-	@FXML
-	private Label errorMonthOne;
-	@FXML
-	private Label errorYearOne;
+    /** Label to display month input error for the loan report. */
+    @FXML
+    private Label errorMonthOne;
 
-	// Second chart and its input fields
-//	@FXML
-//	private BarChart<String, Number> chartTwo;
-	@FXML
-	private PieChart pieChart;
-//	@FXML
-//	private CategoryAxis xTwoAxis;
-//
-//	@FXML
-//	private NumberAxis yTwoAxis;
+    /** Label to display year input error for the loan report. */
+    @FXML
+    private Label errorYearOne;
 
-	@FXML
-	private Label errorMonthTwo;
-	@FXML
-	private Label errorYearTwo;
+    /** Pie chart for displaying account status report. */
+    @FXML
+    private PieChart pieChart;
 
-	@FXML
-	private TextField tfMonthTwo;
+    /** Label to display month input error for the status report. */
+    @FXML
+    private Label errorMonthTwo;
 
-	@FXML
-	private TextField tfYearTwo;
+    /** Label to display year input error for the status report. */
+    @FXML
+    private Label errorYearTwo;
 
-	@FXML
-	private Button btnGenerateTwo;
+    /** TextField for entering the month of the status report. */
+    @FXML
+    private TextField tfMonthTwo;
 
-	// Back button
-	@FXML
-	private Button btnBack;
+    /** TextField for entering the year of the status report. */
+    @FXML
+    private TextField tfYearTwo;
 
+    /** Button to generate the status report. */
+    @FXML
+    private Button btnGenerateTwo;
+
+    /** Button to navigate back to the home screen. */
+    @FXML
+    private Button btnBack;
+
+    
+    /**
+     * Default constructor that initializes the chat client.
+     */
 	public TwoChartsController() {
 		chatClient = ClientUI.chat.getClient();
 	}
 
+	
+	 /**
+     * Sets the chat client instance.
+     * @param chatClient The chat client to set.
+     */
 	public void setChatClient(ChatClient chatClient) {
 		this.chatClient = chatClient;
 		this.chatClient.setTwoChartsController(this);
 	}
 
+	
+	/**
+     * Initializes the UI components and default values.
+     */
 	@FXML
 	private void initialize() {
 		errorMonthOne.setText("");
@@ -111,6 +136,9 @@ public class TwoChartsController {
 
 	}
 
+	/**
+     * Handles the event of generating the loan report.
+     */
 	@FXML
 	private void btnGenerateOneClicked() {
 		Map<String, String> chartOneData = new HashMap<>();
@@ -150,6 +178,11 @@ public class TwoChartsController {
 		ClientUI.chat.accept(sendToServer);
 	}
 
+	
+	 /**
+     * Displays loan report data in the bar chart.
+     * @param loanReportMap The data map containing loan report details.
+     */
 	public void showLoanReportData(Map<String, Map<String, String>> loanReportMap) {
 		Platform.runLater(() -> {
 			// Clear existing data from the chart
@@ -238,128 +271,11 @@ public class TwoChartsController {
 		});
 	}
 
-//	public void showLoanReportData(Map<String, Map<String, String>> loanReportMap) {
-//		Platform.runLater(() -> {
-//			// Clear existing data from the chart
-//			chartOne.getData().clear();
-//
-//			// Predefined categories for the xAxis
-//			List<String> categories = Arrays.asList("Science Fiction", "Romance", "Political Satire",
-//					"Historical Fiction", "Gothic Fiction", "Fantasy", "Epic Poetry", "Dystopian", "Coming-of-Age",
-//					"Adventure");
-//
-//			// Set categories on the xAxis
-//			xOneAxis.setCategories(FXCollections.observableArrayList(categories));
-//
-//			// Create two series for the chart: Borrowed and Late Returns
-//			XYChart.Series<String, Number> borrowedSeries = new XYChart.Series<>();
-//			borrowedSeries.setName("Borrowed Books");
-//
-//			XYChart.Series<String, Number> lateReturnsSeries = new XYChart.Series<>();
-//			lateReturnsSeries.setName("Late Returns");
-//
-//			// Populate the series with data for each category
-//			for (String category : categories) {
-//				Map<String, String> data = loanReportMap.getOrDefault(category, new HashMap<>());
-//
-//				// Get data for borrowed and lateReturn
-//				int borrowed = Integer.parseInt(data.getOrDefault("borrowed", "0"));
-//				int lateReturn = Integer.parseInt(data.getOrDefault("lateReturn", "0"));
-//
-//				// Add data to the series
-//				borrowedSeries.getData().add(new XYChart.Data<>(category, borrowed));
-//				XYChart.Data<String, Number> lateReturnData = new XYChart.Data<>(category, lateReturn);
-//				lateReturnsSeries.getData().add(lateReturnData);
-//
-//				// Calculate the percentage of late returns
-//				if (borrowed > 0) {
-//					double percentage = (double) lateReturn / borrowed * 100;
-//
-//					// Add a label to display the percentage above the column
-//					lateReturnData.nodeProperty().addListener((observable, oldValue, newValue) -> {
-//						if (newValue != null) {
-//							Label label = new Label(String.format("%.1f%%", percentage));
-//							label.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: black;");
-//
-//							// Position the label above the column
-//							StackPane stackPane = (StackPane) newValue;
-//							stackPane.getChildren().add(label);
-//							StackPane.setAlignment(label, Pos.TOP_CENTER);
-//							label.setTranslateY(-10); // Adjust position slightly above the bar
-//						}
-//					});
-//				}
-//			}
-//
-//			// Add the series to the chart
-//			chartOne.getData().addAll(borrowedSeries, lateReturnsSeries);
-//
-//			// Style the series after the nodes are created
-//			borrowedSeries.nodeProperty().addListener((observable, oldValue, newValue) -> {
-//				if (newValue != null) {
-//					newValue.setStyle("-fx-bar-fill: orange;");
-//				}
-//			});
-//
-//			lateReturnsSeries.nodeProperty().addListener((observable, oldValue, newValue) -> {
-//				if (newValue != null) {
-//					newValue.setStyle("-fx-bar-fill: red;");
-//				}
-//			});
-//		});
-//	}
 
-//	public void showLoanReportData(Map<String, Map<String, String>> loanReportMap) {
-//		Platform.runLater(() -> {
-//			// Clear existing data from the chart
-//			chartOne.getData().clear();
-//
-//			// Predefined categories for the xAxis
-//			List<String> categories = Arrays.asList("Science Fiction", "Romance", "Political Satire",
-//					"Historical Fiction", "Gothic Fiction", "Fantasy", "Epic Poetry", "Dystopian", "Coming-of-Age",
-//					"Adventure");
-//
-//			// Set categories on the xAxis
-//			xOneAxis.setCategories(FXCollections.observableArrayList(categories));
-//
-//			// Create two series for the chart: Borrowed and Late Returns
-//			XYChart.Series<String, Number> borrowedSeries = new XYChart.Series<>();
-//			borrowedSeries.setName("Borrowed Books");
-//
-//			XYChart.Series<String, Number> lateReturnsSeries = new XYChart.Series<>();
-//			lateReturnsSeries.setName("Late Returns");
-//
-//			// Populate the series with data for each category
-//			for (String category : categories) {
-//				Map<String, String> data = loanReportMap.getOrDefault(category, new HashMap<>());
-//
-//				// Add data for borrowed books
-//				int borrowed = Integer.parseInt(data.getOrDefault("borrowed", "0"));
-//				borrowedSeries.getData().add(new XYChart.Data<>(category, borrowed));
-//
-//				// Add data for late returns
-//				int lateReturn = Integer.parseInt(data.getOrDefault("lateReturn", "0"));
-//				lateReturnsSeries.getData().add(new XYChart.Data<>(category, lateReturn));
-//			}
-//
-//			// Add the series to the chart
-//			chartOne.getData().addAll(borrowedSeries, lateReturnsSeries);
-//
-//			// Style the series after the nodes are created
-//			borrowedSeries.nodeProperty().addListener((observable, oldValue, newValue) -> {
-//				if (newValue != null) {
-//					newValue.setStyle("-fx-bar-fill: orange;");
-//				}
-//			});
-//
-//			lateReturnsSeries.nodeProperty().addListener((observable, oldValue, newValue) -> {
-//				if (newValue != null) {
-//					newValue.setStyle("-fx-bar-fill: red;");
-//				}
-//			});
-//		});
-//	}
-
+	
+	 /**
+     * Handles the event of generating the status report.
+     */
 	@FXML
 	private void btnGenerateTwoClicked() {
 		Map<String, String> chartOneData = new HashMap<>();
@@ -399,6 +315,11 @@ public class TwoChartsController {
 		ClientUI.chat.accept(sendToServer);
 	}
 
+	
+	 /**
+     * Displays status report data in the pie chart.
+     * @param statusReportMap The data map containing status report details.
+     */
 	public void showStatusReportData(Map<String, String> statusReportMap) {
 		// Clear existing data
 		pieChart.getData().clear();
@@ -429,6 +350,11 @@ public class TwoChartsController {
 		pieChart.setLabelsVisible(true);
 	}
 
+	
+	/**
+     * Handles the event of navigating back to the home screen.
+     * @param event The action event.
+     */
 	@FXML
 	private void btnBackClicked(ActionEvent event) {
 		Stage primaryStage = new Stage();
@@ -441,6 +367,12 @@ public class TwoChartsController {
 		}
 	}
 
+	
+	/**
+     * Starts the charts frame.
+     * @param primaryStage The primary stage.
+     * @throws Exception If an error occurs while loading the frame.
+     */
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/TwoCharts.fxml"));

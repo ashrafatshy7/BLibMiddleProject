@@ -30,42 +30,66 @@ import javafx.stage.Stage;
 import message.Message;
 import message.MessageType;
 
+
+/**
+ * Controller for handling the "See All Books" functionality.
+ */
 public class SeeAllFrameController {
-	private ArrayList<Book> books;
-	private ToggleGroup radios;
-	private ArrayList<String> categoryList;
-	private ChatClient chatClient;
+	 /** List of books displayed. */
+    private ArrayList<Book> books;
 
-	@FXML
-	private TextField searchByNameTextField;
+    /** ToggleGroup for search options. */
+    private ToggleGroup radios;
 
-	@FXML
-	private TextField searchByDescriptionTextField;
+    /** List of book categories. */
+    private ArrayList<String> categoryList;
 
-	@FXML
-	private ComboBox<String> searchByCategory;
+    /** Chat client instance. */
+    private ChatClient chatClient;
 
-	@FXML
-	private Button backButton;
+    /** TextField for searching by book name. */
+    @FXML
+    private TextField searchByNameTextField;
 
-	@FXML
-	private FlowPane booksPanel;
+    /** TextField for searching by book description. */
+    @FXML
+    private TextField searchByDescriptionTextField;
 
-	@FXML
-	private ScrollPane booksScrollPane;
+    /** ComboBox for selecting book categories. */
+    @FXML
+    private ComboBox<String> searchByCategory;
 
-	@FXML
-	private RadioButton nameRadio;
+    /** Button to navigate back to the home screen. */
+    @FXML
+    private Button backButton;
 
-	@FXML
-	private RadioButton categoryRadio;
+    /** Panel to display books. */
+    @FXML
+    private FlowPane booksPanel;
 
-	@FXML
-	private RadioButton descriptionRadio;
+    /** ScrollPane for book results. */
+    @FXML
+    private ScrollPane booksScrollPane;
 
-	// Root node after loading FXML
-	private Parent root;
+    /** RadioButton to search by name. */
+    @FXML
+    private RadioButton nameRadio;
 
+    /** RadioButton to search by category. */
+    @FXML
+    private RadioButton categoryRadio;
+
+    /** RadioButton to search by description. */
+    @FXML
+    private RadioButton descriptionRadio;
+
+    /** Root node after loading FXML. */
+    private Parent root;
+
+    
+    /**
+     * Initializes the UI components and sets up search listeners.
+     */
 	@FXML
 	public void initialize() {
 
@@ -79,6 +103,10 @@ public class SeeAllFrameController {
 
 	}
 
+	
+	/**
+     * Default constructor that initializes the chat client and loads FXML.
+     */
 	public SeeAllFrameController() {
 		chatClient = ClientUI.chat.getClient();
 		books = new ArrayList<>();
@@ -95,12 +123,21 @@ public class SeeAllFrameController {
 		}
 	}
 
+	
+	/**
+     * Sets the chat client instance.
+     * @param chatClient The chat client to set.
+     */
 	public void setChatClient(ChatClient chatClient) {
 		this.chatClient = chatClient;
 		this.chatClient.setSeeAllFrameController(this);
 	}
 
-	// Start method remains unchanged
+	 /**
+     * Starts the "See All Books" frame.
+     * @param primaryStage The primary stage.
+     * @throws Exception If an error occurs while loading the frame.
+     */
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			Scene scene = new Scene(root);
@@ -117,7 +154,10 @@ public class SeeAllFrameController {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+     * Configures search listeners for text fields and combo box.
+     */
 	private void setupSearchListeners() {
 		searchByNameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
 			nameRadio.setSelected(true);
@@ -150,6 +190,10 @@ public class SeeAllFrameController {
 		});
 	}
 
+	/**
+     * Populates the books panel with search results.
+     * @param books The list of books to display.
+     */
 	private void booksResultPanel(ArrayList<Book> books) {
         booksPanel.getChildren().clear();
 
@@ -182,7 +226,10 @@ public class SeeAllFrameController {
         }
     }
 
-	// Back Button Action
+	/**
+     * Handles back button action to return to the home screen.
+     * @param event The action event.
+     */
 	@FXML
 	public void backBtn(ActionEvent event) throws Exception {
 		Stage primaryStage = new Stage();
@@ -191,6 +238,11 @@ public class SeeAllFrameController {
 		homeFrame.start(primaryStage); // Ensure HomeFrameController is similarly set up
 	}
 
+	
+	/**
+     * Searches books based on the selected criteria.
+     * @param text The search text.
+     */
 	private void searchBook(String text) {
 		ArrayList<Book> matchingBooks = new ArrayList<>();
 		if (text == null || text.trim().isEmpty() || text.equals("All Categories")) {
@@ -246,6 +298,11 @@ public class SeeAllFrameController {
 		booksResultPanel(matchingBooks);
 	}
 
+	
+	/**
+     * Sets the books and updates the UI accordingly.
+     * @param books The list of books.
+     */
 	public void setBooks(ArrayList<Book> books) {
 		this.books = books;
 

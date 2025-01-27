@@ -42,22 +42,37 @@ import enteties.User;
 public class ChatClient extends AbstractClient {
 	// Instance variables **********************************************
 
-	private ClientFrameController clientFrameController;
-	private HomeFrameController homeFrameController;
-	private SeeAllFrameController seeAllFrameController;
-	private BookDetailsFrameController bookDetailsFrameController;
-	private SubscriberCardDetailsController subscriberCardDetailsController;
-	private ExtendPopupController extendPopupController;
-	private LoginFrameController loginFrameController;
-	private LoanFrameController loanFrameController;
-	private TwoChartsController twoChartsController;
+	/** Controller for the client frame. */
+    private ClientFrameController clientFrameController;
 
+    /** Controller for the home frame. */
+    private HomeFrameController homeFrameController;
+
+    /** Controller for viewing all books. */
+    private SeeAllFrameController seeAllFrameController;
+
+    /** Controller for book details. */
+    private BookDetailsFrameController bookDetailsFrameController;
+
+    /** Controller for subscriber card details. */
+    private SubscriberCardDetailsController subscriberCardDetailsController;
+
+    /** Controller for extending book loans. */
+    private ExtendPopupController extendPopupController;
+
+    /** Controller for the login frame. */
+    private LoginFrameController loginFrameController;
+
+    /** Controller for loaning books. */
+    private LoanFrameController loanFrameController;
+
+    /** Controller for viewing reports and charts. */
+    private TwoChartsController twoChartsController;
 	/**
 	 * The interface type variable. It allows the implementation of the display
 	 * method in the client.
 	 */
 	ChatIF clientUI;
-	private User user;
 	public static boolean awaitResponse = false;
 
 	// Constructors ****************************************************
@@ -77,41 +92,77 @@ public class ChatClient extends AbstractClient {
 
 	// Instance methods ************************************************
 
-	public void setClientFrameController(ClientFrameController clientFrameController) {
-		this.clientFrameController = clientFrameController;
-	}
+	 /**
+     * Sets the client frame controller.
+     * @param clientFrameController The controller instance.
+     */
+    public void setClientFrameController(ClientFrameController clientFrameController) {
+        this.clientFrameController = clientFrameController;
+    }
 
-	public void setSeeAllFrameController(SeeAllFrameController seeAllFrameController) {
-		this.seeAllFrameController = seeAllFrameController;
-	}
+    /**
+     * Sets the See All frame controller.
+     * @param seeAllFrameController The controller instance.
+     */
+    public void setSeeAllFrameController(SeeAllFrameController seeAllFrameController) {
+        this.seeAllFrameController = seeAllFrameController;
+    }
 
-	public void setHomeFrameController(HomeFrameController homeFrameController) {
-		this.homeFrameController = homeFrameController;
-	}
+    /**
+     * Sets the home frame controller.
+     * @param homeFrameController The controller instance.
+     */
+    public void setHomeFrameController(HomeFrameController homeFrameController) {
+        this.homeFrameController = homeFrameController;
+    }
 
-	public void setBookDetailsFrameController(BookDetailsFrameController bookDetailsFrameController) {
-		this.bookDetailsFrameController = bookDetailsFrameController;
-	}
+    /**
+     * Sets the book details frame controller.
+     * @param bookDetailsFrameController The controller instance.
+     */
+    public void setBookDetailsFrameController(BookDetailsFrameController bookDetailsFrameController) {
+        this.bookDetailsFrameController = bookDetailsFrameController;
+    }
 
-	public void setSubscriberCardDetailsController(SubscriberCardDetailsController subscriberCardDetailsController) {
-		this.subscriberCardDetailsController = subscriberCardDetailsController;
-	}
+    /**
+     * Sets the subscriber card details controller.
+     * @param subscriberCardDetailsController The controller instance.
+     */
+    public void setSubscriberCardDetailsController(SubscriberCardDetailsController subscriberCardDetailsController) {
+        this.subscriberCardDetailsController = subscriberCardDetailsController;
+    }
 
-	public void setExtendPopupController(ExtendPopupController extendPopupController) {
-		this.extendPopupController = extendPopupController;
-	}
+    /**
+     * Sets the extend popup controller.
+     * @param extendPopupController The controller instance.
+     */
+    public void setExtendPopupController(ExtendPopupController extendPopupController) {
+        this.extendPopupController = extendPopupController;
+    }
 
-	public void setLoginFrameController(LoginFrameController loginFrameController) {
-		this.loginFrameController = loginFrameController;
-	}
+    /**
+     * Sets the login frame controller.
+     * @param loginFrameController The controller instance.
+     */
+    public void setLoginFrameController(LoginFrameController loginFrameController) {
+        this.loginFrameController = loginFrameController;
+    }
 
-	public void setLoanFrameController(LoanFrameController loanFrameController) {
-		this.loanFrameController = loanFrameController;
-	}
+    /**
+     * Sets the loan frame controller.
+     * @param loanFrameController The controller instance.
+     */
+    public void setLoanFrameController(LoanFrameController loanFrameController) {
+        this.loanFrameController = loanFrameController;
+    }
 
-	public void setTwoChartsController(TwoChartsController twoChartsController) {
-		this.twoChartsController = twoChartsController;
-	}
+    /**
+     * Sets the two charts controller.
+     * @param twoChartsController The controller instance.
+     */
+    public void setTwoChartsController(TwoChartsController twoChartsController) {
+        this.twoChartsController = twoChartsController;
+    }
 
 	/**
 	 * This method handles all data that comes in from the server.
@@ -168,10 +219,17 @@ public class ChatClient extends AbstractClient {
 			break;
 		case orderBook:
 			try {
-				boolean ordered = (boolean) message.getMessageData();
+				String ordered = (String) message.getMessageData();
 				if (bookDetailsFrameController != null) {
-					bookDetailsFrameController.setAlreadyOrdered(ordered);
-					showSuccessAlert("Order Successed");
+					Platform.runLater(() -> {
+						if (ordered.equals("success")) {
+							bookDetailsFrameController.setAlreadyOrdered(true);
+							showSuccessAlert("Order Successed");
+						} else {
+							bookDetailsFrameController.setAlreadyOrdered(false);
+							showErrorAlert("Order not set! ask the libraian");
+						}
+					});
 				} else {
 					System.err.println("bookDetailsFrameController is not set in ChatClient.");
 				}
@@ -179,11 +237,16 @@ public class ChatClient extends AbstractClient {
 				System.out.println(e.getMessage());
 			}
 			break;
-		case checkOderBook:
+		case checkOrderBook:
 			try {
-				boolean ordered = (boolean) message.getMessageData();
+				String ordered = (String) message.getMessageData();
 				if (bookDetailsFrameController != null) {
-					bookDetailsFrameController.setAlreadyOrdered(ordered);
+					Platform.runLater(() -> {
+						if (ordered.equals("success"))
+							bookDetailsFrameController.setCheckOrderBook(true, ordered);
+						else
+							bookDetailsFrameController.setCheckOrderBook(false, ordered);
+					});
 				} else {
 					System.err.println("bookDetailsFrameController is not set in ChatClient.");
 				}
@@ -198,12 +261,13 @@ public class ChatClient extends AbstractClient {
 			messageLog = regiter.get("message");
 			if (type.equals("success"))
 				showSuccessAlert(messageLog);
-			else showErrorAlert(messageLog);
+			else
+				showErrorAlert(messageLog);
 			break;
 
 		case cardNumber:
 			HashMap<String, Object> response = (HashMap<String, Object>) ((Message) msg).getMessageData();
-			
+
 			// Pass the data to the controller
 			if (subscriberCardDetailsController != null) {
 				subscriberCardDetailsController.cardExist(response);
@@ -211,7 +275,7 @@ public class ChatClient extends AbstractClient {
 				System.out.println("3-subscriberCardDetailsController is null.");
 			}
 			break;
-			
+
 		case updateEmailAndPhone:
 			// Get the boolean value indicating if the update was successful
 			boolean isUpdateSuccessful = (boolean) message.getMessageData();
@@ -376,6 +440,13 @@ public class ChatClient extends AbstractClient {
 		}
 	}
 
+	
+	/**
+     * Displays an informational alert.
+     *
+     * @param title The alert title.
+     * @param content The alert content.
+     */
 	private void showAlert(String title, String content) {
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
 		alert.setTitle(title);
@@ -399,6 +470,11 @@ public class ChatClient extends AbstractClient {
 		}
 	}
 
+	/**
+     * Displays a success alert with the specified message.
+     *
+     * @param message The success message to display.
+     */
 	private void showSuccessAlert(String message) {
 		javafx.application.Platform.runLater(() -> {
 			javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
@@ -409,6 +485,11 @@ public class ChatClient extends AbstractClient {
 		});
 	}
 
+	/**
+     * Displays an error alert with the specified message.
+     *
+     * @param message The error message to display.
+     */
 	private void showErrorAlert(String message) {
 		javafx.application.Platform.runLater(() -> {
 			javafx.scene.control.Alert alert = new javafx.scene.control.Alert(

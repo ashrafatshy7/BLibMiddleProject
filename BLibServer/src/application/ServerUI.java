@@ -18,14 +18,35 @@ import java.util.concurrent.TimeUnit;
 
 import gui.bounderies.ServerFrameController;
 
-public class ServerUI extends Application {
 
+/**
+ * The ServerUI class is responsible for initializing and managing the server-side application.
+ * It sets up scheduled tasks for maintenance operations and provides methods to start and stop the server.
+ */
+public class ServerUI extends Application {
+	
+	/** The server instance. */
 	private static EchoServer server;
 
+	
+	/**
+     * The main entry point of the application.
+     *
+     * @param args The command-line arguments.
+     * @throws Exception If an error occurs during startup.
+     */
 	public static void main(String args[]) throws Exception {
 		launch(args);
 	} // end main
 
+	
+	
+	/**
+     * Starts the JavaFX application and initializes the server UI.
+     *
+     * @param primaryStage The primary stage for the application.
+     * @throws Exception If an error occurs during initialization.
+     */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		mysqlConnection.connectToDB();
@@ -34,6 +55,13 @@ public class ServerUI extends Application {
 		aFrame.start(primaryStage);
 	}
 
+	
+	
+	/**
+     * Starts the server on the specified port.
+     *
+     * @param p The port number to start the server on.
+     */
 	public static void runServer(String p) {
 
 		int port = 0;
@@ -49,10 +77,9 @@ public class ServerUI extends Application {
 
 		try {
 			server.listen(); // Start listening for connections
-//			startMidnightTask();
-			// Start the scheduled task for end-of-month processing
-			// startEndOfMonthTask();
-//			startDailyDueDateCheckTask();
+			startMidnightTask();
+			 startEndOfMonthTask();
+			startDailyDueDateCheckTask();
 
 		} catch (Exception ex) {
 			System.out.println("ERROR - Could not listen for clients!");
@@ -60,6 +87,11 @@ public class ServerUI extends Application {
 
 	}
 
+	
+	
+	/**
+     * Stops the server if it is running.
+     */
 	public static void stopServer() {
 		if (server != null) {
 			try {
@@ -70,19 +102,32 @@ public class ServerUI extends Application {
 		}
 	}
 
+	
+	/**
+     * Returns the current server instance.
+     *
+     * @return The running EchoServer instance.
+     */
 	public static EchoServer getServer() {
 		return server;
 	}
 
+	
+	
+	 /**
+     * Called when the application is about to exit.
+     *
+     * @throws Exception If an error occurs during shutdown.
+     */
 	@Override
 	public void stop() throws Exception {
 		// This method is called when the application is about to exit
 		super.stop();
 	}
 
-	/**
-	 * Scheduled task for generating end-of-month graphs.
-	 */
+	 /**
+     * Starts a scheduled task that runs at the end of each month to process loan and status reports.
+     */
 	private static void startEndOfMonthTask() {
 		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -105,9 +150,13 @@ public class ServerUI extends Application {
 		};
 
 		// Schedule the task to run after one minute and then every minute
-		scheduler.scheduleAtFixedRate(task, 1, 1, TimeUnit.MINUTES);
+		scheduler.scheduleAtFixedRate(task, 1, 5, TimeUnit.MINUTES);
 	}
 
+	
+	 /**
+     * Starts a scheduled task to check for midnight and remove expired orders.
+     */
 	private static void startMidnightTask() {
 		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 		Runnable task = () -> {
@@ -127,13 +176,15 @@ public class ServerUI extends Application {
 			}
 		};
 
-		long initialDelay = computeInitialDelay();
-		long period = TimeUnit.DAYS.toSeconds(1); // 24 hours
-
-		// Schedule the task to run daily at midnight
-		scheduler.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.SECONDS);
+		scheduler.scheduleAtFixedRate(task, 1, 5, TimeUnit.MINUTES);
 	}
 
+	
+	 /**
+     * Computes the delay until the next midnight for scheduling tasks.
+     *
+     * @return The number of seconds until the next midnight.
+     */
 	private static long computeInitialDelay() {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime nextMidnight = now.toLocalDate().atStartOfDay().plusDays(1);
@@ -141,29 +192,10 @@ public class ServerUI extends Application {
 		return duration.getSeconds();
 	}
 
-//	/**
-//	 * Scheduled task for generating end-of-month graphs (simulated for testing).
-//	 */
-//	private static void startEndOfMonthTask() {
-//		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-//
-//		Runnable task = () -> {
-//			System.out.println("Calling mysqlConnection method after one minute...");
-//			try {
-//				mysqlConnection.endOfMonthProcessingLoanReport();
-//				mysqlConnection.endOfMonthProcessingStatusReport();
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		};
-//
-//		// Schedule the task to run after one minute and then every minute
-//		scheduler.scheduleAtFixedRate(task, 1, 1, TimeUnit.MINUTES);
-//	}
 
 	/**
-	 * Scheduled task for daily due date checking.
-	 */
+     * Starts a scheduled task to check loan due dates and send SMS notifications.
+     */
 	private static void startDailyDueDateCheckTask() {
 		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -187,22 +219,16 @@ public class ServerUI extends Application {
 				e.printStackTrace();
 			}
 		};
-		// Schedule the task to run after one minute and then every minute
-		long initialDelay = 0; // Start immediately
-		long oneMinute = TimeUnit.MINUTES.toMillis(1); // One minute in milliseconds
 
-		scheduler.scheduleAtFixedRate(task, initialDelay, oneMinute, TimeUnit.MILLISECONDS);
+		scheduler.scheduleAtFixedRate(task, 1, 5, TimeUnit.MINUTES);
 
-//		// Schedule the task to run at a specific time daily (e.g., midnight)
-//		long initialDelay = calculateInitialDelay();
-//		long oneDay = TimeUnit.DAYS.toMillis(1); // One day in milliseconds
-//
-//		scheduler.scheduleAtFixedRate(task, initialDelay, oneDay, TimeUnit.MILLISECONDS);
 	}
-
-	/**
-	 * Helper method to calculate the initial delay to the next midnight.
-	 */
+	
+	 /**
+     * Calculates the initial delay to the next midnight for scheduling daily tasks.
+     *
+     * @return The number of milliseconds until the next midnight.
+     */
 	private static long calculateInitialDelay() {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime nextMidnight = now.toLocalDate().atStartOfDay().plusDays(1);

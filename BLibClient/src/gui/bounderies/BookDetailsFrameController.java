@@ -21,44 +21,69 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import message.Message;
 import message.MessageType;
-
+/**
+ * Controller for the Book Details Frame.
+ */
 public class BookDetailsFrameController {
+	/** Chat client instance. */
+    private ChatClient chatClient;
 
-	private ChatClient chatClient;
-	private Book book;
-	private String source, earliestReturnDate;
-	private boolean alreadyOrdered;
+    /** The book whose details are displayed. */
+    private Book book;
 
-	@FXML
-	private Label title;
+    /** Source frame identifier. */
+    private String source;
 
-	@FXML
-	private Label author;
+    /** Earliest return date of the book. */
+    private String earliestReturnDate;
 
-	@FXML
-	private Label barcode;
+    /** Indicates whether the book is already ordered. */
+    private boolean alreadyOrdered;
 
-	@FXML
-	private Label category;
+    /** Label for book title. */
+    @FXML
+    private Label title;
 
-	@FXML
-	private Label isAvailable;
+    /** Label for book author. */
+    @FXML
+    private Label author;
 
-	@FXML
-	private Label shelfReturnDate;
+    /** Label for book barcode. */
+    @FXML
+    private Label barcode;
 
-	@FXML
-	private Label description;
+    /** Label for book category. */
+    @FXML
+    private Label category;
 
-	@FXML
-	private Label bookOrdered;
+    /** Label indicating book availability. */
+    @FXML
+    private Label isAvailable;
 
-	@FXML
-	private ImageView image;
+    /** Label for shelf return date. */
+    @FXML
+    private Label shelfReturnDate;
 
-	@FXML
-	private Button order;
+    /** Label for book description. */
+    @FXML
+    private Label description;
 
+    /** Label indicating book order status. */
+    @FXML
+    private Label bookOrdered;
+
+    /** Image view for book cover. */
+    @FXML
+    private ImageView image;
+
+    /** Button to order the book. */
+    @FXML
+    private Button order;
+
+    
+    /**
+     * Initializes the UI elements and their visibility.
+     */
 	@FXML
 	public void initialize() {
 
@@ -78,20 +103,32 @@ public class BookDetailsFrameController {
 		}
 
 	}
-
+	
+	/**
+     * Default constructor that initializes the chat client.
+     */
 	public BookDetailsFrameController() {
 		chatClient = ClientUI.chat.getClient();
 	}
-
+	
+	/**
+     * Sets the chat client instance.
+     * @param chatClient The chat client to set.
+     */
 	public void setChatClient(ChatClient chatClient) {
 		this.chatClient = chatClient;
 		this.chatClient.setBookDetailsFrameController(this);
 	}
-
+	
+	/**
+     * Sets the book details.
+     * @param book The book to set.
+     */
 	public void setBook(Book book) {
 		this.book = book;
 		if (title != null) {
 			if (book.getAvailableCopies() == 0) {
+				order.setDisable(true);
 				Message sendToServer = new Message(MessageType.getEarliestReturnDate, book.getBarcode());
 				ClientUI.chat.accept(sendToServer);
 				
@@ -99,13 +136,21 @@ public class BookDetailsFrameController {
 			populateBookDetails();
 		}
 	}
-
+	
+	/**
+     * Sets the earliest return date for the book.
+     * @param date The earliest return date.
+     */
 	public void setEarliestReturnDate(String date) {
 		earliestReturnDate = date;
 	}
 
+	/**
+     * Sets the order status of the book.
+     * @param ordered Whether the book is already ordered.
+     */
 	public void setAlreadyOrdered(boolean ordered) {
-	
+		
 		alreadyOrdered = ordered;
 		if (alreadyOrdered) {
 			order.setDisable(true);
@@ -113,10 +158,38 @@ public class BookDetailsFrameController {
 		}
 	}
 
+	
+	/**
+     * Sets the order check result.
+     * @param ordered Whether the book is already ordered.
+     * @param message The order status message.
+     */
+	public void setCheckOrderBook(boolean ordered, String message) {
+		alreadyOrdered = ordered;
+		if (!alreadyOrdered) {
+			order.setDisable(true);
+			bookOrdered.setVisible(true);
+			if(message.equals("UserHasActiveLoan"))
+				bookOrdered.setText("You have active loan!");
+			else if(message.equals("OrderExists"))
+				bookOrdered.setText("You already have an order!");
+			else if(message.equals("error"))
+				bookOrdered.setText("error in ordering!");
+		}
+	}
+	
+	
+	/**
+     * Sets the source frame.
+     * @param source The source to set.
+     */
 	public void setSource(String source) {
 		this.source = source;
 	}
 
+	/**
+     * Handles book availability logic.
+     */
 	private void bookAvailable() {
 		int available = book.getAvailableCopies();
 
@@ -143,6 +216,11 @@ public class BookDetailsFrameController {
 
 	}
 
+	
+	
+	/**
+     * Populates the UI elements with book details.
+     */
 	private void populateBookDetails() {
 		image.setImage(book.getImage());
 		image.setPreserveRatio(true);
@@ -156,6 +234,13 @@ public class BookDetailsFrameController {
 		description.setText(book.getDescription());
 	}
 
+	
+	
+	/**
+     * Starts the Book Details Frame.
+     * @param primaryStage The primary stage to set.
+     * @throws Exception If an error occurs while loading the frame.
+     */
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/BookDetailsFrame.fxml"));
@@ -182,7 +267,7 @@ public class BookDetailsFrameController {
 
 			if (ClientUI.user instanceof Subscriber) {
 				Order orderBook = new Order(ClientUI.user.getID(), book.getBarcode());
-				Message sendToServer = new Message(MessageType.checkOderBook, orderBook);
+				Message sendToServer = new Message(MessageType.checkOrderBook, orderBook);
 				ClientUI.chat.accept(sendToServer);
 			}
 
@@ -191,6 +276,13 @@ public class BookDetailsFrameController {
 		}
 	}
 
+	
+	
+	/**
+     * Handles back button action.
+     * @param event The action event.
+     * @throws Exception If an error occurs.
+     */
 	@FXML
 	public void backBtn(ActionEvent event) throws Exception {
 		Stage primaryStage = new Stage();
@@ -204,6 +296,12 @@ public class BookDetailsFrameController {
 		}
 	}
 
+	
+	 /**
+     * Handles order button action.
+     * @param event The action event.
+     * @throws Exception If an error occurs.
+     */
 	@FXML
 	public void orderBtn(ActionEvent event) throws Exception {
 		Order orderBook = new Order(ClientUI.user.getID(), book.getBarcode());

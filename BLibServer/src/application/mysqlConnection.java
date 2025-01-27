@@ -31,10 +31,16 @@ import enteties.Librarian;
 import enteties.Loan;
 import enteties.Order;
 
+/**
+ * Handles MySQL database connection and operations.
+ */
 public class mysqlConnection {
 
 	private static Connection conn;
 
+	/**
+     * Establishes a connection to the MySQL database.
+     */
 	public static void connectToDB() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
@@ -56,6 +62,11 @@ public class mysqlConnection {
 		}
 	}
 
+	/**
+     * Retrieves all books from the database.
+     *
+     * @return ArrayList of Book objects.
+     */
 	public static ArrayList<Book> getAllBooks() {
 		Statement stmt = null;
 		ResultSet resultSet = null;
@@ -125,82 +136,109 @@ public class mysqlConnection {
 		return books;
 	}
 
-	public static boolean orderBook(Object msg) {
-		boolean ordered = false;
-		Order orderBook = (Order) msg;
-		String barcode = orderBook.getBarcode();
-		String id = orderBook.getSubscriberID();
+	 /**
+     * Places an order for a book.
+     *
+     * @param msg Order object containing subscriber ID and book barcode.
+     * @return Success message if the order was placed successfully.
+     */
+	public static String orderBook(Object msg) {
+	    Order orderBook = (Order) msg;
+	    String barcode = orderBook.getBarcode();
+	    String id = orderBook.getSubscriberID();
 
-		PreparedStatement pstmt = null;
+	    String result = null;
+	    PreparedStatement pstmt = null;
 
-		try {
-			String query = "INSERT INTO orders (subscriberID, requestDate, barcode) VALUES (?, ?, ?)";
-			pstmt = conn.prepareStatement(query);
+	    try {
+	        String query = "INSERT INTO orders (subscriberID, requestDate, barcode) VALUES (?, ?, ?)";
+	        pstmt = conn.prepareStatement(query);
 
-			// Format: yyyy-MM-dd HH:mm:ss
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String requestDateString = formatter.format(new Date()); // Now
+	        // Format: yyyy-MM-dd HH:mm:ss
+	        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	        String requestDateString = formatter.format(new Date()); // Now
 
-			pstmt.setString(1, id);
-			pstmt.setString(2, requestDateString); // store as string
-			pstmt.setString(3, barcode);
+	        pstmt.setString(1, id);
+	        pstmt.setString(2, requestDateString);
+	        pstmt.setString(3, barcode);
 
-			pstmt.executeUpdate();
-			ordered = true;
+	        int rowsInserted = pstmt.executeUpdate();
+	        if (rowsInserted > 0) {
+	            result = "success";
+	        } else {
+	            result = "error";
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        // You could explicitly set result to "error" in case of an exception
+	        result = "error";
+	    } finally {
+	        try {
+	            if (pstmt != null)
+	                pstmt.close();
+	        } catch (SQLException se) {
+	            se.printStackTrace();
+	        }
+	    }
+	    return result;
+	}
+	
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (pstmt != null)
-					pstmt.close();
-			} catch (SQLException se) {
-				se.printStackTrace();
-			}
-		}
-		return ordered;
+	/**
+     * Checks if a book has already been ordered by the subscriber.
+     *
+     * @param msg Order object containing subscriber ID and book barcode.
+     * @return Status of the order.
+     */
+	public static String checkOrderedBook(Object msg) {
+	    Order orderBook = (Order) msg;
+	    String barcode = orderBook.getBarcode();
+	    String id = orderBook.getSubscriberID();
+	    
+	    String result = null;
+	    
+
+	    String queryCheckLoan = "SELECT dueDate FROM loan WHERE barcode = ? AND id = ? AND returnDate IS NULL";
+
+	    String queryCheckOrder = "SELECT 1 FROM orders WHERE barcode = ? AND subscriberID = ? LIMIT 1";
+
+	    try (
+	        PreparedStatement pstmtLoan = conn.prepareStatement(queryCheckLoan);
+	        PreparedStatement pstmtOrder = conn.prepareStatement(queryCheckOrder)
+	    ) {
+	        pstmtLoan.setString(1, barcode);
+	        pstmtLoan.setString(2, id);
+	        try (ResultSet loanRS = pstmtLoan.executeQuery()) {
+	            if (loanRS.next()) {
+	                // There is an active loan for this book (returnDate is null)
+	                result = "UserHasActiveLoan";
+	                return result;
+	            }
+	        }
+
+	        pstmtOrder.setString(1, barcode);
+	        pstmtOrder.setString(2, id);
+	        try (ResultSet orderRS = pstmtOrder.executeQuery()) {
+	            if (orderRS.next()) {
+	            	result = "OrderExists";
+	                return result;
+	            }
+	        }
+
+	        result = "success";
+            
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        result = "error";
+	    }
+
+	    return result;
 	}
 
-	public static boolean checkOrderedBook(Object msg) {
-		Order orderBook = (Order) msg;
-		String barcode = orderBook.getBarcode();
-		String id = orderBook.getSubscriberID();
 
-		PreparedStatement pstmt = null;
-		ResultSet resultSet = null;
-		boolean exists = false;
-
-		try {
-			String query = "SELECT 1 FROM orders WHERE barcode = ? AND subscriberID = ? LIMIT 1";
-			pstmt = conn.prepareStatement(query);
-			pstmt.setString(1, barcode);
-			pstmt.setString(2, id);
-			resultSet = pstmt.executeQuery();
-
-			if (resultSet.next()) {
-				exists = true;
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (resultSet != null)
-					resultSet.close();
-			} catch (SQLException se) {
-				se.printStackTrace();
-			}
-			try {
-				if (pstmt != null)
-					pstmt.close();
-			} catch (SQLException se) {
-				se.printStackTrace();
-			}
-		}
-
-		return exists;
-	}
-
+	/**
+     * Removes orders that are older than 2 days.
+     */
 	public static void removeOrder() {
 		PreparedStatement pstmt = null;
 
@@ -226,6 +264,12 @@ public class mysqlConnection {
 		}
 	}
 
+	
+	/**
+     * Retrieves the top 5 loaned books.
+     *
+     * @return ArrayList of the top 5 loaned Book objects.
+     */
 	public static ArrayList<Book> getTop5LoanedBooks() {
 		Statement stmt = null;
 		ResultSet resultSet = null;
@@ -316,6 +360,12 @@ public class mysqlConnection {
 		return books;
 	}
 
+	 /**
+     * Gets the earliest return date for a book.
+     *
+     * @param barcode Book barcode.
+     * @return Earliest return date in string format.
+     */
 	public static String getEarliestReturnDate(Object barcode) {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -364,6 +414,12 @@ public class mysqlConnection {
 		return earliestDate;
 	}
 
+	
+	/**
+     * Updates values in the database based on provided data.
+     *
+     * @param msg List containing update details.
+     */
 	public static void updateValues(Object msg) {
 		PreparedStatement pstmt = null;
 		ArrayList<String> data = (ArrayList<String>) msg;
@@ -388,6 +444,13 @@ public class mysqlConnection {
 
 	}
 
+	
+	/**
+     * Saves a new subscriber to the database.
+     *
+     * @param msg Subscriber object.
+     * @return Map containing the result of the operation.
+     */
 	public static Map<String, String> saveNewSubscriber(Object msg) {
 		Subscriber sub = (Subscriber) msg;
 		Map<String, String> result = new HashMap<>();
@@ -432,6 +495,12 @@ public class mysqlConnection {
 		}
 	}
 
+	
+	 /**
+     * Saves user information to the database.
+     *
+     * @param msg User details.
+     */
 	public static void saveUserToDB(Object msg) {
 		Statement stmt;
 		try {
@@ -451,6 +520,11 @@ public class mysqlConnection {
 		}
 	}
 
+	 /**
+     * Updates subscriber details.
+     *
+     * @param msg Subscriber details.
+     */
 	public static void updateSubscriberDetails(Object msg) {
 		PreparedStatement pstmt = null;
 		try {
@@ -519,6 +593,13 @@ public class mysqlConnection {
 		}
 	}
 
+	
+	/**
+     * Retrieves card details if the card exists.
+     *
+     * @param cardNum Card number.
+     * @return Map containing card details.
+     */
 	public static Map<String, Object> getCardDetailsIfExists(String cardNum) {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -607,13 +688,53 @@ public class mysqlConnection {
 
 				while (resultSet.next()) {
 					Map<String, Object> row = new HashMap<>();
+					String barcode = resultSet.getString("barcode");
+
 					row.put("issueType", resultSet.getString("issueType"));
 					row.put("issueDate", resultSet.getDate("issueDate"));
-					row.put("barcode", resultSet.getString("barcode"));
+
+					String bookTitleQuery = "SELECT title FROM books WHERE barcode = ?";
+					try (PreparedStatement bookStatement = conn.prepareStatement(bookTitleQuery)) {
+						bookStatement.setString(1, barcode);
+						try (ResultSet bookResultSet = bookStatement.executeQuery()) {
+							if (bookResultSet.next()) {
+								row.put("title", bookResultSet.getString("title"));
+							} else {
+								row.put("title", "Unknown Title");
+							}
+						}
+					}
 					issuesHistory.add(row);
 				}
 
+				System.out.println("issuesHistory MAP = " + issuesHistory.toString());
+
 				result.put("issuesHistory", issuesHistory);
+
+				// Close resources
+				resultSet.close();
+				preparedStatement.close();
+
+				// order history
+				String orderHistoryQuery = "SELECT orderDate, bookTitle FROM orderhistory WHERE subscriberId = ?";
+				preparedStatement = conn.prepareStatement(orderHistoryQuery);
+				preparedStatement.setString(1, cardNum);
+
+				resultSet = preparedStatement.executeQuery();
+
+				List<Map<String, Object>> orderHistory = new ArrayList<>();
+
+				while (resultSet.next()) {
+					Map<String, Object> row = new HashMap<>();
+					row.put("orderDate", resultSet.getString("orderDate"));
+					row.put("bookTitle", resultSet.getString("bookTitle"));
+					orderHistory.add(row);
+				}
+
+				System.out.println("orderHistory MAP = " + orderHistory.toString());
+
+				result.put("orderHistory", orderHistory);
+
 			}
 
 		} catch (SQLException e) {
@@ -629,10 +750,20 @@ public class mysqlConnection {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("resultresultresultresult = " + result.toString());
+		System.out.println("result MAP = " + result.toString());
 		return result;
 	}
 
+
+	
+	 /**
+     * Updates a subscriber's email and phone number.
+     *
+     * @param email Email address.
+     * @param phoneNumber Phone number.
+     * @param cardNum Card number.
+     * @return True if the update was successful, false otherwise.
+     */
 	public static boolean updateSubscriberEmailAndPhoneNumber(String email, String phoneNumber, String cardNum) {
 		String sql = "UPDATE users SET email = ?, phoneNumber = ? WHERE id = ?";
 		PreparedStatement stmt = null;
@@ -669,44 +800,12 @@ public class mysqlConnection {
 		}
 	}
 
-//	public static boolean updateReturnDate(Object messageData) {
-//		// Cast the messageData to the expected Map format
-//		Map<String, String> temp = (Map<String, String>) messageData;
-//
-//		// Check if the map is empty
-//		if (temp == null || temp.isEmpty()) {
-//			return false;
-//		}
-//
-//		// Query to update the return date based on the book title
-//		String query = "UPDATE loan SET dueDate = ? WHERE bookTitle = ?";
-//
-//		try (PreparedStatement stmt = conn.prepareStatement(query)) {
-//			// Iterate through the map entries
-//			for (Map.Entry<String, String> entry : temp.entrySet()) {
-//				String bookTitle = entry.getKey(); // Get the book title (key)
-//				String returnDate = entry.getValue(); // Get the return date (value)
-//
-//				// Set parameters in the prepared statement
-//				stmt.setString(1, returnDate);
-//				stmt.setString(2, bookTitle);
-//
-//				// Execute the update
-//				int rowsUpdated = stmt.executeUpdate();
-//				if (rowsUpdated == 0) {
-//					System.err.println("Failed to update book: " + bookTitle);
-//				} else {
-//					System.out.println("Successfully updated book: " + bookTitle);
-//				}
-//			}
-//
-//			return true; // All updates completed successfully
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			return false;
-//		}
-//	}
-
+	/**
+     * Updates the return date of a book loan.
+     *
+     * @param messageData Loan details.
+     * @return True if the update was successful, false otherwise.
+     */
 	// key: Loan,,, subscriber[0] -> ID, librarian[1] -> ID, book[2] -> name
 	public static boolean updateReturnDate(Object messageData) {
 
@@ -793,7 +892,12 @@ public class mysqlConnection {
 	}
 
 
-	// Method to retrieve loans for books with return dates after 1 week
+	/**
+     * Retrieves books with extended return dates.
+     *
+     * @param number Subscriber card number.
+     * @return Map containing book titles and their extended return dates.
+     */
 	public static Map<String, String> getExtendedBooks(Object number) {
 		String cardNum = (String) number;
 		Map<String, String> loanMap = new LinkedHashMap<>(); // Using LinkedHashMap to maintain insertion order
@@ -801,12 +905,7 @@ public class mysqlConnection {
 		ResultSet resultSet = null;
 
 		// Updated query to join the 'loan' and 'books' tables using barcode
-		String query = "SELECT b.title, l.dueDate FROM loan l " + "JOIN books b ON l.barcode = b.barcode " + // Joining
-																												// the
-																												// 'books'
-																												// table
-																												// on
-																												// barcode
+		String query = "SELECT b.title, l.dueDate FROM loan l " + "JOIN books b ON l.barcode = b.barcode " + 
 				"WHERE l.id = ? AND l.dueDate BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY ";
 
 		try {
@@ -827,7 +926,6 @@ public class mysqlConnection {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			// Close the ResultSet and PreparedStatement to prevent resource leaks
 			try {
 				if (resultSet != null)
 					resultSet.close();
@@ -841,6 +939,12 @@ public class mysqlConnection {
 		return loanMap;
 	}
 
+	 /**
+     * Updates the extension return date of a book loan.
+     *
+     * @param messageData Map containing the subscriber card number, book title, and return date.
+     * @return True if the extension update was successful, false otherwise.
+     */
 	public static boolean updateExtensionReturnDate(Object messageData) {
 		Map<String, String> data = (Map<String, String>) messageData;
 
@@ -899,7 +1003,22 @@ public class mysqlConnection {
 			int rowsUpdated = updateStatement.executeUpdate();
 
 			// If rowsUpdated > 0, the update was successful
-			return rowsUpdated > 0;
+			
+			boolean  success = rowsUpdated > 0;
+			
+			if(success) {
+				Alert alert = new Alert(Alert.AlertType.INFORMATION);
+				alert.setTitle("Librarian Message");
+				alert.setHeaderText(null);
+				alert.setContentText("Subscriber: "+cardNum+" extended book: "+bookTitle);
+				alert.showAndWait();
+
+			}
+			
+			return success;
+			
+			
+			
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -910,6 +1029,13 @@ public class mysqlConnection {
 		}
 	}
 
+	
+	/**
+     * Logs in a user.
+     *
+     * @param message Login credentials.
+     * @return User object if login is successful.
+     */
 	public static User login(Object message) {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -964,6 +1090,13 @@ public class mysqlConnection {
 		return user;
 	}
 
+	
+	/**
+     * Processes the return of a borrowed book.
+     *
+     * @param message Return details.
+     * @return Map with return status and message.
+     */
 	public static Map<String, String> returnBook(Object message) {
 		Map<String, String> result = new HashMap<>();
 		PreparedStatement pstmt = null;
@@ -1117,6 +1250,13 @@ public class mysqlConnection {
 		}
 	}
 
+	
+	/**
+     * Checks the subscriber's status.
+     *
+     * @param message Subscriber ID.
+     * @return Map containing the subscriber's status.
+     */
 	public static Map<String, String> checkSubscriberStatus(Object message) {
 		Map<String, String> result = new HashMap<>();
 		PreparedStatement pstmt = null;
@@ -1163,6 +1303,13 @@ public class mysqlConnection {
 		}
 	}
 
+	
+	/**
+     * Creates a new loan for a book.
+     *
+     * @param message Loan details.
+     * @return Map with loan creation status.
+     */
 	public static Map<String, String> createLoan(Object message) {
 		Map<String, String> result = new HashMap<>();
 		PreparedStatement pstmt = null;
@@ -1174,6 +1321,8 @@ public class mysqlConnection {
 		PreparedStatement pstmtDeleteBookshelf = null; // New statement to remove from bookshelf
 		ResultSet rs = null;
 		ResultSet rsOrders = null;
+		PreparedStatement pstmtCheckLoanExists = null;
+	    ResultSet rsCheckLoanExists = null;
 
 		try {
 			ArrayList<Object> msg = (ArrayList<Object>) message;
@@ -1184,6 +1333,24 @@ public class mysqlConnection {
 			String bookBarcode = loan.getBarcode();
 			String borrowDateStr = loan.getBorrowDate();
 			String dueDateStr = loan.getReturnDate();
+			
+			
+			
+			String sqlCheckDuplicateLoan = "SELECT * FROM loan WHERE id = ? AND barcode = ? AND borrowDate = ?";
+	        pstmtCheckLoanExists = conn.prepareStatement(sqlCheckDuplicateLoan);
+	        pstmtCheckLoanExists.setString(1, subscriberID);
+	        pstmtCheckLoanExists.setString(2, bookBarcode);
+	        pstmtCheckLoanExists.setDate(3, java.sql.Date.valueOf(borrowDateStr));
+	        rsCheckLoanExists = pstmtCheckLoanExists.executeQuery();
+	        if (rsCheckLoanExists.next()) {
+	            result.put("type", "unsuccessful");
+	            result.put("message", "Loan was not successful. A loan with the same subscriber, barcode, and borrow date already exists.");
+	            return result;
+	        }
+	        rsCheckLoanExists.close();
+	        pstmtCheckLoanExists.close();
+			
+			
 
 			// 1) Check if the book exists
 			String sqlCheckBook = "SELECT availableCopies FROM books WHERE barcode = ?";
@@ -1364,55 +1531,13 @@ public class mysqlConnection {
 		}
 	}
 
-	// REPORTS
-//	public static Map<String, Map<String, String>> fetchLoanDataForReport(Object message) {
-//		// Cast the input object to a Map<String, String>
-//		Map<String, String> loanMonthAndYear = (Map<String, String>) message;
-//
-//		// Extract the "month" and "year" values from the map
-//		String month = loanMonthAndYear.get("month");
-//		String year = loanMonthAndYear.get("year");
-//
-//		// Query to filter the LoanReports table by month and year
-//		String query = "SELECT week, borrowed, lateReturn FROM loanreport WHERE month = ? AND year = ?";
-//
-//		// Create a Map to hold the results
-//		Map<String, Map<String, String>> loanData = new HashMap<>();
-//
-//		try (PreparedStatement stmt = conn.prepareStatement(query)) {
-//			// Set the parameters for the query
-//			stmt.setString(1, month);
-//			stmt.setString(2, year);
-//
-//			// Execute the query
-//			try (ResultSet rs = stmt.executeQuery()) {
-//				// Process the result set
-//				while (rs.next()) {
-//					// Fetch the values
-//					String week = rs.getString("week");
-//					String borrowed = rs.getString("borrowed");
-//					String lateReturn = rs.getString("lateReturn");
-//
-//					// Create or update the week-specific map
-//					Map<String, String> weekData = new HashMap<>();
-//					weekData.put("borrowed", borrowed);
-//					weekData.put("lateReturn", lateReturn);
-//
-//					// Add to the main map with week as the key
-//					loanData.put("Week " + week, weekData);
-//				}
-//			}
-//
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//
-//		System.out.println("Loan Data Map: " + loanData);
-//
-//		return loanData;
-//	}
-
-	// REPORTS
+	
+	 /**
+     * Retrieves loan data for generating reports.
+     *
+     * @param message Report parameters including month and year.
+     * @return Map with categorized loan data.
+     */
 	public static Map<String, Map<String, String>> fetchLoanDataForReport(Object message) {
 		System.out.println("calling endOfMonthProcessing()");
 		// Cast the input object to a Map<String, String>
@@ -1457,10 +1582,19 @@ public class mysqlConnection {
 		}
 
 		System.out.println("Loan Data Map: " + loanData);
-
+		
+		
+		
 		return loanData;
 	}
 
+	
+	/**
+     * Retrieves status data for generating reports.
+     *
+     * @param message Report parameters including month and year.
+     * @return Map containing active and frozen subscriber counts.
+     */
 	public static Map<String, String> fetchStatusDataForReport(Object message) {
 		// Cast the input object to a Map<String, String>
 		Map<String, String> loanMonthAndYear = (Map<String, String>) message;
@@ -1500,91 +1634,10 @@ public class mysqlConnection {
 		return statusData;
 	}
 
-//	public static void endOfMonthProcessingLoanReport() {
-//		PreparedStatement insertStmt = null;
-//		PreparedStatement checkStmt = null;
-//		ResultSet rs = null;
-//
-//		List<String> categories = Arrays.asList("Science Fiction", "Romance", "Political Satire", "Historical Fiction",
-//				"Gothic Fiction", "Fantasy", "Epic Poetry", "Dystopian", "Coming-of-Age", "Adventure");
-//
-//		try {
-//			// Query distinct years and months from the loan table
-//			String distinctYearMonthQuery = "SELECT DISTINCT YEAR(borrowDate) AS year,MONTH(borrowDate) AS month FROM loan";
-//			Statement stmt = conn.createStatement();
-//			rs = stmt.executeQuery(distinctYearMonthQuery);
-//
-//			// Prepare the insertion query for loanreport (without loanReportId)
-//			String insertQuery = "INSERT INTO loanreport (month, year, category, borrowed, lateReturn) VALUES (?, ?, ?, ?, ?)";
-//			insertStmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
-//
-//			// Prepare the query to check borrowed and late return counts
-//			String checkQuery = "SELECT COUNT(*) AS borrowed,SUM(CASE WHEN returnDate > dueDate THEN 1 ELSE 0 END) AS lateReturn FROM loan l JOIN books b ON l.barcode = b.barcode WHERE MONTH(l.borrowDate) = ? AND YEAR(l.borrowDate) = ? AND b.category = ?";
-//			checkStmt = conn.prepareStatement(checkQuery);
-//
-//			// Iterate over each distinct year and month
-//			while (rs.next()) {
-//				int year = rs.getInt("year");
-//				int month = rs.getInt("month");
-//				String monthFormatted = String.format("%02d", month); // Format as 01, 02, etc.
-//
-//				// For each category, check borrowed and lateReturn counts
-//				for (String category : categories) {
-//					checkStmt.setInt(1, month); // Set month parameter
-//					checkStmt.setInt(2, year); // Set year parameter
-//					checkStmt.setString(3, category); // Set category parameter
-//
-//					ResultSet checkRs = checkStmt.executeQuery();
-//					int borrowed = 0;
-//					int lateReturn = 0;
-//
-//					if (checkRs.next()) {
-//						borrowed = checkRs.getInt("borrowed");
-//						lateReturn = checkRs.getInt("lateReturn");
-//					}
-//
-//					// Insert the data into loanreport table
-//					insertStmt.setString(1, monthFormatted);
-//					insertStmt.setString(2, String.valueOf(year));
-//					insertStmt.setString(3, category);
-//					insertStmt.setInt(4, borrowed);
-//					insertStmt.setInt(5, lateReturn);
-//
-//					insertStmt.executeUpdate();
-//
-//					// Retrieve the auto-generated primary key using getGeneratedKeys()
-//					ResultSet generatedKeys = insertStmt.getGeneratedKeys();
-//					if (generatedKeys.next()) {
-//						int loanReportId = generatedKeys.getInt(1);
-//						System.out.println("Loan report inserted with ID: " + loanReportId);
-//					}
-//				}
-//			}
-//
-//			System.out.println("End-of-month processing completed. Data inserted into loanreport table.");
-//			
-//			
-//			
-//
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		} finally {
-//			// Clean up resources
-//			try {
-//				if (rs != null)
-//					rs.close();
-//				if (insertStmt != null)
-//					insertStmt.close();
-//				if (checkStmt != null)
-//					checkStmt.close();
-//				if (conn != null)
-//					conn.close();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
 
+	/**
+     * Performs end-of-month processing for loan reports.
+     */
 	public static void endOfMonthProcessingLoanReport() {
 		PreparedStatement insertStmt = null;
 		PreparedStatement checkStmt = null;
@@ -1678,6 +1731,9 @@ public class mysqlConnection {
 		}
 	}
 
+	 /**
+     * Performs end-of-month processing for subscriber status reports.
+     */
 	public static void endOfMonthProcessingStatusReport() {
 		PreparedStatement insertStmt = null;
 		ResultSet rs = null;
@@ -1745,232 +1801,12 @@ public class mysqlConnection {
 		}
 	}
 
-//	public static void endOfMonthProcessingStatusReport() {
-//	    PreparedStatement insertStmt = null;
-//	    PreparedStatement userStatusStmt = null;  // Use PreparedStatement for the SELECT query
-//	    ResultSet rs = null;
-//
-//	    try {
-//	        Calendar cal = Calendar.getInstance();
-//	        cal.add(Calendar.MONTH, -1); // Go back to previous month
-//	        int previousMonth = cal.get(Calendar.MONTH) + 1; // Adjust for 0-based month index
-//	        int previousYear = cal.get(Calendar.YEAR);
-//	        String previousMonthFormatted = String.format("%02d", previousMonth);
-//	        String dateFormatted = previousYear + "-" + previousMonthFormatted + "-01"; // Format to yyyy-mm-dd
-//
-//	        // Prepare the insertion query for statusreport
-//	        String insertQuery = "INSERT INTO statusreport (monthAndYear, active, frozen) VALUES (?, ?, ?)";
-//	        String updateQuery = "UPDATE statusreport SET active = ?, frozen = ? WHERE monthAndYear = ?";
-//
-//	        // Prepare the query to get active and frozen user counts
-//	        String userStatusQuery = "SELECT COUNT(*) AS count FROM users WHERE status = ?";
-//
-//	        // Prepare the user status statement for active users
-//	        userStatusStmt = conn.prepareStatement(userStatusQuery);
-//
-//	        // Count active users
-//	        userStatusStmt.setString(1, "active");
-//	        rs = userStatusStmt.executeQuery();
-//	        int activeCount = 0;
-//	        if (rs.next()) {
-//	            activeCount = rs.getInt("count");
-//	            System.out.println("Active Count: " + activeCount);
-//	        }
-//
-//	        // Check if the record for the monthAndYear already exists
-//	        String checkExistenceQuery = "SELECT COUNT(*) AS count FROM statusreport WHERE monthAndYear = ?";
-//	        PreparedStatement checkExistenceStmt = conn.prepareStatement(checkExistenceQuery);
-//	        checkExistenceStmt.setString(1, dateFormatted);
-//	        rs = checkExistenceStmt.executeQuery();
-//	        int existingCount = 0;
-//	        if (rs.next()) {
-//	            existingCount = rs.getInt("count");
-//	        }
-//
-//	        if (existingCount > 0) {
-//	            // If the record exists, update it
-//	            PreparedStatement updateStmt = conn.prepareStatement(updateQuery);
-//	            updateStmt.setInt(1, activeCount);
-//	            updateStmt.setInt(2, 0);  // Set frozen count to 0 for now
-//	            updateStmt.setString(3, dateFormatted);
-//	            updateStmt.executeUpdate();
-//	        } else {
-//	            // If the record does not exist, insert it
-//	            insertStmt = conn.prepareStatement(insertQuery);
-//	            insertStmt.setString(1, dateFormatted);
-//	            insertStmt.setInt(2, activeCount);
-//	            insertStmt.setInt(3, 0);  // Initialize frozen count to 0
-//	            insertStmt.executeUpdate();
-//	        }
-//
-//	        // Count frozen users
-//	        userStatusStmt.setString(1, "frozen");
-//	        rs = userStatusStmt.executeQuery();
-//	        int frozenCount = 0;
-//	        if (rs.next()) {
-//	            frozenCount = rs.getInt("count");
-//	        }
-//
-//	        if (existingCount > 0) {
-//	            // If the record exists, update it with frozen count
-//	            PreparedStatement updateStmt = conn.prepareStatement(updateQuery);
-//	            updateStmt.setInt(1, 0);  // Set active count to 0 for now
-//	            updateStmt.setInt(2, frozenCount);
-//	            updateStmt.setString(3, dateFormatted);
-//	            updateStmt.executeUpdate();
-//	        } else {
-//	            // If the record does not exist, insert frozen user count as well
-//	            insertStmt.setString(1, dateFormatted);  // Set date again
-//	            insertStmt.setInt(2, 0); // Set active count to 0
-//	            insertStmt.setInt(3, frozenCount);
-//	            insertStmt.executeUpdate();
-//	        }
-//
-//	        System.out.println("Status report processed for previous month (" + previousMonthFormatted + "/" + previousYear + ").");
-//
-//	    } catch (SQLException e) {
-//	        e.printStackTrace();
-//	    } finally {
-//	        // Clean up resources
-//	        try {
-//	            if (rs != null) rs.close();
-//	            if (insertStmt != null) insertStmt.close();
-//	            if (userStatusStmt != null) userStatusStmt.close();
-//	        } catch (SQLException e) {
-//	            e.printStackTrace();
-//	        }
-//	    }
-//	}
-
-//	public static void endOfMonthProcessingStatusReport() {
-//		PreparedStatement insertStmt = null;
-//		ResultSet rs = null;
-//
-//		try {
-//			Calendar cal = Calendar.getInstance();
-//			cal.add(Calendar.MONTH, -1); // Go back to previous month
-//			int previousMonth = cal.get(Calendar.MONTH) + 1; // Adjust for 0-based month index
-//			int previousYear = cal.get(Calendar.YEAR);
-//			String previousMonthFormatted = String.format("%02d", previousMonth);
-//
-//			// Prepare the insertion query for statusreport
-//			String insertQuery = "INSERT INTO statusreport (monthAndYear, active, frozen) VALUES (?, ?, ?)";
-//			insertStmt = conn.prepareStatement(insertQuery);
-//
-//			// Prepare the query to get active and frozen user counts
-//			String userStatusQuery = "SELECT COUNT(*) AS count FROM users WHERE status = ?";
-//
-//			// Count active users
-//			insertStmt.setString(1, previousYear + "-" + previousMonthFormatted);
-//			insertStmt.setString(2, "active");
-//			rs = conn.createStatement().executeQuery(userStatusQuery);
-//			int activeCount = 0;
-//			if (rs.next()) {
-//				activeCount = rs.getInt("count");
-//			}
-//			insertStmt.setInt(3, activeCount);
-//			insertStmt.executeUpdate();
-//
-//			// Count frozen users (repeat the query with status='frozen')
-//			rs.close(); // Close the result set before re-using
-//			insertStmt.setString(2, "frozen");
-//			rs = conn.createStatement().executeQuery(userStatusQuery);
-//			int frozenCount = 0;
-//			if (rs.next()) {
-//				frozenCount = rs.getInt("count");
-//			}
-//			insertStmt.setInt(3, frozenCount);
-//			insertStmt.executeUpdate();
-//
-//			System.out.println(
-//					"Status report inserted for previous month (" + previousMonthFormatted + "/" + previousYear + ").");
-//
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		} finally {
-//			// Clean up resources
-//			try {
-//				if (rs != null)
-//					rs.close();
-//				if (insertStmt != null)
-//					insertStmt.close();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
-
-//	public static void endOfMonthProcessingStatusReport() {
-//		PreparedStatement insertStmt = null;
-//		ResultSet rs = null;
-//
-//		try {
-//			Calendar cal = Calendar.getInstance();
-//			cal.add(Calendar.MONTH, -1); // Go back to previous month
-//			int previousMonth = cal.get(Calendar.MONTH) + 1; // Adjust for 0-based month index
-//			int previousYear = cal.get(Calendar.YEAR);
-//			String previousMonthFormatted = String.format("%02d", previousMonth);
-//
-//			// Prepare the insertion query for statusreport
-//			String insertQuery = "INSERT INTO statusreport (monthAndYear, active, frozen) VALUES (?, ?, ?)";
-//			insertStmt = conn.prepareStatement(insertQuery);
-//
-//			// Prepare the query to get active and frozen user counts
-//			String userStatusQuery = "SELECT COUNT(*) AS count FROM users WHERE status = ?";
-//
-//			// Count active users
-//			insertStmt.setString(1, previousYear + "-" + previousMonthFormatted);
-//			insertStmt.setString(2, "active");
-//			rs = conn.createStatement().executeQuery(userStatusQuery);
-//			int activeCount = 0;
-//			if (rs.next()) {
-//				activeCount = rs.getInt("count");
-//			}
-//			insertStmt.setInt(3, activeCount);
-//			insertStmt.executeUpdate();
-//
-//			// Count frozen users (repeat the query with status='frozen')
-//			rs.close(); // Close the result set before re-using
-//			insertStmt.setString(2, "frozen");
-//			rs = conn.createStatement().executeQuery(userStatusQuery);
-//			int frozenCount = 0;
-//			if (rs.next()) {
-//				frozenCount = rs.getInt("count");
-//			}
-//			insertStmt.setInt(3, frozenCount);
-//			insertStmt.executeUpdate();
-//
-//			System.out.println(
-//					"Status report inserted for previous month (" + previousMonthFormatted + "/" + previousYear + ").");
-//
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			if (e instanceof SQLNonTransientConnectionException) {
-//				System.err
-//						.println("Failed to execute status report due to connection issue. Attempting to reconnect...");
-//				conn = getConnection(); // Implement reconnection logic here
-//				if (conn != null) {
-//					// Retry the operation if reconnection is successful
-//					endOfMonthProcessingStatusReport(); // Recursive call to retry
-//				} else {
-//					System.err.println("Reconnection failed. Status report processing skipped.");
-//				}
-//			}
-//		} finally {
-//			// Clean up resources
-//			try {
-//				if (rs != null)
-//					rs.close();
-//				if (insertStmt != null)
-//					insertStmt.close();
-//				if (conn != null)
-//					conn.close(); // Close connection even if reconnection failed
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
-
+	
+	/**
+     * Retrieves a connection to the database.
+     *
+     * @return Connection object.
+     */
 	public static Connection getConnection() {
 		Connection conn = null;
 		try {
@@ -1984,6 +1820,12 @@ public class mysqlConnection {
 		return conn;
 	}
 
+	
+	 /**
+     * Checks due dates and sends SMS notifications for book returns.
+     *
+     * @return True if SMS notifications were sent, false otherwise.
+     */
 	public static boolean checkDueDateAndSendSMS() {
 		boolean smsSent = false;
 

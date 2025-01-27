@@ -1,7 +1,6 @@
 package gui.bounderies;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import message.Message;
 import message.MessageType;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import application.ChatClient;
 import application.ClientUI;
@@ -20,6 +18,7 @@ import enteties.Book;
 import enteties.IssueHistory;
 import enteties.Librarian;
 import enteties.Loan;
+import enteties.Order;
 import enteties.Subscriber;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -75,6 +74,9 @@ public class SubscriberCardDetailsController {
 	private Label lblUserName;
 
 	@FXML
+	private Label lblOrderHistory;
+
+	@FXML
 	private Label lblInsertCardNumber;
 
 	@FXML
@@ -117,6 +119,15 @@ public class SubscriberCardDetailsController {
 	private TableColumn<IssueHistory, String> colIssueDescription;
 
 	@FXML
+	private TableView<Order> tableOrderHistory;
+
+	@FXML
+	private TableColumn<Order, String> colOrderDate;
+
+	@FXML
+	private TableColumn<Order, String> colOrderBookTitle;
+
+	@FXML
 	private Label lblInvalidCardNumber;
 
 	@FXML
@@ -132,7 +143,7 @@ public class SubscriberCardDetailsController {
 	private Label lblUpdateDateMessage;
 
 	private Map<Loan, ArrayList<Object>> updatedReturnDates = new HashMap<>();
-	
+
 	// public static String type = "subscriber";
 
 	public SubscriberCardDetailsController() {
@@ -159,6 +170,9 @@ public class SubscriberCardDetailsController {
 		colIssueType.setCellValueFactory(new PropertyValueFactory<>("issueType"));
 		colIssueDate.setCellValueFactory(new PropertyValueFactory<>("issueDate"));
 		colIssueDescription.setCellValueFactory(new PropertyValueFactory<>("issueDescription"));
+
+		colOrderDate.setCellValueFactory(new PropertyValueFactory<>("orderDate"));
+		colOrderBookTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
 
 		// Handle editing of the Return Date column
 		colReturnDate.setOnEditCommit(event -> {
@@ -272,7 +286,18 @@ public class SubscriberCardDetailsController {
 					String issueDateStr = formatDate(issue.get("issueDate"));
 
 					tableIssuesHistory.getItems().add(new IssueHistory((String) issue.get("issueType"), issueDateStr,
-							(String) issue.get("barcode")));
+							(String) issue.get("title")));
+				}
+			}
+
+			// Order history table
+			List<Map<String, Object>> orderHistory = (List<Map<String, Object>>) cardDetails.get("orderHistory");
+			System.out.println("tableOrderHistory =======" + tableOrderHistory.toString());
+			if (orderHistory != null) {
+				tableOrderHistory.getItems().clear();
+				for (Map<String, Object> order : orderHistory) {
+					String orderDateStr = formatDate(order.get("orderDate"));
+					tableOrderHistory.getItems().add(new Order(orderDateStr, (String) order.get("bookTitle"), true));
 				}
 			}
 		});
@@ -370,7 +395,7 @@ public class SubscriberCardDetailsController {
 	private void btnUpdateDateClicked(ActionEvent event) {
 
 		LocalDate currentDate = LocalDate.now();
-		
+
 		for (Loan loan : updatedReturnDates.keySet()) {
 			LocalDate returnDate = LocalDate.parse(loan.getReturnDate());
 
@@ -393,7 +418,6 @@ public class SubscriberCardDetailsController {
 			}
 		}
 
-		
 		// Send the data to the server
 		Message sendToServer = new Message(MessageType.updateReturnDate, updatedReturnDates);
 		ClientUI.chat.accept(sendToServer);
@@ -492,6 +516,9 @@ public class SubscriberCardDetailsController {
 		lblIssueHistory.setVisible(false);
 		tableIssuesHistory.setVisible(false);
 
+		lblOrderHistory.setVisible(false);
+		tableOrderHistory.setVisible(false);
+
 		btnUpdateDates.setVisible(false);
 
 		lblEmailPhonemessage.setVisible(false);
@@ -520,6 +547,9 @@ public class SubscriberCardDetailsController {
 
 		lblIssueHistory.setVisible(true);
 		tableIssuesHistory.setVisible(true);
+
+		lblOrderHistory.setVisible(true);
+		tableOrderHistory.setVisible(true);
 
 		colReturnDate.setVisible(true);
 	}

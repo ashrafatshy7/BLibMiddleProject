@@ -24,57 +24,88 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import message.Message;
 import message.MessageType;
-
+/**
+ * Controller for the Home Frame.
+ */
 public class HomeFrameController {
 
-	private ChatClient chatClient;
+	 /** Chat client instance. */
+    private ChatClient chatClient;
 
-	@FXML
-	private Button seeAll;
+    /** Button to view all books. */
+    @FXML
+    private Button seeAll;
 
-	@FXML
-	private Button login;
+    /** Button to login/logout. */
+    @FXML
+    private Button login;
 
-	@FXML
-	private Label status;
+    /** Label for displaying user status. */
+    @FXML
+    private Label status;
 
-	@FXML
-	private Label activeFrozen;
+    /** Label for displaying account status (Active/Frozen). */
+    @FXML
+    private Label activeFrozen;
 
-	@FXML
-	private Button subscriberInfo;
+    /** Button to show subscriber information. */
+    @FXML
+    private Button subscriberInfo;
 
-	@FXML
-	private Button librarianRegisterReader;
+    /** Button for librarian to register a reader. */
+    @FXML
+    private Button librarianRegisterReader;
 
-	@FXML
-	private Button librarianreturnBook;
+    /** Button for librarian to return a book. */
+    @FXML
+    private Button librarianreturnBook;
 
-	@FXML
-	private Button librarianLoanBook;
+    /** Button for librarian to loan a book. */
+    @FXML
+    private Button librarianLoanBook;
 
-	@FXML
-	private Button librarianReport;
+    /** Button for librarian to generate reports. */
+    @FXML
+    private Button librarianReport;
 
-	@FXML
-	private FlowPane topBooksContainer; // Updated container reference
+    /** Container for displaying top books. */
+    @FXML
+    private FlowPane topBooksContainer;
 
+    
+    /**
+     * Initializes UI components and binds table columns.
+     */
 	@FXML
 	private void initialize() {
 
 		configureUserInterface();
 
 	}
-
+	
+	/**
+     * Default constructor that initializes the chat client.
+     */
 	public HomeFrameController() {
 		chatClient = ClientUI.chat.getClient();
 	}
 
+	
+	/**
+     * Sets the chat client instance.
+     * @param chatClient The chat client to set.
+     */
 	public void setChatClient(ChatClient chatClient) {
 		this.chatClient = chatClient;
 		this.chatClient.setHomeFrameController(this);
 	}
 
+	
+	/**
+     * Starts the Home Frame.
+     * @param primaryStage The primary stage.
+     * @throws Exception If an error occurs while loading the frame.
+     */
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/HomeFrame.fxml"));
@@ -105,8 +136,8 @@ public class HomeFrameController {
 	}
 
 	/**
-	 * Configures the visibility of UI components based on the user's role.
-	 */
+     * Configures the visibility of UI components based on the user's role.
+     */
 	private void configureUserInterface() {
 		// Hide all role-specific buttons initially
 		subscriberInfo.setVisible(false);
@@ -146,8 +177,10 @@ public class HomeFrameController {
 	}
 
 	/**
-	 * Opens the Subscriber Information view.
-	 */
+     * Opens the Subscriber Information view.
+     * @param event The action event.
+     * @throws Exception If an error occurs.
+     */
 	public void registerReader(ActionEvent event) throws Exception {
 		((Node) event.getSource()).getScene().getWindow().hide();
 		Stage primaryStage = new Stage();
@@ -155,6 +188,12 @@ public class HomeFrameController {
 		registerSubscriber.start(primaryStage);
 	}
 
+	
+	/**
+     * Opens the Return Book view.
+     * @param event The action event.
+     * @throws Exception If an error occurs.
+     */
 	public void returnBook(ActionEvent event) throws Exception {
 		((Node) event.getSource()).getScene().getWindow().hide();
 		Stage primaryStage = new Stage();
@@ -162,18 +201,31 @@ public class HomeFrameController {
 		returnBook.start(primaryStage);
 	}
 
+	 /**
+     * Opens the Loan Book view.
+     * @param event The action event.
+     * @throws Exception If an error occurs.
+     */
 	public void loanBook(ActionEvent event) throws Exception {
 		((Node) event.getSource()).getScene().getWindow().hide();
 		Stage primaryStage = new Stage();
 		LoanFrameController loanBook = new LoanFrameController();
 		loanBook.start(primaryStage);
 	}
-
+	/**
+     * Handles the order book action.
+     * @param event The action event.
+     */
 	public void orderBook(ActionEvent event) throws Exception {
 		System.out.println("Subscriber Information clicked.");
 		// Implement navigation to Subscriber Information view
 	}
 
+	 /**
+     * Opens the Report view.
+     * @param event The action event.
+     * @throws Exception If an error occurs.
+     */
 	public void report(ActionEvent event) throws Exception {
 		((Node) event.getSource()).getScene().getWindow().hide();
 		Stage primaryStage = new Stage();
@@ -181,7 +233,11 @@ public class HomeFrameController {
 		twoChartsController.start(primaryStage);
 	}
 
-	//
+	/**
+     * Opens the Subscriber Details view.
+     * @param event The action event.
+     * @throws Exception If an error occurs.
+     */
 	public void btnShowSubscriberDetails(ActionEvent event) throws Exception {
 		((Node) event.getSource()).getScene().getWindow().hide();
 		Stage primaryStage = new Stage();
@@ -190,8 +246,10 @@ public class HomeFrameController {
 	}
 
 	/**
-	 * Opens the See All Books view.
-	 */
+     * Opens the See All Books view.
+     * @param event The action event.
+     * @throws Exception If an error occurs.
+     */
 	public void seeAllBooks(ActionEvent event) throws Exception {
 		((Node) event.getSource()).getScene().getWindow().hide();
 		Stage primaryStage = new Stage();
@@ -199,6 +257,12 @@ public class HomeFrameController {
 		seeAllFrame.start(primaryStage);
 	}
 
+	
+	/**
+     * Handles the login/logout button action.
+     * @param event The action event.
+     * @throws Exception If an error occurs.
+     */
 	public void loginBtn(ActionEvent event) throws Exception {
 		if (login.getText().equals("Login")) {
 			((Node) event.getSource()).getScene().getWindow().hide();
@@ -213,22 +277,18 @@ public class HomeFrameController {
 	}
 
 	/**
-	 * Sets the books and populates the top books UI. This method should be called
-	 * after fetching books from the server.
-	 *
-	 * @param books List of top 5 loaned books.
-	 */
+     * Sets the books and populates the top books UI.
+     * @param books List of top 5 loaned books.
+     */
 	public void setBooks(ArrayList<Book> books) {
 		// Populate the top books UI
 		populateTopBooks(books);
 	}
 
-	/**
-	 * Populates the topBooksContainer with book images and names. Ensures that UI
-	 * updates are run on the JavaFX Application Thread.
-	 *
-	 * @param topBooks List of top loaned books.
-	 */
+	 /**
+     * Populates the topBooksContainer with book images and names.
+     * @param topBooks List of top loaned books.
+     */
 	private void populateTopBooks(List<Book> topBooks) {
 		Platform.runLater(() -> {
 			topBooksContainer.getChildren().clear();
@@ -237,13 +297,13 @@ public class HomeFrameController {
 				VBox bookBox = new VBox();
 				bookBox.setSpacing(5);
 				ImageView imageView = new ImageView(book.getImage());
-				imageView.setFitWidth(109.0);
-				imageView.setFitHeight(182.0);
+				imageView.setFitWidth(150.0);
+				imageView.setFitHeight(223.0);
 				imageView.setPreserveRatio(true);
 
 				Label bookName = new Label(book.getTitle());
 				bookName.setWrapText(true);
-				bookName.setMaxWidth(109.0);
+				bookName.setMaxWidth(150.0);
 				bookName.setStyle("-fx-alignment: center;");
 
 				bookBox.setOnMouseClicked(event -> {

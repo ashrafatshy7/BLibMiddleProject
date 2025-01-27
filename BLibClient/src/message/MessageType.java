@@ -6,7 +6,7 @@ public enum MessageType {
 	disconnectFromServer,
 	getEarliestReturnDate,
 	orderBook,
-	checkOderBook,
+	checkOrderBook,
 	registerSubscriber,
 	cardNumber,
 	updateEmailAndPhone,

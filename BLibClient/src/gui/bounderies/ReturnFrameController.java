@@ -20,26 +20,39 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 
+/**
+ * Controller for handling book returns.
+ */
 public class ReturnFrameController {
 
-	@FXML
-	private TextField bookBarcodeField;
+	/** TextField for entering the book barcode. */
+    @FXML
+    private TextField bookBarcodeField;
 
-	@FXML
-	private TextField readercardField;
+    /** TextField for entering the reader's card number. */
+    @FXML
+    private TextField readercardField;
 
-	@FXML
-	private Button Returnbutton;
+    /** Button to initiate the return process. */
+    @FXML
+    private Button Returnbutton;
 
-	@FXML
-	private Label barcodeIssue;
+    /** Label to display book barcode issues. */
+    @FXML
+    private Label barcodeIssue;
 
-	@FXML
-	private Label readerCardIssue;
+    /** Label to display reader card issues. */
+    @FXML
+    private Label readerCardIssue;
 
-	@FXML
-	private ChoiceBox<String> issueChoice;
+    /** ChoiceBox for selecting return issues (e.g., lost, no issue). */
+    @FXML
+    private ChoiceBox<String> issueChoice;
 
+    
+    /**
+     * Initializes the UI components and sets default values.
+     */
 	@FXML
 	private void initialize() {
 
@@ -61,6 +74,12 @@ public class ReturnFrameController {
 
 	}
 
+	
+	/**
+     * Handles the return button action.
+     * @param event The action event.
+     * @throws Exception If an error occurs during the return process.
+     */
 	@FXML
 	public void handleReturnButtonAction(ActionEvent event) throws Exception {
 
@@ -90,6 +109,12 @@ public class ReturnFrameController {
 		ClientUI.chat.accept(sendToServer);
 	}
 
+	
+	/**
+     * Starts the Return Frame.
+     * @param primaryStage The primary stage.
+     * @throws Exception If an error occurs while loading the frame.
+     */
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/ReturnFrame.fxml"));
@@ -106,6 +131,11 @@ public class ReturnFrameController {
 		}
 	}
 
+	
+	 /**
+     * Handles the action to return to the home screen.
+     * @param event The action event.
+     */
 	@FXML
 	public void goBack(ActionEvent event) {
 		Stage primaryStage = new Stage();

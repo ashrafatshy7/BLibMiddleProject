@@ -14,16 +14,28 @@ import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import javafx.scene.control.TextField;
 
+/**
+ * Controller for the IP Frame.
+ */
 public class IpFrameController {
 
-	@FXML
-	private Button connectBtn;
-	@FXML
-	private TextField ipText;
+	/** Button to initiate the connection. */
+    @FXML
+    private Button connectBtn;
 
-	@FXML
-	private TextField portText;
+    /** TextField to input the IP address. */
+    @FXML
+    private TextField ipText;
 
+    /** TextField to input the port number. */
+    @FXML
+    private TextField portText;
+
+    
+    /**
+     * Displays an error alert with the provided text.
+     * @param errorText The error message to display.
+     */
 	private void showErrorAlert(String errorText) {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setContentText("Error");
@@ -31,6 +43,11 @@ public class IpFrameController {
 		alert.showAndWait();
 	}
 
+	/**
+     * Starts the IP Frame.
+     * @param primaryStage The primary stage.
+     * @throws Exception If an error occurs while loading the frame.
+     */
 	public void start(Stage primaryStage) throws Exception {
 
 		Parent root = FXMLLoader.load(getClass().getResource("/gui/bounderies/IpFrame.fxml"));
@@ -41,7 +58,11 @@ public class IpFrameController {
 		primaryStage.show();
 
 	}
-
+	/**
+     * Handles the connection action triggered by the connect button.
+     * @param event The action event.
+     * @throws Exception If an error occurs during the connection process.
+     */
 	public void connect(ActionEvent event) throws Exception {
 		String ipAddress = "127.0.0.1";
 
@@ -65,6 +86,11 @@ public class IpFrameController {
 			showErrorAlert("client is null");
 	}
 
+	/**
+     * Validates the given port number.
+     * @param port The port number to validate.
+     * @return True if the port number is valid, false otherwise.
+     */
 	private boolean isValidPort(String port) {
 		if (port == null || port.isEmpty()) {
 			return false;
@@ -79,6 +105,11 @@ public class IpFrameController {
 		}
 	}
 
+	/**
+     * Validates the given IPv4 address.
+     * @param ip The IP address to validate.
+     * @return True if the IP address is valid, false otherwise.
+     */
 	private boolean isValidIPv4(String ip) {
 		if (ip == null || ip.isEmpty()) {
 			return false;

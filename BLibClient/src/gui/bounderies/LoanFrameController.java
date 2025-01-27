@@ -22,41 +22,57 @@ import message.Message;
 import message.MessageType;
 import enteties.Loan;
 import enteties.Subscriber;
-
+/**
+ * Controller for handling loan operations.
+ */
 public class LoanFrameController {
 
-	private ChatClient chatClient;
+	/** Chat client instance. */
+    private ChatClient chatClient;
 
-	@FXML
-	private TextField barcodeTextField;
+    /** TextField for entering the book barcode. */
+    @FXML
+    private TextField barcodeTextField;
 
-	@FXML
-	private TextField readerCardTextField;
+    /** TextField for entering the reader's card number. */
+    @FXML
+    private TextField readerCardTextField;
 
-	@FXML
-	private DatePicker currentDatePicker;
+    /** DatePicker for selecting the current date. */
+    @FXML
+    private DatePicker currentDatePicker;
 
-	@FXML
-	private DatePicker returnDatePicker;
+    /** DatePicker for selecting the return date. */
+    @FXML
+    private DatePicker returnDatePicker;
 
-	@FXML
-	private Button setLoanBtn;
+    /** Button to submit the loan request. */
+    @FXML
+    private Button setLoanBtn;
 
-	@FXML
-	private Button checkStatusBtn;
-	
-	@FXML
-	private Button btnBackClicked;
+    /** Button to check the subscriber's status. */
+    @FXML
+    private Button checkStatusBtn;
+    
+    /** Button to go back to the previous screen. */
+    @FXML
+    private Button btnBackClicked;
 
-	@FXML
-	private Label barcodeError;
+    /** Label to display barcode error messages. */
+    @FXML
+    private Label barcodeError;
 
-	@FXML
-	private Label readerCardError;
+    /** Label to display reader card error messages. */
+    @FXML
+    private Label readerCardError;
 
-	@FXML
-	private Label returnDateError;
+    /** Label to display return date error messages. */
+    @FXML
+    private Label returnDateError;
 
+    /**
+     * Initializes the UI components and sets default values.
+     */
 	@FXML
 	private void initialize() {
 
@@ -91,15 +107,27 @@ public class LoanFrameController {
 
 	}
 
+	/**
+     * Default constructor that initializes the chat client.
+     */
 	public LoanFrameController() {
 		chatClient = ClientUI.chat.getClient();
 	}
 
+	/**
+     * Sets the chat client instance.
+     * @param chatClient The chat client to set.
+     */
 	public void setChatClient(ChatClient chatClient) {
 		this.chatClient = chatClient;
 		this.chatClient.setLoanFrameController(this);
 	}
 
+	/**
+     * Starts the Loan Frame.
+     * @param primaryStage The primary stage.
+     * @throws Exception If an error occurs while loading the frame.
+     */
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/LoanFrame.fxml"));
@@ -126,6 +154,12 @@ public class LoanFrameController {
 
 	}
 
+	
+	/**
+     * Handles loan submission action.
+     * @param event The action event.
+     * @throws Exception If an error occurs during submission.
+     */
 	@FXML
 	public void submitLoan(ActionEvent event) throws Exception {
 		boolean valid = true;
@@ -152,6 +186,12 @@ public class LoanFrameController {
 
 	}
 
+	
+	/**
+     * Checks the subscriber's status.
+     * @param event The action event.
+     * @throws Exception If an error occurs.
+     */
 	@FXML
 	public void checkStatus(ActionEvent event) throws Exception {
 		if (checkStatusBtn.getText().equals("Check Status")) {
@@ -179,6 +219,9 @@ public class LoanFrameController {
 
 	}
 
+	/**
+     * Enables form fields for loan entry.
+     */
 	public void setActive() {
 		javafx.application.Platform.runLater(() -> {
 			barcodeTextField.setDisable(false);
@@ -190,6 +233,11 @@ public class LoanFrameController {
 		});
 	}
 
+	/**
+     * Validates the entered barcode.
+     * @param barcode The barcode to check.
+     * @return True if valid, false otherwise.
+     */
 	private boolean checkBarcode(String barcode) {
 		if (barcode != null && barcode.length() == 6) {
 
@@ -200,7 +248,12 @@ public class LoanFrameController {
 
 		return false;
 	}
-
+	
+	/**
+     * Validates the reader card number.
+     * @param readerCard The reader card to check.
+     * @return True if valid, false otherwise.
+     */
 	private boolean checkReaderCard(String readerCard) {
 		if (readerCard != null && readerCard.length() == 9) {
 
@@ -212,6 +265,11 @@ public class LoanFrameController {
 		return false;
 	}
 
+	/**
+     * Validates the return date.
+     * @param returnDate The return date to check.
+     * @return True if valid, false otherwise.
+     */
 	private boolean checkReturnDate(LocalDate returnDate) {
 		if (returnDate == null || returnDatePicker.getEditor().getText().trim().isEmpty()) {
 			returnDateError.setVisible(true);
@@ -228,6 +286,10 @@ public class LoanFrameController {
 		return true;
 	}
 
+	/**
+     * Handles the back button action.
+     * @param event The action event.
+     */
 	@FXML
 	public void btnBackClicked(ActionEvent event) {
 		Stage primaryStage = new Stage();

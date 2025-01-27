@@ -15,6 +15,7 @@ import java.util.Map;
 import enteties.Book;
 import enteties.Subscriber;
 import enteties.User;
+import javafx.scene.control.Alert;
 import message.Message;
 import message.MessageType;
 import ocsf.server.*;
@@ -126,13 +127,13 @@ public class EchoServer extends AbstractServer {
 				client.sendToClient(messageFromServer);
 				break;
 			case orderBook:
-				boolean order = mysqlConnection.orderBook(message.getMessageData());
+				String order = mysqlConnection.orderBook(message.getMessageData());
 				messageFromServer = new Message(MessageType.orderBook, order);
 				client.sendToClient(messageFromServer);
 				break;
-			case checkOderBook:
-				boolean ordered = mysqlConnection.checkOrderedBook(message.getMessageData());
-				messageFromServer = new Message(MessageType.checkOderBook, ordered);
+			case checkOrderBook:
+				String ordered = mysqlConnection.checkOrderedBook(message.getMessageData());
+				messageFromServer = new Message(MessageType.checkOrderBook, ordered);
 				client.sendToClient(messageFromServer);
 				break;
 			case registerSubscriber:

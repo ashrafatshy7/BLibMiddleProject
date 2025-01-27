@@ -1,7 +1,5 @@
 package gui.bounderies;
 
-import java.util.ArrayList;
-
 import application.ClientUI;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,44 +15,63 @@ import message.Message;
 import message.MessageType;
 import enteties.Subscriber;
 
+/**
+ * Controller for handling subscriber registration.
+ */
 public class RegisterSubscriberController {
 
+	/** TextField for entering the reader card number. */
 	@FXML
 	private TextField readCardField;
 
+	/** TextField for entering the email. */
 	@FXML
 	private TextField emailField;
 
+	/** PasswordField for entering the password. */
 	@FXML
 	private PasswordField passwordField;
 
+	/** PasswordField for confirming the password. */
 	@FXML
 	private PasswordField confirmPasswordField;
 
+	/** TextField for entering the username. */
 	@FXML
 	private TextField usernameField;
 
+	/** TextField for entering the phone number. */
 	@FXML
 	private TextField phoneField;
 
+	/** Label to display read card error messages. */
 	@FXML
 	private Label readCardError;
 
+	/** Label to display email error messages. */
 	@FXML
 	private Label emailError;
 
+	/** Label to display password error messages. */
 	@FXML
 	private Label passwordError;
 
+	/** Label to display confirm password error messages. */
 	@FXML
 	private Label confirmPasswordError;
 
+	/** Label to display username error messages. */
 	@FXML
 	private Label usernameError;
 
+	/** Label to display phone number error messages. */
 	@FXML
 	private Label phoneError;
 
+	
+	/**
+     * Initializes UI components and adds change listeners to fields.
+     */
 	@FXML
 	public void initialize() {
 		// Add change listeners to all fields
@@ -66,6 +83,12 @@ public class RegisterSubscriberController {
 		addFieldChangeListener(phoneField, phoneError);
 	}
 
+	
+	/**
+     * Adds a change listener to the given text field to remove error styling.
+     * @param textField The text field to monitor.
+     * @param errorLabel The corresponding error label to hide.
+     */
 	private void addFieldChangeListener(TextField textField, Label errorLabel) {
 		textField.textProperty().addListener((observable, oldValue, newValue) -> {
 			textField.getStyleClass().remove("invalid-border");
@@ -73,7 +96,11 @@ public class RegisterSubscriberController {
 		});
 	}
 
-	@FXML
+	/**
+     * Starts the registration frame.
+     * @param primaryStage The primary stage.
+     * @throws Exception If an error occurs while loading the frame.
+     */
 	public void start(Stage primaryStage) throws Exception {
 		Stage stage = new Stage();
 		Parent root = FXMLLoader.load(getClass().getResource("/gui/bounderies/RegisterSubscriber.fxml"));
@@ -82,6 +109,11 @@ public class RegisterSubscriberController {
 		stage.show();
 	}
 
+	
+	/**
+     * Handles the registration of a new subscriber.
+     * @param event The action event.
+     */
 	public void registerSubscriber(ActionEvent event) {
 		String readCard = readCardField.getText().trim();
 		String email = emailField.getText().trim();
@@ -101,6 +133,17 @@ public class RegisterSubscriberController {
 		ClientUI.chat.accept(sendToserver);
 	}
 
+	
+	/**
+     * Validates the user input fields.
+     * @param readCard The reader card number.
+     * @param email The email address.
+     * @param password The password.
+     * @param confirmPassword The confirmed password.
+     * @param username The username.
+     * @param phone The phone number.
+     * @return True if all inputs are valid, false otherwise.
+     */
 	private boolean validateInput(String readCard, String email, String password, String confirmPassword,
 			String username, String phone) {
 		boolean isValid = true;
@@ -169,6 +212,12 @@ public class RegisterSubscriberController {
 		return isValid;
 	}
 
+	
+	/**
+     * Applies error styling to the specified text field.
+     * @param field The text field to style.
+     * @param hasError Whether the field has an error.
+     */
 	private void applyErrorStyle(TextField field, boolean hasError) {
 		field.getStyleClass().remove("invalid-border");
 		if (hasError) {
@@ -178,6 +227,10 @@ public class RegisterSubscriberController {
 		}
 	}
 
+	/**
+     * Handles the back button action to return to the home screen.
+     * @param event The action event.
+     */
 	public void goBack(ActionEvent event) {
 		Stage primaryStage = new Stage();
 		((Node) event.getSource()).getScene().getWindow().hide();
