@@ -66,6 +66,8 @@ public class ServerFrameController {
 
     /** ObservableList containing the connected clients. */
     private ObservableList<Client> clientsData;
+    
+    private Timeline timeline;
 
     /**
      * Initializes the server frame controller.
@@ -94,6 +96,9 @@ public class ServerFrameController {
         });
         
 
+        
+        
+        
     }
     
     
@@ -143,9 +148,11 @@ public class ServerFrameController {
     public void StartServer(ActionEvent event) throws Exception {
     	
     	if(startServerBtn.getText().equals("Stop Server")) {
-    		ServerUI.stopServer();
-    		startServerBtn.setText("Start Server");
-    		return;
+    	    ServerUI.stopServer();
+    	    startServerBtn.setText("Start Server");
+    	    clientsData.clear();
+    	    clientsTable.getItems().clear();
+    	    return;
     	}
         String p= portTxt.getText();
         //check if the portTxt is not empty and contains only numbers.
@@ -158,7 +165,10 @@ public class ServerFrameController {
             
             ServerUI.runServer(p);
             startServerBtn.setText("Stop Server");
-            loadClientData();
+           
+            timeline = new Timeline(new KeyFrame(Duration.seconds(5), e -> loadClientData()));
+            timeline.setCycleCount(Timeline.INDEFINITE);
+            timeline.play();
         }
     }
     
@@ -176,6 +186,7 @@ public class ServerFrameController {
             clientsTable.setItems(clientsData);
         } else {
             showErrorAlert("Server is not running.");
+            timeline.stop();
         }
     }
 

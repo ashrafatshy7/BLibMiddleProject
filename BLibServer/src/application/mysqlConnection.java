@@ -40,8 +40,8 @@ public class mysqlConnection {
 	private static Connection conn;
 
 	/**
-     * Establishes a connection to the MySQL database.
-     */
+	 * Establishes a connection to the MySQL database.
+	 */
 	public static void connectToDB() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
@@ -64,10 +64,10 @@ public class mysqlConnection {
 	}
 
 	/**
-     * Retrieves all books from the database.
-     *
-     * @return ArrayList of Book objects.
-     */
+	 * Retrieves all books from the database.
+	 *
+	 * @return ArrayList of Book objects.
+	 */
 	public static ArrayList<Book> getAllBooks() {
 		Statement stmt = null;
 		ResultSet resultSet = null;
@@ -137,37 +137,37 @@ public class mysqlConnection {
 		return books;
 	}
 
-	 /**
-     * Places an order for a book.
-     *
-     * @param msg Order object containing subscriber ID and book barcode.
-     * @return Success message if the order was placed successfully.
-     */
+	/**
+	 * Places an order for a book.
+	 *
+	 * @param msg Order object containing subscriber ID and book barcode.
+	 * @return Success message if the order was placed successfully.
+	 */
 	public static String orderBook(Object msg) {
-	    Order orderBook = (Order) msg;
-	    String barcode = orderBook.getBarcode();
-	    String id = orderBook.getSubscriberID();
+		Order orderBook = (Order) msg;
+		String barcode = orderBook.getBarcode();
+		String id = orderBook.getSubscriberID();
 
-	    String result = null;
-	    PreparedStatement pstmt = null;
+		String result = null;
+		PreparedStatement pstmt = null;
 
-	    try {
-	        String query = "INSERT INTO orders (subscriberID, requestDate, barcode) VALUES (?, ?, ?)";
-	        pstmt = conn.prepareStatement(query);
+		try {
+			String query = "INSERT INTO orders (subscriberID, requestDate, barcode) VALUES (?, ?, ?)";
+			pstmt = conn.prepareStatement(query);
 
-	        // Format: yyyy-MM-dd HH:mm:ss
-	        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	        String requestDateString = formatter.format(new Date()); // Now
+			// Format: yyyy-MM-dd HH:mm:ss
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String requestDateString = formatter.format(new Date()); // Now
 
-	        pstmt.setString(1, id);
-	        pstmt.setString(2, requestDateString);
-	        pstmt.setString(3, barcode);
+			pstmt.setString(1, id);
+			pstmt.setString(2, requestDateString);
+			pstmt.setString(3, barcode);
 
-	        int rowsInserted = pstmt.executeUpdate();
-	        if (rowsInserted > 0) {
-	            result = "success";
-	            
-	            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+			int rowsInserted = pstmt.executeUpdate();
+			if (rowsInserted > 0) {
+				result = "success";
+
+				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 				String requestDateOnly = dateFormatter.format(new Date());
 
 				String bookTitleQuery = "SELECT title FROM books WHERE barcode = ?";
@@ -175,7 +175,7 @@ public class mysqlConnection {
 
 				PreparedStatement bookTitleStmt = null;
 				PreparedStatement orderHistoryStmt = null;
-	            
+
 				bookTitleStmt = conn.prepareStatement(bookTitleQuery);
 				bookTitleStmt.setString(1, barcode);
 				ResultSet rs = bookTitleStmt.executeQuery();
@@ -192,81 +192,76 @@ public class mysqlConnection {
 				orderHistoryStmt.setString(2, id);
 				orderHistoryStmt.setString(3, bookTitle);
 				orderHistoryStmt.executeUpdate();
-	            
-	        } else {
-	            result = "error";
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        // You could explicitly set result to "error" in case of an exception
-	        result = "error";
-	    } finally {
-	        try {
-	            if (pstmt != null)
-	                pstmt.close();
-	        } catch (SQLException se) {
-	            se.printStackTrace();
-	        }
-	    }
-	    return result;
+
+			} else {
+				result = "error";
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			// You could explicitly set result to "error" in case of an exception
+			result = "error";
+		} finally {
+			try {
+				if (pstmt != null)
+					pstmt.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}
+		return result;
 	}
-	
 
 	/**
-     * Checks if a book has already been ordered by the subscriber.
-     *
-     * @param msg Order object containing subscriber ID and book barcode.
-     * @return Status of the order.
-     */
+	 * Checks if a book has already been ordered by the subscriber.
+	 *
+	 * @param msg Order object containing subscriber ID and book barcode.
+	 * @return Status of the order.
+	 */
 	public static String checkOrderedBook(Object msg) {
-	    Order orderBook = (Order) msg;
-	    String barcode = orderBook.getBarcode();
-	    String id = orderBook.getSubscriberID();
-	    
-	    String result = null;
-	    
+		Order orderBook = (Order) msg;
+		String barcode = orderBook.getBarcode();
+		String id = orderBook.getSubscriberID();
 
-	    String queryCheckLoan = "SELECT dueDate FROM loan WHERE barcode = ? AND id = ? AND returnDate IS NULL";
+		String result = null;
 
-	    String queryCheckOrder = "SELECT 1 FROM orders WHERE barcode = ? AND subscriberID = ? LIMIT 1";
+		String queryCheckLoan = "SELECT dueDate FROM loan WHERE barcode = ? AND id = ? AND returnDate IS NULL";
 
-	    try (
-	        PreparedStatement pstmtLoan = conn.prepareStatement(queryCheckLoan);
-	        PreparedStatement pstmtOrder = conn.prepareStatement(queryCheckOrder)
-	    ) {
-	        pstmtLoan.setString(1, barcode);
-	        pstmtLoan.setString(2, id);
-	        try (ResultSet loanRS = pstmtLoan.executeQuery()) {
-	            if (loanRS.next()) {
-	                // There is an active loan for this book (returnDate is null)
-	                result = "UserHasActiveLoan";
-	                return result;
-	            }
-	        }
+		String queryCheckOrder = "SELECT 1 FROM orders WHERE barcode = ? AND subscriberID = ? LIMIT 1";
 
-	        pstmtOrder.setString(1, barcode);
-	        pstmtOrder.setString(2, id);
-	        try (ResultSet orderRS = pstmtOrder.executeQuery()) {
-	            if (orderRS.next()) {
-	            	result = "OrderExists";
-	                return result;
-	            }
-	        }
+		try (PreparedStatement pstmtLoan = conn.prepareStatement(queryCheckLoan);
+				PreparedStatement pstmtOrder = conn.prepareStatement(queryCheckOrder)) {
+			pstmtLoan.setString(1, barcode);
+			pstmtLoan.setString(2, id);
+			try (ResultSet loanRS = pstmtLoan.executeQuery()) {
+				if (loanRS.next()) {
+					// There is an active loan for this book (returnDate is null)
+					result = "UserHasActiveLoan";
+					return result;
+				}
+			}
 
-	        result = "success";
-            
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        result = "error";
-	    }
+			pstmtOrder.setString(1, barcode);
+			pstmtOrder.setString(2, id);
+			try (ResultSet orderRS = pstmtOrder.executeQuery()) {
+				if (orderRS.next()) {
+					result = "OrderExists";
+					return result;
+				}
+			}
 
-	    return result;
+			result = "success";
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			result = "error";
+		}
+
+		return result;
 	}
 
-
 	/**
-     * Removes orders that are older than 2 days.
-     */
+	 * Removes orders that are older than 2 days.
+	 */
 	public static void removeOrder() {
 		PreparedStatement pstmt = null;
 
@@ -292,12 +287,11 @@ public class mysqlConnection {
 		}
 	}
 
-	
 	/**
-     * Retrieves the top 5 loaned books.
-     *
-     * @return ArrayList of the top 5 loaned Book objects.
-     */
+	 * Retrieves the top 5 loaned books.
+	 *
+	 * @return ArrayList of the top 5 loaned Book objects.
+	 */
 	public static ArrayList<Book> getTop5LoanedBooks() {
 		Statement stmt = null;
 		ResultSet resultSet = null;
@@ -388,12 +382,12 @@ public class mysqlConnection {
 		return books;
 	}
 
-	 /**
-     * Gets the earliest return date for a book.
-     *
-     * @param barcode Book barcode.
-     * @return Earliest return date in string format.
-     */
+	/**
+	 * Gets the earliest return date for a book.
+	 *
+	 * @param barcode Book barcode.
+	 * @return Earliest return date in string format.
+	 */
 	public static String getEarliestReturnDate(Object barcode) {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -442,12 +436,11 @@ public class mysqlConnection {
 		return earliestDate;
 	}
 
-	
 	/**
-     * Updates values in the database based on provided data.
-     *
-     * @param msg List containing update details.
-     */
+	 * Updates values in the database based on provided data.
+	 *
+	 * @param msg List containing update details.
+	 */
 	public static void updateValues(Object msg) {
 		PreparedStatement pstmt = null;
 		ArrayList<String> data = (ArrayList<String>) msg;
@@ -472,13 +465,12 @@ public class mysqlConnection {
 
 	}
 
-	
 	/**
-     * Saves a new subscriber to the database.
-     *
-     * @param msg Subscriber object.
-     * @return Map containing the result of the operation.
-     */
+	 * Saves a new subscriber to the database.
+	 *
+	 * @param msg Subscriber object.
+	 * @return Map containing the result of the operation.
+	 */
 	public static Map<String, String> saveNewSubscriber(Object msg) {
 		Subscriber sub = (Subscriber) msg;
 		Map<String, String> result = new HashMap<>();
@@ -523,12 +515,11 @@ public class mysqlConnection {
 		}
 	}
 
-	
-	 /**
-     * Saves user information to the database.
-     *
-     * @param msg User details.
-     */
+	/**
+	 * Saves user information to the database.
+	 *
+	 * @param msg User details.
+	 */
 	public static void saveUserToDB(Object msg) {
 		Statement stmt;
 		try {
@@ -548,11 +539,11 @@ public class mysqlConnection {
 		}
 	}
 
-	 /**
-     * Updates subscriber details.
-     *
-     * @param msg Subscriber details.
-     */
+	/**
+	 * Updates subscriber details.
+	 *
+	 * @param msg Subscriber details.
+	 */
 	public static void updateSubscriberDetails(Object msg) {
 		PreparedStatement pstmt = null;
 		try {
@@ -621,13 +612,12 @@ public class mysqlConnection {
 		}
 	}
 
-	
 	/**
-     * Retrieves card details if the card exists.
-     *
-     * @param cardNum Card number.
-     * @return Map containing card details.
-     */
+	 * Retrieves card details if the card exists.
+	 *
+	 * @param cardNum Card number.
+	 * @return Map containing card details.
+	 */
 	public static Map<String, Object> getCardDetailsIfExists(String cardNum) {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -782,16 +772,14 @@ public class mysqlConnection {
 		return result;
 	}
 
-
-	
-	 /**
-     * Updates a subscriber's email and phone number.
-     *
-     * @param email Email address.
-     * @param phoneNumber Phone number.
-     * @param cardNum Card number.
-     * @return True if the update was successful, false otherwise.
-     */
+	/**
+	 * Updates a subscriber's email and phone number.
+	 *
+	 * @param email       Email address.
+	 * @param phoneNumber Phone number.
+	 * @param cardNum     Card number.
+	 * @return True if the update was successful, false otherwise.
+	 */
 	public static boolean updateSubscriberEmailAndPhoneNumber(String email, String phoneNumber, String cardNum) {
 		String sql = "UPDATE users SET email = ?, phoneNumber = ? WHERE id = ?";
 		PreparedStatement stmt = null;
@@ -829,103 +817,95 @@ public class mysqlConnection {
 	}
 
 	/**
-     * Updates the return date of a book loan.
-     *
-     * @param messageData Loan details.
-     * @return True if the update was successful, false otherwise.
-     */
+	 * Updates the return date of a book loan.
+	 *
+	 * @param messageData Loan details.
+	 * @return True if the update was successful, false otherwise.
+	 */
 	// key: Loan,,, subscriber[0] -> ID, librarian[1] -> ID, book[2] -> name
 	public static boolean updateReturnDate(Object messageData) {
 
-	    Map<Loan, ArrayList<Object>> updatedDetails = (Map<Loan, ArrayList<Object>>) messageData;
+		Map<Loan, ArrayList<Object>> updatedDetails = (Map<Loan, ArrayList<Object>>) messageData;
 
-	    String barcodeQuery = "SELECT barcode FROM books WHERE title = ?";
-	    // Set the returnDate column, rather than dueDate
-	    String updateLoanQuery = 
-	          "UPDATE loan "
-	        + "   SET dueDate = ?, "
-	        + "       librarianUserName = ?, "
-	        + "       updateReturnDate = ? "
-	        + " WHERE id = ? "
-	        + "   AND borrowDate = ? "
-	        + "   AND barcode = ?";
-	    String getLibrarianNameQuery = 
-	          "SELECT username FROM users WHERE id = ? AND type = 'Librarian'";
+		String barcodeQuery = "SELECT barcode FROM books WHERE title = ?";
+		// Set the returnDate column, rather than dueDate
+		String updateLoanQuery = "UPDATE loan " + "   SET dueDate = ?, " + "       librarianUserName = ?, "
+				+ "       updateReturnDate = ? " + " WHERE id = ? " + "   AND borrowDate = ? " + "   AND barcode = ?";
+		String getLibrarianNameQuery = "SELECT username FROM users WHERE id = ? AND type = 'Librarian'";
 
-	    LocalDate currentDate = LocalDate.now();
-	    String currentDateStr = currentDate.toString();
+		LocalDate currentDate = LocalDate.now();
+		String currentDateStr = currentDate.toString();
 
-	    for (Loan loan : updatedDetails.keySet()) {
-	        ArrayList<Object> value = updatedDetails.get(loan);
-	        Subscriber subscriber = new Subscriber(((Subscriber) value.get(0)).getID());
-	        Librarian librarian = new Librarian(((Librarian) value.get(1)).getID());
-	        Book book = new Book(((Book) value.get(2)).getTitle());
+		for (Loan loan : updatedDetails.keySet()) {
+			ArrayList<Object> value = updatedDetails.get(loan);
+			Subscriber subscriber = new Subscriber(((Subscriber) value.get(0)).getID());
+			Librarian librarian = new Librarian(((Librarian) value.get(1)).getID());
+			Book book = new Book(((Book) value.get(2)).getTitle());
 
-	        try (PreparedStatement barcodeStmt = conn.prepareStatement(barcodeQuery);
-	             PreparedStatement updateLoanStmt = conn.prepareStatement(updateLoanQuery);
-	             PreparedStatement updateLibrarianNameStmt = conn.prepareStatement(getLibrarianNameQuery)) {
+			try (PreparedStatement barcodeStmt = conn.prepareStatement(barcodeQuery);
+					PreparedStatement updateLoanStmt = conn.prepareStatement(updateLoanQuery);
+					PreparedStatement updateLibrarianNameStmt = conn.prepareStatement(getLibrarianNameQuery)) {
 
-	            // 1. Find the book’s barcode based on its title
-	            barcodeStmt.setString(1, book.getTitle());
-	            ResultSet rs = barcodeStmt.executeQuery();
+				// 1. Find the book’s barcode based on its title
+				barcodeStmt.setString(1, book.getTitle());
+				ResultSet rs = barcodeStmt.executeQuery();
 
-	            if (rs.next()) {
-	                book.setBarcode(rs.getString("barcode"));
-	            } else {
-	                System.err.println("Barcode not found for bookTitle: " + book.getTitle());
-	                continue;
-	            }
+				if (rs.next()) {
+					book.setBarcode(rs.getString("barcode"));
+				} else {
+					System.err.println("Barcode not found for bookTitle: " + book.getTitle());
+					continue;
+				}
 
-	            // 2. Retrieve the librarian's username
-	            updateLibrarianNameStmt.setString(1, librarian.getID());
-	            rs = updateLibrarianNameStmt.executeQuery();
+				// 2. Retrieve the librarian's username
+				updateLibrarianNameStmt.setString(1, librarian.getID());
+				rs = updateLibrarianNameStmt.executeQuery();
 
-	            if (rs.next()) {
-	                librarian.setName(rs.getString("username"));
-	            } else {
-	                System.err.println("librarian name invalid");
-	                continue;
-	            }
+				if (rs.next()) {
+					librarian.setName(rs.getString("username"));
+				} else {
+					System.err.println("librarian name invalid");
+					continue;
+				}
 
-	            // Debugging prints
-	            System.out.println("loan.getReturnDate(): " + loan.getReturnDate());
-	            System.out.println("librarian.getName(): " + librarian.getName());
-	            System.out.println("currentDateStr: " + currentDateStr);
-	            System.out.println("subscriber.getID(): " + subscriber.getID());
-	            System.out.println("loan.getBorrowDate(): " + loan.getBorrowDate());
-	            System.out.println("book.getBarcode(): " + book.getBarcode());
+				// Debugging prints
+				System.out.println("loan.getReturnDate(): " + loan.getReturnDate());
+				System.out.println("librarian.getName(): " + librarian.getName());
+				System.out.println("currentDateStr: " + currentDateStr);
+				System.out.println("subscriber.getID(): " + subscriber.getID());
+				System.out.println("loan.getBorrowDate(): " + loan.getBorrowDate());
+				System.out.println("book.getBarcode(): " + book.getBarcode());
 
-	            // 3. Update the row in the loan table
-	            updateLoanStmt.setString(1, loan.getReturnDate());     // returnDate
-	            updateLoanStmt.setString(2, librarian.getName());      // librarianUserName
-	            updateLoanStmt.setString(3, currentDateStr);           // updateReturnDate
-	            updateLoanStmt.setString(4, subscriber.getID());       // WHERE id = ?
-	            updateLoanStmt.setString(5, loan.getBorrowDate());     // WHERE borrowDate = ?
-	            updateLoanStmt.setString(6, book.getBarcode());        // WHERE barcode = ?
+				// 3. Update the row in the loan table
+				updateLoanStmt.setString(1, loan.getReturnDate()); // returnDate
+				updateLoanStmt.setString(2, librarian.getName()); // librarianUserName
+				updateLoanStmt.setString(3, currentDateStr); // updateReturnDate
+				updateLoanStmt.setString(4, subscriber.getID()); // WHERE id = ?
+				updateLoanStmt.setString(5, loan.getBorrowDate()); // WHERE borrowDate = ?
+				updateLoanStmt.setString(6, book.getBarcode()); // WHERE barcode = ?
 
-	            int rowsUpdated = updateLoanStmt.executeUpdate();
-	            if (rowsUpdated == 0) {
-	                System.err.println("Failed to update loan for book: " + book.getTitle());
-	            } else {
-	                System.out.println("Successfully updated loan for book: " + book.getTitle());
-	            }
+				int rowsUpdated = updateLoanStmt.executeUpdate();
+				if (rowsUpdated == 0) {
+					System.err.println("Failed to update loan for book: " + book.getTitle());
+				} else {
+					System.out.println("Successfully updated loan for book: " + book.getTitle());
+				}
 
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	            return false;
-	        }
-	    }
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
 
-	    return true;
+		return true;
 	}
 
-
 	/**
-     * Retrieves books with extended return dates.
-     *
-     * @param number Subscriber card number.
-     * @return Map containing book titles and their extended return dates.
-     */
+	 * Retrieves books with extended return dates.
+	 *
+	 * @param number Subscriber card number.
+	 * @return Map containing book titles and their extended return dates.
+	 */
 	public static Map<String, String> getExtendedBooks(Object number) {
 		String cardNum = (String) number;
 		Map<String, String> loanMap = new LinkedHashMap<>(); // Using LinkedHashMap to maintain insertion order
@@ -933,8 +913,8 @@ public class mysqlConnection {
 		ResultSet resultSet = null;
 
 		// Updated query to join the 'loan' and 'books' tables using barcode
-		String query = "SELECT b.title, l.dueDate FROM loan l " + "JOIN books b ON l.barcode = b.barcode " + 
-				"WHERE l.id = ? AND l.dueDate BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY ";
+		String query = "SELECT b.title, l.dueDate FROM loan l " + "JOIN books b ON l.barcode = b.barcode "
+				+ "WHERE l.id = ? AND l.dueDate BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY ";
 
 		try {
 			preparedStatement = conn.prepareStatement(query);
@@ -967,12 +947,13 @@ public class mysqlConnection {
 		return loanMap;
 	}
 
-	 /**
-     * Updates the extension return date of a book loan.
-     *
-     * @param messageData Map containing the subscriber card number, book title, and return date.
-     * @return True if the extension update was successful, false otherwise.
-     */
+	/**
+	 * Updates the extension return date of a book loan.
+	 *
+	 * @param messageData Map containing the subscriber card number, book title, and
+	 *                    return date.
+	 * @return True if the extension update was successful, false otherwise.
+	 */
 	public static boolean updateExtensionReturnDate(Object messageData) {
 		Map<String, String> data = (Map<String, String>) messageData;
 
@@ -1031,24 +1012,20 @@ public class mysqlConnection {
 			int rowsUpdated = updateStatement.executeUpdate();
 
 			// If rowsUpdated > 0, the update was successful
-			
-			boolean  success = rowsUpdated > 0;
-			
+
+			boolean success = rowsUpdated > 0;
+
 			if (success) {
-			    Platform.runLater(() -> {
-			        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-			        alert.setTitle("Librarian Message");
-			        alert.setHeaderText(null);
-			        alert.setContentText("Subscriber: " + cardNum + " extended book: " + bookTitle);
-			        alert.showAndWait();
-			    });
+				Platform.runLater(() -> {
+					Alert alert = new Alert(Alert.AlertType.INFORMATION);
+					alert.setTitle("Librarian Message");
+					alert.setHeaderText(null);
+					alert.setContentText("Subscriber: " + cardNum + " extended book: " + bookTitle);
+					alert.showAndWait();
+				});
 			}
 
-			
 			return success;
-			
-			
-			
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1059,13 +1036,12 @@ public class mysqlConnection {
 		}
 	}
 
-	
 	/**
-     * Logs in a user.
-     *
-     * @param message Login credentials.
-     * @return User object if login is successful.
-     */
+	 * Logs in a user.
+	 *
+	 * @param message Login credentials.
+	 * @return User object if login is successful.
+	 */
 	public static User login(Object message) {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -1120,13 +1096,12 @@ public class mysqlConnection {
 		return user;
 	}
 
-	
 	/**
-     * Processes the return of a borrowed book.
-     *
-     * @param message Return details.
-     * @return Map with return status and message.
-     */
+	 * Processes the return of a borrowed book.
+	 *
+	 * @param message Return details.
+	 * @return Map with return status and message.
+	 */
 	public static Map<String, String> returnBook(Object message) {
 		Map<String, String> result = new HashMap<>();
 		PreparedStatement pstmt = null;
@@ -1240,14 +1215,14 @@ public class mysqlConnection {
 				pstmt.setString(1, orderId);
 				pstmt.executeUpdate();
 
-				 Platform.runLater(() -> {
-				Alert alert = new Alert(Alert.AlertType.INFORMATION);
-				alert.setTitle("Book Arrived");
-				alert.setHeaderText(null);
-				alert.setContentText("Email has sent to: " + readerCard + "\n" + bookBarcode
-						+ " has been arrived and waiting for you.");
-				alert.showAndWait();
-				 });
+				Platform.runLater(() -> {
+					Alert alert = new Alert(Alert.AlertType.INFORMATION);
+					alert.setTitle("Book Arrived");
+					alert.setHeaderText(null);
+					alert.setContentText("Email has sent to: " + readerCard + "\n" + bookBarcode
+							+ " has been arrived and waiting for you.");
+					alert.showAndWait();
+				});
 
 			}
 
@@ -1282,13 +1257,12 @@ public class mysqlConnection {
 		}
 	}
 
-	
 	/**
-     * Checks the subscriber's status.
-     *
-     * @param message Subscriber ID.
-     * @return Map containing the subscriber's status.
-     */
+	 * Checks the subscriber's status.
+	 *
+	 * @param message Subscriber ID.
+	 * @return Map containing the subscriber's status.
+	 */
 	public static Map<String, String> checkSubscriberStatus(Object message) {
 		Map<String, String> result = new HashMap<>();
 		PreparedStatement pstmt = null;
@@ -1335,13 +1309,12 @@ public class mysqlConnection {
 		}
 	}
 
-	
 	/**
-     * Creates a new loan for a book.
-     *
-     * @param message Loan details.
-     * @return Map with loan creation status.
-     */
+	 * Creates a new loan for a book.
+	 *
+	 * @param message Loan details.
+	 * @return Map with loan creation status.
+	 */
 	public static Map<String, String> createLoan(Object message) {
 		Map<String, String> result = new HashMap<>();
 		PreparedStatement pstmt = null;
@@ -1354,7 +1327,7 @@ public class mysqlConnection {
 		ResultSet rs = null;
 		ResultSet rsOrders = null;
 		PreparedStatement pstmtCheckLoanExists = null;
-	    ResultSet rsCheckLoanExists = null;
+		ResultSet rsCheckLoanExists = null;
 
 		try {
 			ArrayList<Object> msg = (ArrayList<Object>) message;
@@ -1365,24 +1338,21 @@ public class mysqlConnection {
 			String bookBarcode = loan.getBarcode();
 			String borrowDateStr = loan.getBorrowDate();
 			String dueDateStr = loan.getReturnDate();
-			
-			
-			
+
 			String sqlCheckDuplicateLoan = "SELECT * FROM loan WHERE id = ? AND barcode = ? AND borrowDate = ?";
-	        pstmtCheckLoanExists = conn.prepareStatement(sqlCheckDuplicateLoan);
-	        pstmtCheckLoanExists.setString(1, subscriberID);
-	        pstmtCheckLoanExists.setString(2, bookBarcode);
-	        pstmtCheckLoanExists.setDate(3, java.sql.Date.valueOf(borrowDateStr));
-	        rsCheckLoanExists = pstmtCheckLoanExists.executeQuery();
-	        if (rsCheckLoanExists.next()) {
-	            result.put("type", "unsuccessful");
-	            result.put("message", "Loan was not successful. A loan with the same subscriber, barcode, and borrow date already exists.");
-	            return result;
-	        }
-	        rsCheckLoanExists.close();
-	        pstmtCheckLoanExists.close();
-			
-			
+			pstmtCheckLoanExists = conn.prepareStatement(sqlCheckDuplicateLoan);
+			pstmtCheckLoanExists.setString(1, subscriberID);
+			pstmtCheckLoanExists.setString(2, bookBarcode);
+			pstmtCheckLoanExists.setDate(3, java.sql.Date.valueOf(borrowDateStr));
+			rsCheckLoanExists = pstmtCheckLoanExists.executeQuery();
+			if (rsCheckLoanExists.next()) {
+				result.put("type", "unsuccessful");
+				result.put("message",
+						"Loan was not successful. A loan with the same subscriber, barcode, and borrow date already exists.");
+				return result;
+			}
+			rsCheckLoanExists.close();
+			pstmtCheckLoanExists.close();
 
 			// 1) Check if the book exists
 			String sqlCheckBook = "SELECT availableCopies FROM books WHERE barcode = ?";
@@ -1563,13 +1533,12 @@ public class mysqlConnection {
 		}
 	}
 
-	
-	 /**
-     * Retrieves loan data for generating reports.
-     *
-     * @param message Report parameters including month and year.
-     * @return Map with categorized loan data.
-     */
+	/**
+	 * Retrieves loan data for generating reports.
+	 *
+	 * @param message Report parameters including month and year.
+	 * @return Map with categorized loan data.
+	 */
 	public static Map<String, Map<String, String>> fetchLoanDataForReport(Object message) {
 		System.out.println("calling endOfMonthProcessing()");
 		// Cast the input object to a Map<String, String>
@@ -1614,19 +1583,16 @@ public class mysqlConnection {
 		}
 
 		System.out.println("Loan Data Map: " + loanData);
-		
-		
-		
+
 		return loanData;
 	}
 
-	
 	/**
-     * Retrieves status data for generating reports.
-     *
-     * @param message Report parameters including month and year.
-     * @return Map containing active and frozen subscriber counts.
-     */
+	 * Retrieves status data for generating reports.
+	 *
+	 * @param message Report parameters including month and year.
+	 * @return Map containing active and frozen subscriber counts.
+	 */
 	public static Map<String, String> fetchStatusDataForReport(Object message) {
 		// Cast the input object to a Map<String, String>
 		Map<String, String> loanMonthAndYear = (Map<String, String>) message;
@@ -1666,10 +1632,9 @@ public class mysqlConnection {
 		return statusData;
 	}
 
-
 	/**
-     * Performs end-of-month processing for loan reports.
-     */
+	 * Performs end-of-month processing for loan reports.
+	 */
 	public static void endOfMonthProcessingLoanReport() {
 		PreparedStatement insertStmt = null;
 		PreparedStatement checkStmt = null;
@@ -1761,9 +1726,9 @@ public class mysqlConnection {
 		}
 	}
 
-	 /**
-     * Performs end-of-month processing for subscriber status reports.
-     */
+	/**
+	 * Performs end-of-month processing for subscriber status reports.
+	 */
 	public static void endOfMonthProcessingStatusReport() {
 		PreparedStatement insertStmt = null;
 		ResultSet rs = null;
@@ -1831,12 +1796,11 @@ public class mysqlConnection {
 		}
 	}
 
-	
 	/**
-     * Retrieves a connection to the database.
-     *
-     * @return Connection object.
-     */
+	 * Retrieves a connection to the database.
+	 *
+	 * @return Connection object.
+	 */
 	public static Connection getConnection() {
 		Connection conn = null;
 		try {
@@ -1850,12 +1814,11 @@ public class mysqlConnection {
 		return conn;
 	}
 
-	
-	 /**
-     * Checks due dates and sends SMS notifications for book returns.
-     *
-     * @return True if SMS notifications were sent, false otherwise.
-     */
+	/**
+	 * Checks due dates and sends SMS notifications for book returns.
+	 *
+	 * @return True if SMS notifications were sent, false otherwise.
+	 */
 	public static boolean checkDueDateAndSendSMS() {
 		boolean smsSent = false;
 
@@ -1897,6 +1860,18 @@ public class mysqlConnection {
 		}
 
 		return smsSent;
+	}
+
+
+	public static void switchToActive() throws SQLException {
+		String sql = "UPDATE middleproject.users AS u " + "JOIN ( SELECT id, MAX(issueDate) AS latestIssueDate "
+				+ "   FROM middleproject.issuehistory WHERE issueType = 'late return' GROUP BY id "
+				+ ") AS ih ON ih.id = u.id SET u.status = 'Active' "
+				+ "WHERE ih.latestIssueDate = (NOW() - INTERVAL 14 DAY)  AND u.status = 'Frozen'";
+
+		try (PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.executeUpdate();
+		}
 	}
 
 }

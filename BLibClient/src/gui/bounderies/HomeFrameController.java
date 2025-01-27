@@ -67,6 +67,14 @@ public class HomeFrameController {
     /** Button for librarian to generate reports. */
     @FXML
     private Button librarianReport;
+    
+    /** Label for displaying user name. */
+    @FXML 
+    private Label userName; 
+    
+    /** Label Welcome. */
+    @FXML 
+    private Label welcome;
 
     /** Container for displaying top books. */
     @FXML
@@ -162,13 +170,19 @@ public class HomeFrameController {
 				activeFrozen.setStyle("-fx-text-fill: red;");
 			}
 			subscriberInfo.setText("My Details");
+			userName.setText(ClientUI.user.getName());
+			welcome.setVisible(true);
 		} else if (ClientUI.user instanceof Librarian) {
 			librarianRegisterReader.setVisible(true);
 			librarianreturnBook.setVisible(true);
 			librarianLoanBook.setVisible(true);
 			librarianReport.setVisible(true);
+			welcome.setVisible(true);
+			userName.setText(ClientUI.user.getName());
 		}else {
 			subscriberInfo.setVisible(false);
+			welcome.setVisible(false);
+			userName.setText("");
 		}
 
 		if (ClientUI.user != null) {

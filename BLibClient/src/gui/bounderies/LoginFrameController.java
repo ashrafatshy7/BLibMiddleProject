@@ -91,9 +91,10 @@ public class LoginFrameController {
 	     * @param user The logged-in user.
 	     */
 	    public void setUser(User user) {
+	    	Platform.runLater(() -> {
 	    	if(user != null) {
 	    		ClientUI.user = user;
-	    		Platform.runLater(() -> {
+	    		
 	                Stage currentStage = (Stage) loginButton.getScene().getWindow();
 	                currentStage.close();
 
@@ -105,12 +106,13 @@ public class LoginFrameController {
 	                } catch (Exception e) {
 	                    e.printStackTrace();
 	                }
-	            });
+	            
 	    	}
 	    	else {
+	    		showAlert("User Not Found", "No User data is available.");
 	    		System.out.println("User Not Found");
 	    	}
-	    	
+	    	});
 	    }
 	    
 	    /**
@@ -197,11 +199,11 @@ public class LoginFrameController {
 	     * @param title The title of the alert.
 	     * @param message The alert message.
 	     */
-	    private void showAlert(AlertType alertType, String title, String message) {
-	        Alert alert = new Alert(alertType);
+	    private void showAlert(String title, String content) {
+	        Alert alert = new Alert(Alert.AlertType.INFORMATION);
 	        alert.setTitle(title);
 	        alert.setHeaderText(null);
-	        alert.setContentText(message);
+	        alert.setContentText(content);
 	        alert.showAndWait();
 	    }
 	    
