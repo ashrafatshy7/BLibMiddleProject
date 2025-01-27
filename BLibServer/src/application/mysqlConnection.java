@@ -1198,13 +1198,12 @@ public class mysqlConnection {
 				pstmt.executeUpdate();
 			}
 
-			String selectOrderSQL = "SELECT id FROM orders WHERE barcode = ? AND subscriberID = ? AND notification = 0 "
+			String selectOrderSQL = "SELECT id FROM orders WHERE barcode = ? AND notification = 0 "
 					+ "ORDER BY requestDate ASC " + "LIMIT 1";
 
 			pstmt.close();
 			pstmt = conn.prepareStatement(selectOrderSQL);
 			pstmt.setString(1, bookBarcode);
-			pstmt.setString(2, readerCard);
 			rs = pstmt.executeQuery();
 
 			if (rs.next()) {
@@ -1861,7 +1860,6 @@ public class mysqlConnection {
 
 		return smsSent;
 	}
-
 
 	public static void switchToActive() throws SQLException {
 		String sql = "UPDATE middleproject.users AS u " + "JOIN ( SELECT id, MAX(issueDate) AS latestIssueDate "
