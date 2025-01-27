@@ -39,9 +39,7 @@ public class ClientUI extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Example user initialization
-        // user = new Subscriber("815340001", "StudentUser4", "3344556677", "student4@example.com", "asd");
-        user = new Librarian("123", "aaa", "234567", "aaa@gmail.com", "asd");
+        user = null;
         
         IpFrameController aFrame = new IpFrameController();
         aFrame.start(primaryStage);

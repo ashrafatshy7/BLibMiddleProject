@@ -136,7 +136,6 @@ public class ServerUI extends Application {
 			LocalDateTime lastDayOfMonth = now.with(TemporalAdjusters.lastDayOfMonth());
 
 			// Check if it's the last day of the month at midnight
-			if (now.toLocalDate().equals(lastDayOfMonth.toLocalDate()) && now.getHour() == 0 && now.getMinute() == 0) {
 				System.out.println("End of month detected. Calling mysqlConnection method...");
 				try {
 					mysqlConnection.endOfMonthProcessingLoanReport();
@@ -144,13 +143,11 @@ public class ServerUI extends Application {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			} else {
-				System.out.println("Not the end of the month yet.");
-			}
+			
 		};
 
 		// Schedule the task to run after one minute and then every minute
-		scheduler.scheduleAtFixedRate(task, 1, 5, TimeUnit.MINUTES);
+		scheduler.scheduleAtFixedRate(task, 0, 5, TimeUnit.MINUTES);
 	}
 
 	

@@ -14,6 +14,12 @@ public class Order implements Serializable {
 
     /** The barcode of the book being ordered. */
     private String barcode;
+    
+    /** The title of the book being ordered. */
+    private String title; 
+    
+    /** The order date in string format. */
+    private String orderDate;
 
     /** The date and time when the order was placed. */
     private Timestamp requestDate;
@@ -40,6 +46,55 @@ public class Order implements Serializable {
     public Order(String subscriberID, String barcode) {
         this.subscriberID = subscriberID;
         this.barcode = barcode;
+    }
+    
+    
+    /**
+     * Constructs an Order instance with order date and book title.
+     *
+     * @param orderDate The order date.
+     * @param title The title of the ordered book.
+     * @param flag A flag used to differentiate constructors.
+     */
+    public Order(String orderDate, String title, boolean flag) {
+        this.title = title;
+        this.orderDate = orderDate;
+    }
+    
+    /**
+     * Retrieves the title of the book.
+     *
+     * @return The title of the book.
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * Sets the title of the book.
+     *
+     * @param bookTitle The title of the book to set.
+     */
+    public void setTitle(String bookTitle) {
+        this.title = bookTitle;
+    }
+
+    /**
+     * Retrieves the order date.
+     *
+     * @return The order date.
+     */
+    public String getOrderDate() {
+        return orderDate;
+    }
+
+    /**
+     * Sets the order date.
+     *
+     * @param orderDate The order date to set.
+     */
+    public void setOrderDate(String orderDate) {
+        this.orderDate = orderDate;
     }
 
     /**

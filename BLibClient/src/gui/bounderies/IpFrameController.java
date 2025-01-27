@@ -64,7 +64,7 @@ public class IpFrameController {
      * @throws Exception If an error occurs during the connection process.
      */
 	public void connect(ActionEvent event) throws Exception {
-		String ipAddress = "127.0.0.1";
+		String ipAddress = ipText.getText();
 
 		if (!isValidPort(portText.getText())) {
 			showErrorAlert("port is invalid");

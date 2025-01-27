@@ -36,125 +36,176 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
+/**
+ * Controller for managing subscriber card details.
+ */
 public class SubscriberCardDetailsController {
 
-	private ChatClient chatClient;
+	/** The chat client for communication with the server. */
+    private ChatClient chatClient;
 
-	@FXML
-	private Button btnBack;
-	@FXML
-	private Button btnUpdateDetails;
+    /** Button to navigate back to the previous screen. */
+    @FXML
+    private Button btnBack;
 
-	@FXML
-	private Button btnUpdateDates;
+    /** Button to update subscriber details. */
+    @FXML
+    private Button btnUpdateDetails;
 
-	@FXML
-	private Button btnExtend;
+    /** Button to update loan return dates. */
+    @FXML
+    private Button btnUpdateDates;
 
-	@FXML
-	private Button btnSearch;
+    /** Button to request an extension for book loans. */
+    @FXML
+    private Button btnExtend;
 
-	@FXML
-	private TextField tfInsertCardNumber;
+    /** Button to search for subscriber details. */
+    @FXML
+    private Button btnSearch;
 
-	@FXML
-	private TextField tfCardNumber;
+    /** TextField to enter a card number for searching. */
+    @FXML
+    private TextField tfInsertCardNumber;
 
-	@FXML
-	private TextField tfUserName;
+    /** TextField displaying the subscriber's card number. */
+    @FXML
+    private TextField tfCardNumber;
 
-	@FXML
-	private TextField tfPhoneNumber;
+    /** TextField displaying the subscriber's name. */
+    @FXML
+    private TextField tfUserName;
 
-	@FXML
-	private TextField tfEmail;
+    /** TextField displaying the subscriber's phone number. */
+    @FXML
+    private TextField tfPhoneNumber;
 
-	@FXML
-	private Label lblUserName;
+    /** TextField displaying the subscriber's email. */
+    @FXML
+    private TextField tfEmail;
 
-	@FXML
-	private Label lblOrderHistory;
+    /** Label for displaying the subscriber's name. */
+    @FXML
+    private Label lblUserName;
 
-	@FXML
-	private Label lblInsertCardNumber;
+    /** Label for the order history section. */
+    @FXML
+    private Label lblOrderHistory;
 
-	@FXML
-	private Label lblPhoneNumber;
+    /** Label for prompting card number input. */
+    @FXML
+    private Label lblInsertCardNumber;
 
-	@FXML
-	private Label lblEmail;
+    /** Label for the phone number field. */
+    @FXML
+    private Label lblPhoneNumber;
 
-	@FXML
-	private Label lblCardNumber;
+    /** Label for the email field. */
+    @FXML
+    private Label lblEmail;
 
-	@FXML
-	private Label lblLoanHistory;
+    /** Label for the card number field. */
+    @FXML
+    private Label lblCardNumber;
 
-	@FXML
-	private Label lblIssueHistory;
+    /** Label for the loan history section. */
+    @FXML
+    private Label lblLoanHistory;
 
-	@FXML
-	private TableView<Loan> tableLoanHistory;
+    /** Label for the issue history section. */
+    @FXML
+    private Label lblIssueHistory;
 
-	@FXML
-	private TableColumn<Loan, String> colBookTitle;
+    /** Table to display the subscriber's loan history. */
+    @FXML
+    private TableView<Loan> tableLoanHistory;
 
-	@FXML
-	private TableColumn<Loan, String> colBorrowDate;
+    /** Column for displaying book titles in loan history. */
+    @FXML
+    private TableColumn<Loan, String> colBookTitle;
 
-	@FXML
-	private TableColumn<Loan, String> colReturnDate;
+    /** Column for displaying borrow dates in loan history. */
+    @FXML
+    private TableColumn<Loan, String> colBorrowDate;
 
-	@FXML
-	private TableView<IssueHistory> tableIssuesHistory;
+    /** Column for displaying return dates in loan history. */
+    @FXML
+    private TableColumn<Loan, String> colReturnDate;
 
-	@FXML
-	private TableColumn<IssueHistory, String> colIssueType;
+    /** Table to display the subscriber's issue history. */
+    @FXML
+    private TableView<IssueHistory> tableIssuesHistory;
 
-	@FXML
-	private TableColumn<IssueHistory, String> colIssueDate;
+    /** Column for displaying issue types in issue history. */
+    @FXML
+    private TableColumn<IssueHistory, String> colIssueType;
 
-	@FXML
-	private TableColumn<IssueHistory, String> colIssueDescription;
+    /** Column for displaying issue dates in issue history. */
+    @FXML
+    private TableColumn<IssueHistory, String> colIssueDate;
 
-	@FXML
-	private TableView<Order> tableOrderHistory;
+    /** Column for displaying issue descriptions in issue history. */
+    @FXML
+    private TableColumn<IssueHistory, String> colIssueDescription;
 
-	@FXML
-	private TableColumn<Order, String> colOrderDate;
+    /** Table to display the subscriber's order history. */
+    @FXML
+    private TableView<Order> tableOrderHistory;
 
-	@FXML
-	private TableColumn<Order, String> colOrderBookTitle;
+    /** Column for displaying order dates in order history. */
+    @FXML
+    private TableColumn<Order, String> colOrderDate;
 
-	@FXML
-	private Label lblInvalidCardNumber;
+    /** Column for displaying ordered book titles. */
+    @FXML
+    private TableColumn<Order, String> colOrderBookTitle;
 
-	@FXML
-	private Label lblPhoneNumberMessage;
+    /** Label to display invalid card number messages. */
+    @FXML
+    private Label lblInvalidCardNumber;
 
-	@FXML
-	private Label lblEmailmessage;
+    /** Label to display phone number validation messages. */
+    @FXML
+    private Label lblPhoneNumberMessage;
 
-	@FXML
-	private Label lblEmailPhonemessage;
+    /** Label to display email validation messages. */
+    @FXML
+    private Label lblEmailmessage;
 
-	@FXML
-	private Label lblUpdateDateMessage;
+    /** Label to display general email and phone number update messages. */
+    @FXML
+    private Label lblEmailPhonemessage;
 
-	private Map<Loan, ArrayList<Object>> updatedReturnDates = new HashMap<>();
+    /** Label to display return date update messages. */
+    @FXML
+    private Label lblUpdateDateMessage;
 
-	// public static String type = "subscriber";
+    /** Map to store updated return dates for processing. */
+    private Map<Loan, ArrayList<Object>> updatedReturnDates = new HashMap<>();
 
+
+    /**
+     * Constructor for initializing the controller.
+     */
 	public SubscriberCardDetailsController() {
 		chatClient = ClientUI.chat.getClient();
 	}
 
+	
+	/**
+     * Sets the chat client for communication.
+     *
+     * @param chatClient The ChatClient instance to use.
+     */
 	public void setChatClient(ChatClient chatClient) {
 		this.chatClient = chatClient;
 		this.chatClient.setSubscriberCardDetailsController(this);
 	}
 
+	
+	 /**
+     * Initializes the controller by setting up UI components and table configurations.
+     */
 	@FXML
 	private void initialize() {
 		// Hide all components
@@ -194,6 +245,13 @@ public class SubscriberCardDetailsController {
 		}
 	}
 
+	
+	
+	/**
+     * Handles the search button click event.
+     *
+     * @param event The action event.
+     */
 	@FXML
 	public void btnSearchClicked(ActionEvent event) {
 		String cardNumber;
@@ -227,7 +285,11 @@ public class SubscriberCardDetailsController {
 		ClientUI.chat.accept(sendToServer);
 	}
 
-	// bulululu
+	/**
+     * Handles when subscriber card details exist and updates the UI accordingly.
+     *
+     * @param cardDetails A map containing card details.
+     */
 	public void cardExist(Map<String, Object> cardDetails) {
 		boolean cardExists = (boolean) cardDetails.get("exists");
 
@@ -303,7 +365,13 @@ public class SubscriberCardDetailsController {
 		});
 	}
 
-	// Utility method to format java.sql.Date or other date objects to String
+
+	 /**
+     * Formats a given date object into a string.
+     *
+     * @param dateObject The date object to format.
+     * @return A formatted date string.
+     */
 	private String formatDate(Object dateObject) {
 		if (dateObject instanceof java.sql.Date) {
 			java.sql.Date sqlDate = (java.sql.Date) dateObject;
@@ -313,6 +381,12 @@ public class SubscriberCardDetailsController {
 		return dateObject != null ? dateObject.toString() : "";
 	}
 
+	
+	/**
+     * Handles the update details button click event.
+     *
+     * @param event The action event.
+     */
 	@FXML
 	private void btnUpdateDetailsClicked(ActionEvent event) {
 		// Get the inserted details from the text fields
@@ -361,17 +435,33 @@ public class SubscriberCardDetailsController {
 		ClientUI.chat.accept(sendToServer);
 	}
 
-	// Helper method to validate email format
+	/**
+	 * Validates the format of the provided email address.
+	 *
+	 * @param email The email address to validate.
+	 * @return True if the email format is valid, false otherwise.
+	 */
 	private boolean isValidEmail(String email) {
 		return email != null
 				&& email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
 	}
 
-	// Helper method to validate phone number format
+	/**
+	 * Validates the format of the provided phone number.
+	 *
+	 * @param phoneNumber The phone number to validate.
+	 * @return True if the phone number format is valid (10-digit numeric), false otherwise.
+	 */
 	private boolean isValidPhoneNumber(String phoneNumber) {
 		return phoneNumber != null && phoneNumber.matches("\\d{10}");
 	}
 
+	
+	/**
+     * Checks the response after updating subscriber details.
+     *
+     * @param isUpdated Boolean indicating success or failure of the update.
+     */
 	public void btnUpdateDetailsClickedCheck(boolean isUpdated) {
 		Platform.runLater(() -> {
 			if (isUpdated) {
@@ -391,6 +481,12 @@ public class SubscriberCardDetailsController {
 		});
 	}
 
+	
+	/**
+     * Handles the update date button click event.
+     *
+     * @param event The action event.
+     */
 	@FXML
 	private void btnUpdateDateClicked(ActionEvent event) {
 
@@ -426,6 +522,13 @@ public class SubscriberCardDetailsController {
 		lblUpdateDateMessage.setVisible(false);
 	}
 
+	
+	
+	/**
+     * Checks the response after updating return dates.
+     *
+     * @param isUpdated Boolean indicating success or failure of the update.
+     */
 	public void btnUpdateReturnDateCheck(boolean isUpdated) {
 		Platform.runLater(() -> {
 			if (isUpdated) {
@@ -443,6 +546,12 @@ public class SubscriberCardDetailsController {
 
 	}
 
+	
+	/**
+     * Handles the back button click event.
+     *
+     * @param event The action event.
+     */
 	@FXML
 	private void btnBackClicked(ActionEvent event) {
 		Stage primaryStage = new Stage();
@@ -457,6 +566,12 @@ public class SubscriberCardDetailsController {
 
 	}
 
+	
+	/**
+     * Handles the extend loan button click event.
+     *
+     * @param event The action event.
+     */
 	@FXML
 	private void btnExtendClicked(ActionEvent event) {
 
@@ -494,6 +609,9 @@ public class SubscriberCardDetailsController {
 		}
 	}
 
+	/**
+     * Hides the UI components related to subscriber details.
+     */
 	private void hideComponents() {
 
 		lblCardNumber.setVisible(false);
@@ -529,6 +647,10 @@ public class SubscriberCardDetailsController {
 		btnExtend.setVisible(false);
 	}
 
+	
+	/**
+     * Shows the UI components related to subscriber details.
+     */
 	private void showComponents() {
 		lblCardNumber.setVisible(true);
 		tfCardNumber.setVisible(true);
@@ -582,6 +704,13 @@ public class SubscriberCardDetailsController {
 
 	}
 
+	
+	 /**
+     * Starts the subscriber details window.
+     *
+     * @param primaryStage The primary stage to display the UI.
+     * @throws Exception if the UI fails to load.
+     */
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/bounderies/SubscriberCardDetails.fxml"));

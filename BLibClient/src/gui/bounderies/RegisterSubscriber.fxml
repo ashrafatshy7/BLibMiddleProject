@@ -17,27 +17,27 @@
         <!-- Form Elements -->
         <Label layoutX="423.0" layoutY="108.0" styleClass="form-label" text="Read Card:" />
         <TextField fx:id="readCardField" layoutX="424.0" layoutY="138.0" styleClass="underlined-field" />
-        <Label fx:id="readCardError" layoutX="500.0" layoutY="170.0" styleClass="error-label" visible="false" />
+        <Label fx:id="readCardError" layoutX="470.0" layoutY="170.0" styleClass="error-label" visible="false" />
 
         <Label layoutX="425.0" layoutY="188.0" styleClass="form-label" text="Email:" />
         <TextField fx:id="emailField" layoutX="424.0" layoutY="218.0" styleClass="underlined-field" />
-        <Label fx:id="emailError" layoutX="500.0" layoutY="250.0" styleClass="error-label" visible="false" />
+        <Label fx:id="emailError" layoutX="520.0" layoutY="250.0" styleClass="error-label" visible="false" />
 
         <Label layoutX="426.0" layoutY="268.0" styleClass="form-label" text="Password:" />
         <PasswordField fx:id="passwordField" layoutX="424.0" layoutY="298.0" styleClass="underlined-field" />
-        <Label fx:id="passwordError" layoutX="500.0" layoutY="330.0" styleClass="error-label" visible="false" />
+        <Label fx:id="passwordError" layoutX="380.0" layoutY="330.0" styleClass="error-label" visible="false" />
 
         <Label layoutX="424.0" layoutY="348.0" styleClass="form-label" text="Confirm Password:" />
         <PasswordField fx:id="confirmPasswordField" layoutX="424.0" layoutY="378.0" styleClass="underlined-field" />
-        <Label fx:id="confirmPasswordError" layoutX="500.0" layoutY="410.0" styleClass="error-label" visible="false" />
+        <Label fx:id="confirmPasswordError" layoutX="490.0" layoutY="410.0" styleClass="error-label" visible="false" />
 
         <Label layoutX="424.0" layoutY="428.0" styleClass="form-label" text="Username:" />
         <TextField fx:id="usernameField" layoutX="425.0" layoutY="458.0" styleClass="underlined-field" />
-        <Label fx:id="usernameError" layoutX="500.0" layoutY="490.0" styleClass="error-label" visible="false" />
+        <Label fx:id="usernameError" layoutX="470.0" layoutY="490.0" styleClass="error-label" visible="false" />
 
         <Label layoutX="425.0" layoutY="508.0" styleClass="form-label" text="Phone Number:" />
         <TextField fx:id="phoneField" layoutX="425.0" layoutY="538.0" styleClass="underlined-field" />
-        <Label fx:id="phoneError" layoutX="500.0" layoutY="570.0" styleClass="error-label" visible="false" />
+        <Label fx:id="phoneError" layoutX="425.0" layoutY="570.0" styleClass="error-label" visible="false" />
 
         <!-- Register Button -->
         <Button fx:id="registerBtn" layoutX="530.0" layoutY="608.0" onAction="#registerSubscriber" styleClass="modern-button" text="Register" />

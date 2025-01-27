@@ -194,9 +194,15 @@ public class BookDetailsFrameController {
 		int available = book.getAvailableCopies();
 
 		if (available > 0) {
-			isAvailable.setText(isAvailable.getText() + "Yes");
-			System.out.println(book.getShelfs());
-			shelfReturnDate.setText("Shelf: " + book.getShelfs().get(0));
+			 isAvailable.setText(isAvailable.getText() + "Yes");
+		        
+		        // Check if shelves list exists and is non-empty
+		        if (book.getShelfs() != null && !book.getShelfs().isEmpty()) {
+		            shelfReturnDate.setText("Shelf: " + book.getShelfs().get(0));
+		        } else {
+		            // Decide how you want to handle an empty or null shelves list:
+		            shelfReturnDate.setText("No shelf location available.");
+		        }
 		} else {
 			isAvailable.setText(isAvailable.getText() + "No");
 			shelfReturnDate.setText("Return date: " + earliestReturnDate);

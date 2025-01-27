@@ -26,6 +26,7 @@ import enteties.Book;
 import enteties.Issue;
 import enteties.Subscriber;
 import enteties.User;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import enteties.Librarian;
 import enteties.Loan;
@@ -165,6 +166,33 @@ public class mysqlConnection {
 	        int rowsInserted = pstmt.executeUpdate();
 	        if (rowsInserted > 0) {
 	            result = "success";
+	            
+	            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+				String requestDateOnly = dateFormatter.format(new Date());
+
+				String bookTitleQuery = "SELECT title FROM books WHERE barcode = ?";
+				String orderHistoryQuery = "INSERT INTO orderhistory (orderDate, subscriberID, bookTitle) VALUES (?, ?, ?)";
+
+				PreparedStatement bookTitleStmt = null;
+				PreparedStatement orderHistoryStmt = null;
+	            
+				bookTitleStmt = conn.prepareStatement(bookTitleQuery);
+				bookTitleStmt.setString(1, barcode);
+				ResultSet rs = bookTitleStmt.executeQuery();
+
+				String bookTitle = null;
+				if (rs.next()) {
+					bookTitle = rs.getString("title");
+				} else {
+					throw new SQLException("No book found for the given barcode: " + barcode);
+				}
+
+				orderHistoryStmt = conn.prepareStatement(orderHistoryQuery);
+				orderHistoryStmt.setString(1, requestDateOnly);
+				orderHistoryStmt.setString(2, id);
+				orderHistoryStmt.setString(3, bookTitle);
+				orderHistoryStmt.executeUpdate();
+	            
 	        } else {
 	            result = "error";
 	        }
@@ -1006,14 +1034,16 @@ public class mysqlConnection {
 			
 			boolean  success = rowsUpdated > 0;
 			
-			if(success) {
-				Alert alert = new Alert(Alert.AlertType.INFORMATION);
-				alert.setTitle("Librarian Message");
-				alert.setHeaderText(null);
-				alert.setContentText("Subscriber: "+cardNum+" extended book: "+bookTitle);
-				alert.showAndWait();
-
+			if (success) {
+			    Platform.runLater(() -> {
+			        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			        alert.setTitle("Librarian Message");
+			        alert.setHeaderText(null);
+			        alert.setContentText("Subscriber: " + cardNum + " extended book: " + bookTitle);
+			        alert.showAndWait();
+			    });
 			}
+
 			
 			return success;
 			
@@ -1210,12 +1240,14 @@ public class mysqlConnection {
 				pstmt.setString(1, orderId);
 				pstmt.executeUpdate();
 
+				 Platform.runLater(() -> {
 				Alert alert = new Alert(Alert.AlertType.INFORMATION);
 				alert.setTitle("Book Arrived");
 				alert.setHeaderText(null);
 				alert.setContentText("Email has sent to: " + readerCard + "\n" + bookBarcode
 						+ " has been arrived and waiting for you.");
 				alert.showAndWait();
+				 });
 
 			}
 
@@ -1695,7 +1727,6 @@ public class mysqlConnection {
 					ResultSet generatedKeys = insertStmt.getGeneratedKeys();
 					if (generatedKeys.next()) {
 						int loanReportId = generatedKeys.getInt(1);
-						System.out.println("Loan report inserted with ID: " + loanReportId);
 					}
 				}
 			}
@@ -1723,8 +1754,7 @@ public class mysqlConnection {
 					insertStmt.close();
 				if (checkStmt != null)
 					checkStmt.close();
-				if (conn != null)
-					conn.close();
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

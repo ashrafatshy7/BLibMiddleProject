@@ -2,19 +2,26 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="194.0" prefWidth="316.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ServerFrameController">
+<AnchorPane prefHeight="525.0" prefWidth="764.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.bounderies.ServerFrameController">
     <children>
         <!-- Existing UI components like portTxt and startServerBtn -->
         
         <TextField fx:id="portTxt" layoutX="107.0" layoutY="52.0" promptText="Enter Port Number" text="5555" />
         
-        <Button fx:id="startServerBtn" layoutX="119.0" layoutY="97.0" onAction="#StartServer" text="Start Server" />
-        
-        <!-- New "Show Clients" Button -->
-        <Button fx:id="showClientsBtn" disable="true" layoutX="116.0" layoutY="142.0" onAction="#showClients" text="Show Clients" />
+        <Button fx:id="startServerBtn" layoutX="277.0" layoutY="52.0" onAction="#StartServer" text="Start Server" />
       <Label layoutX="72.0" layoutY="56.0" text="Port:" />
+      <TableView fx:id="clientsTable" layoutX="14.0" layoutY="89.0" prefHeight="421.0" prefWidth="730.0">
+        <columns>
+          <TableColumn fx:id="ipColumn" prefWidth="195.9999942779541" text="IP Address" />
+          <TableColumn fx:id="hostColumn" minWidth="0.0" prefWidth="318.3999938964844" text="Host Name" />
+            <TableColumn fx:id="statusColumn" prefWidth="216.00006103515625" text="Connection Status" />
+        </columns>
+      </TableView>
+      
     </children>
 </AnchorPane>

@@ -276,19 +276,16 @@ public class SeeAllFrameController {
 
 			for (Book currentBook : books) {
 				if (currentBook.getDescription() != null) {
-					String[] descriptionWords = currentBook.getDescription().toLowerCase().split("\\s+"); // Split the
-																											// description
-																											// into
-																											// words
+					String[] descriptionWords = currentBook.getDescription().toLowerCase().split("\\s+");
 					for (String searchWord : searchWords) {
 						for (String descriptionWord : descriptionWords) {
-							if (descriptionWord.contains(searchWord)) { // Check if the word matches partially or fully
+							if (descriptionWord.contains(searchWord)) { 
 								matchingBooks.add(currentBook);
-								break; // No need to check other words in the description
+								break; 
 							}
 						}
 						if (matchingBooks.contains(currentBook)) {
-							break; // No need to check other search words for this book
+							break;
 						}
 					}
 				}
@@ -312,18 +309,16 @@ public class SeeAllFrameController {
 		// Extract unique categories
 		Set<String> categorySet = new HashSet<>();
 		for (Book book : books) {
-			if (book.getCategory() != null) { // Check for null to avoid potential NullPointerException
+			if (book.getCategory() != null) { 
 				categorySet.add(book.getCategory());
 			}
 		}
 		categoryList = new ArrayList<>(categorySet);
 		Collections.sort(categoryList);
-		categoryList.add(0, "All Categories"); // Add default option at the beginning
+		categoryList.add(0, "All Categories"); 
 
-		// UI Updates: Must run on JavaFX Application Thread
 		Platform.runLater(() -> {
-			// Update ComboBox for categories
-			searchByCategory.getItems().clear(); // Clear existing items to avoid duplication
+			searchByCategory.getItems().clear(); 
 			searchByCategory.getItems().addAll(categoryList);
 			searchByCategory.setValue("All Categories");
 
