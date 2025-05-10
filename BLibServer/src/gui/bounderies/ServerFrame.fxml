@@ -9,7 +9,7 @@
     <children>
         <!-- Existing UI components like portTxt and startServerBtn -->
         
-        <TextField fx:id="portTxt" layoutX="107.0" layoutY="52.0" promptText="Enter Port Number" />
+        <TextField fx:id="portTxt" layoutX="107.0" layoutY="52.0" promptText="Enter Port Number" text="5555" />
         
         <Button fx:id="startServerBtn" layoutX="119.0" layoutY="97.0" onAction="#StartServer" text="Start Server" />
         

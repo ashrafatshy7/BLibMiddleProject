@@ -1,61 +1,23 @@
 package enteties;
 
-public class Librarian {
-    private String ID;   
-    private String name; 
-    private String email; 
-    private String phone; 
+import java.io.Serializable;
 
-    public Librarian(String ID, String name, String email, String phone) {
-        this.ID = ID;
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-    }
+public class Librarian extends User implements Serializable  {
+	
+	private static final long serialVersionUID = 1L;
 
-    // Getter and Setter for ID
-    public String getID() {
-        return ID;
-    }
-
-    public void setID(String ID) {
-        this.ID = ID;
-    }
-
-    // Getter and Setter for name
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    // Getter and Setter for email
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    // Getter and Setter for phone
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
+    // Constructor
+    public Librarian(String ID, String name, String phoneNumber, String email) {
+        super(ID, name, phoneNumber, email);
     }
 
     @Override
     public String toString() {
         return "Librarian{" +
-                "ID='" + ID + '\'' +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
+                "ID='" + getID() + '\'' +
+                ", name='" + getName() + '\'' +
+                ", email='" + getEmail() + '\'' +
+                ", phone='" + getPhoneNumber() + '\'' +
                 '}';
     }
 }

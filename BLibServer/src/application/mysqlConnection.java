@@ -13,10 +13,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import enteties.Librarian;
+import enteties.Subscriber;
+import enteties.User;
+
 
 public class mysqlConnection {
 	
 	
+	private static final User New = null;
 	private static Connection conn;
 
 	public static void connectToDB() 
@@ -32,7 +37,7 @@ public class mysqlConnection {
         
         try 
         {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/middleproject?serverTimezone=IST","root","1234");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost/middleproject?serverTimezone=IST","root","Aa123456");
             System.out.println("SQL connection succeed");
           
             
@@ -46,6 +51,152 @@ public class mysqlConnection {
    	}
 	
 	
+	
+	
+	
+	
+	public static User login(Object message) {
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    User user = null; // Assuming a User class exists to map the result
+	    ArrayList<String> loginDetails = (ArrayList<String>) message;
+
+	    String email = loginDetails.get(0);
+	    String password = loginDetails.get(1);
+
+	    try {
+	        String query = "SELECT * FROM users WHERE email = ? AND password = ?";
+	        
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, email);
+	        pstmt.setString(2, password);
+
+	        rs = pstmt.executeQuery();
+	        
+	        
+	      
+	        if (rs.next()) {
+	        	
+	        	String type = rs.getString("type");
+	        	System.out.println(type);
+	        	if(type.equals("Subscriber")) {
+	        		user = new Subscriber(rs.getString("id"), rs.getString("username"), rs.getString("phoneNumber"), rs.getString("email"));
+	        	}else if(type.equals("Librarian")) {
+	        		user = new Librarian(rs.getString("id"), rs.getString("username"), rs.getString("phoneNumber"), rs.getString("email"));
+	        	}
+	        	
+	        	
+	        }
+	        
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        // Close the ResultSet and PreparedStatement
+	        try {
+	            if (rs != null) rs.close();
+	        } catch (SQLException se) {
+	            se.printStackTrace();
+	        }
+	        try {
+	            if (pstmt != null) pstmt.close();
+	        } catch (SQLException se) {
+	            se.printStackTrace();
+	        }
+	    }
+	    System.out.println(user);
+	    return user; 
+	}
+
+	
+	public static boolean Return(Object message) {
+		
+		PreparedStatement pstmt = null;
+		PreparedStatement updateStatusStmt = null;
+		ResultSet rs = null;
+		boolean isSuccess = false;
+		
+		ArrayList<String> returnDetails = (ArrayList<String>) message;
+
+	    String bookBarcode = returnDetails.get(0);
+	    String readerCard = returnDetails.get(1);
+	    
+	    try {
+	    	String queryCheckReturnDate = " SELECT returnDate FROM loan WHERE barcode = ? AND id = ?";
+	    	pstmt=conn.prepareStatement(queryCheckReturnDate);
+	    	pstmt.setString(1, bookBarcode);
+	    	pstmt.setString(2, readerCard);
+	    	rs = pstmt.executeQuery();
+	    	
+	    	if (rs.next()) {
+	    		java.sql.Date returnDate = rs.getDate("returnDate");
+	    		
+	    		java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
+	    		long diffInMillis = currentDate.getTime()-returnDate.getTime();
+	    		long diffInDays = diffInMillis/(1000*60*60*24);
+	    		
+	    		if (diffInDays>=7) {
+	    			String freezeQuery = "UPDATE users SET status = 'frozen', frozenUntil = DATE_ADD(NOW(), INTERVAL 1 MONTH) WHERE id = ?";
+	    			updateStatusStmt=conn.prepareStatement(freezeQuery);
+	    			updateStatusStmt.setString(1, readerCard);
+	    			updateStatusStmt.executeUpdate();
+	    		}
+	    	}
+	    	
+	    	String query = "UPDATE books SET availableCopies = availableCopies + 1 WHERE barcode = ?";
+	    	
+	    	pstmt=conn.prepareStatement(query);
+	    	pstmt.setString(1, bookBarcode);
+	    	pstmt.setString(2, readerCard);
+	    	
+	    	 int rowsAffected = pstmt.executeUpdate(); // Execute the update query
+
+	         if (rowsAffected > 0) {
+	             isSuccess = true; // The return was processed successfully
+	         }
+
+	     } catch (SQLException e) {
+	         e.printStackTrace();
+	     } finally {
+	    	// Close all resources
+	         try {
+	             if (rs != null) rs.close();
+	         } catch (SQLException se) {
+	             se.printStackTrace();
+	         }
+	         try {
+	             if (pstmt != null) pstmt.close();
+	         } catch (SQLException se) {
+	             se.printStackTrace();
+	         }
+	         try {
+	             if (updateStatusStmt != null) updateStatusStmt.close();
+	         } catch (SQLException se) {
+	             se.printStackTrace();
+	         }
+	     }
+
+	     return isSuccess;
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private static void User() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+
+
+
 	// subscribers
 	public static ArrayList<Map<String, Object>> getAllValues(Object msg) {
 	    Statement stmt;

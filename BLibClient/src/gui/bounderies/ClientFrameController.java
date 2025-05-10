@@ -143,7 +143,7 @@ public class ClientFrameController {
 
     public void setChatClient(ChatClient chatClient) {
         this.chatClient = chatClient;
-           this.chatClient.setClientFrameController(this);
+        this.chatClient.setClientFrameController(this);
     }
 
     public void initializeData() {
@@ -187,7 +187,7 @@ public class ClientFrameController {
     
 
  
-    public void getSubscribers(ArrayList<Subscriber> subscribers) {
+    public void setSubscribers(ArrayList<Subscriber> subscribers) {
         Platform.runLater(() -> {
             subscribersList.clear();
             subscribersList.setAll(subscribers);
